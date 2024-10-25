@@ -50,7 +50,12 @@ const getCustomerById = async (req, res) => {
     }
     res.status(200).json(customer);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res
+      .status(500)
+      .json(
+        "There was an error in passing in the data from the database : ",
+        error
+      );
   }
 };
 

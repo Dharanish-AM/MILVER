@@ -64,18 +64,79 @@
       "to": "Velachery",
       "distance_km": 7.2,
       "customers": [
-        { "customer_id": 1, "coordinates": [80.228, 13.0411] },
-        { "customer_id": 2, "coordinates": [80.2225, 13.03] },
-        { "customer_id": 3, "coordinates": [80.2171, 13.0221] },
-        { "customer_id": 4, "coordinates": [80.217, 13.0108] },
-        { "customer_id": 5, "coordinates": [80.2182, 13.0002] },
-        { "customer_id": 6, "coordinates": [80.2198, 12.998] },
-        { "customer_id": 7, "coordinates": [80.2221, 12.9971] },
-        { "customer_id": 8, "coordinates": [80.2208, 12.9969] },
-        { "customer_id": 9, "coordinates": [80.2255, 12.9952] },
-        { "customer_id": 10, "coordinates": [80.219, 12.996] }
+        {
+          "customer_id": 1,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.228, 13.0411]
+          }
+        },
+        {
+          "customer_id": 2,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2225, 13.03]
+          }
+        },
+        {
+          "customer_id": 3,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2171, 13.0221]
+          }
+        },
+        {
+          "customer_id": 4,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.217, 13.0108]
+          }
+        },
+        {
+          "customer_id": 5,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2182, 13.0002]
+          }
+        },
+        {
+          "customer_id": 6,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2198, 12.998]
+          }
+        },
+        {
+          "customer_id": 7,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2221, 12.9971]
+          }
+        },
+        {
+          "customer_id": 8,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2208, 12.9969]
+          }
+        },
+        {
+          "customer_id": 9,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.2255, 12.9952]
+          }
+        },
+        {
+          "customer_id": 10,
+          "location": {
+            "type": "Point",
+            "coordinates": [80.219, 12.996]
+          }
+        }
       ]
     },
+
     {
       "route_id": 2,
       "from": "Royapettah",

@@ -1,49 +1,27 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const routeSchema = new mongoose.Schema({
+const routeSchema = new Schema({
   route_id: {
     type: Number,
-    required: true,
+    unique: true,
   },
-  route_name: {
+  from: {
     type: String,
     required: true,
   },
-  from_location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
-  to_location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
-  distance: {
-    type: Number,
+  to: {
+    type: String,
     required: true,
   },
-  delivery_person: {
-    type: mongoose.Schema.Types.ObjectId,
+  distance_km: {
+    type: Number,
     required: true,
   },
   customers: [
     {
       customer_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        type: Number,
         required: true,
       },
       location: {
@@ -54,21 +32,13 @@ const routeSchema = new mongoose.Schema({
         },
         coordinates: {
           type: [Number],
-          required: true,
+          required: true,  
         },
       },
     },
   ],
-  temp_drivers: [
-    {
-      driver_id: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
-  ],
 });
 
-routeSchema.index({ from_location: "2dsphere" });
-routeSchema.index({ to_location: "2dsphere" });
-routeSchema.index({ "customers.location": "2dsphere" });
+routeSchema.index({ customers: "2dsphere" });
 const Route = mongoose.model("Route", routeSchema);
 module.exports = Route;

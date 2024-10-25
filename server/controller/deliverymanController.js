@@ -1,5 +1,4 @@
 const Deliveryman = require("../models/Deliveryman");
-
 const createDeliveryman = async (req, res) => {
   try {
     const {
@@ -39,7 +38,7 @@ const createDeliveryman = async (req, res) => {
 
 const getAllDeliverymen = async (req, res) => {
   try {
-    const deliverymen = await Deliveryman.find(); // No populate, just raw data
+    const deliverymen = await Deliveryman.find(); 
     res.status(200).json(deliverymen);
   } catch (error) {
     res.status(500).json({ error: error.message });
