@@ -1,4 +1,19 @@
+const Customer = require("../models/Customer");
 const Route = require("../models/Route");
+
+const addCustomerIdsToRoutes = async () => {
+  try {
+    for(var i=0;i<130;i++){
+      const customer = await Customer.findBy(i
+        {
+          ""
+        }
+      );
+    }
+  } catch {
+    console.log("Error");
+  }
+};
 
 const createRoute = async (req, res) => {
   console.log("consoling the data to the enter in the routes : ", req.body);
@@ -89,4 +104,5 @@ module.exports = {
   getRouteById,
   updateRoute,
   deleteRoute,
+  addCustomerIdsToRoutes,
 };

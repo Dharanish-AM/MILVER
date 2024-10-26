@@ -18,25 +18,7 @@ const routeSchema = new Schema({
     type: Number,
     required: true,
   },
-  customers: [
-    {
-      customer_id: {
-        type: Number,
-        required: true,
-      },
-      location: {
-        type: {
-          type: String,
-          enum: ["Point"],
-          required: true,
-        },
-        coordinates: {
-          type: [Number],
-          required: true,  
-        },
-      },
-    },
-  ],
+  customers: [mongoose.Schema.Types.ObjectId],
 });
 
 routeSchema.index({ customers: "2dsphere" });

@@ -5,9 +5,9 @@ const CustomerSchema = new Schema({
   customer_id: {
     type: Number,
     required: true,
-  } ,
+  },
   name: {
-    type: String,      
+    type: String,
     required: true,
   },
   address: {
@@ -30,8 +30,9 @@ const CustomerSchema = new Schema({
     required: true,
   },
   route: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Route",
+    //type: mongoose.Schema.Types.ObjectId,
+    type: Number,
+    //ref: "Route",
   },
   estimatedtime: {
     type: Date,
