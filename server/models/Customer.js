@@ -5,9 +5,9 @@ const CustomerSchema = new Schema({
   customer_id: {
     type: Number,
     required: true,
-  },
+  } ,
   name: {
-    type: String,
+    type: String,      
     required: true,
   },
   address: {
