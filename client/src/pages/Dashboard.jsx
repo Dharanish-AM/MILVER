@@ -6,7 +6,7 @@ import exclamation from "../assets/exclamation.png";
 import supplied from "../assets/supplied.png";
 import collected from "../assets/collected.png";
 import broken from "../assets/broken.png";
-
+import person from "../assets/person.png";
 function Dashboard() {
   return (
     <section className="Dashboard">
@@ -151,8 +151,34 @@ function Dashboard() {
                 </div>
               </div>
               <div className="Dashboard-left-bottom-right-overview">
-                <div className="Dashboard-left-bottom-right-overview-element"></div>
-                <div className="Dashboard-left-bottom-right-overview-element"></div>
+                <div className="Dashboard-left-bottom-right-overview-element">
+                  <div className="Dashboard-left-bottom-right-overview-element-value">
+                    <div
+                      className="Dashboard-left-bottom-right-overview-element-value-img"
+                      style={{ backgroundImage: `url(${person})` }}
+                    ></div>
+                    <div className="Dashboard-left-bottom-right-overview-element-value-text">
+                      6/13
+                    </div>
+                  </div>
+                  <div className="Dashboard-left-bottom-right-overview-element-label">
+                    Active Members
+                  </div>
+                </div>
+                <div className="Dashboard-left-bottom-right-overview-element">
+                  <div className="Dashboard-left-bottom-right-overview-element-value">
+                    <div
+                      className="Dashboard-left-bottom-right-overview-element-value-img"
+                      style={{ backgroundImage: `url(${tick})` }}
+                    ></div>
+                    <div className="Dashboard-left-bottom-right-overview-element-value-text">
+                      3
+                    </div>
+                  </div>
+                  <div className="Dashboard-left-bottom-right-overview-element-label">
+                    Completed
+                  </div>
+                </div>
               </div>
               <div className="Dashboard-left-bottom-right-table"></div>
             </div>
