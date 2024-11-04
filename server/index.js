@@ -9,7 +9,7 @@ const Route = require("./routes/routeRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
- 
+
 db();
 
 app.use(cors({ origin: "*" }));
@@ -22,3 +22,4 @@ app.use("/api/route", Route);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+

@@ -1,40 +1,52 @@
 const Customer = require("../models/Customer");
 const Route = require("../models/Route");
-
 const createRoute = async (req, res) => {
-  const { route_id } = req.body;
-  console.log("creating the routes : ", req.body);
+  const { from, to, from_cords, to_cords } = req.body;
+  console.log("Creating the route:", req.body);
+  const calculateDistance = (coords1, coords2) => {
+    const [lon1, lat1] = coords1;
+    const [lon2, lat2] = coords2;
+    const toRadians = (degrees) => (degrees * Math.PI) / 180;
+    const R = 6371;
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+  const distance_km = calculateDistance(from_cords, to_cords);
+
+  const newRoute = new Route({
+    from,
+    to,
+    from_cords: {
+      type: "Point",
+      coordinates: from_cords,
+    },
+    to_cords: {
+      type: "Point",
+      coordinates: to_cords,
+    },
+    distance_km: parseInt(distance_km),
+    customers: [],
+  });
 
   try {
-    const route = await Route.findOne({route_id: route_id });
-    if (!route) {
-      route = new Route({
-        route_id,
-        from,
-        to,
-        distance_km,
-        from_coordinates,
-        to_coordinates,
-        customers: [],
-      });
-      await route.save();
-    }
-    route.customers = [];
-    const customers = await Customer.find({ route: route_id });
-    const customerIds = customers.map((customer) => customer._id);
-    route.customers.push(...customerIds);
-    await route.save();
-    return res.status(200).json({
-      message: "Customer IDs added to route successfully",
-      route,
-      customers,
-    });
+    console.log("Before saving the new route:", newRoute);
+    await newRoute.save();
+    return res.status(201).json(newRoute);
   } catch (error) {
-    console.error(error);
+    console.error("Error saving route:", error);
     return res.status(500).json({ error: "Server error" });
   }
 };
-// const createRoute
 
 const getAllRoutes = async (req, res) => {
   try {
@@ -90,5 +102,4 @@ module.exports = {
   getRouteById,
   updateRoute,
   deleteRoute,
-  createRoute,
 };

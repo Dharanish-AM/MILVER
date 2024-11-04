@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const routeSchema = new Schema({
   route_id: {
@@ -14,39 +15,41 @@ const routeSchema = new Schema({
     type: String,
     required: true,
   },
+  from_cords: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  to_cords: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
   distance_km: {
     type: Number,
-    required: true,
   },
-  from_coordinates: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
+  customers: {
+    type: [Number],
+    default: null,
   },
-  to_coordinates: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
-  },
-  customers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-    },
-  ],
 });
+
+routeSchema.index({ from_cords: "2dsphere" });
+routeSchema.index({ to_cords: "2dsphere" });
+
+routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
 
 const Route = mongoose.model("Route", routeSchema);
 module.exports = Route;

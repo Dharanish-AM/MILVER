@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const CustomerSchema = new Schema({
   customer_id: {
     type: Number,
-    required: true,
+    unique: true,
   },
   name: {
     type: String,
@@ -30,9 +31,7 @@ const CustomerSchema = new Schema({
     required: true,
   },
   route: {
-    //type: mongoose.Schema.Types.ObjectId,
     type: Number,
-    //ref: "Route",
   },
   estimatedtime: {
     type: Date,
@@ -42,6 +41,9 @@ const CustomerSchema = new Schema({
     type: Date,
   },
 });
+
+// Enable auto-increment for customer_id
+CustomerSchema.plugin(AutoIncrement, { inc_field: "customer_id" });
 
 CustomerSchema.index({ location: "2dsphere" });
 
