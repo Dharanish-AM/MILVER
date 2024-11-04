@@ -45,7 +45,7 @@
 }
 .Dashboard-container {
   flex: 1;
-  display: flexbox;
+  display: flex;
   flex-direction: row;
   height: 100%;
   overflow: hidden;
@@ -347,4 +347,62 @@
   margin-left: 5%;
   font-size: 1.5vw;
   font-weight: 600;
+}
+.Dashboard-left-bottom-right-table {
+  flex:1;
+  width: 98%;
+}
+.delivery-details-table {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.Dashboard-right {
+  height: calc(100% - 8vh);
+  width: calc(35% - 2vw);
+  margin-left: none;
+  margin-right: 2vw;
+  margin-top: 4vh;
+  margin-bottom: 4vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+.Dashboard-right-mapContainer {
+  height: 65%;
+  width: 100%;
+  background-color: white;
+  border-radius: 15px;
+}
+.Dashboard-right-routes {
+  height: 30%;
+  width: 100%;
+  background-color: white;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Dashboard-right-routes-heading {
+  width: 90%;
+  margin-top: 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+.Dashboard-right-routes-heading-img {
+  height: 2vw;
+  aspect-ratio: 1;
+  background-image: url("./assets/route.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.Dashboard-right-routes-heading-text {
+  font-size: 1.6vw;
+  font-weight: 600;
+  height: 80%;
+  margin-left: 1vw;
 }
