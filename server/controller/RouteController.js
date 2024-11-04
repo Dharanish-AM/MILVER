@@ -1,46 +1,16 @@
 const Customer = require("../models/Customer");
 const Route = require("../models/Route");
 
-const addCustomerIdsToRoutes = async () => {
-  try {
-    for(var i=0;i<130;i++){
-      const customer = await Customer.findBy(i
-        {
-          ""
-        }
-      );
-    }
-  } catch {
-    console.log("Error");
-  }
-};
-
 const createRoute = async (req, res) => {
   console.log("consoling the data to the enter in the routes : ", req.body);
 
-  const formattedCustomers = req.body.customers.map((customer) => {
-    const roundedCoordinates = customer.location.coordinates.map((coord) =>
-      Number(coord.toFixed(6))
-    );
-    return {
-      customer_id: customer.customer_id,
-      location: {
-        type: "Point",
-        coordinates: roundedCoordinates,
-      },
-    };
-  });
-
-  const formattedCustomersdata = formattedCustomers;
-  console.log("formated data after arranging : ", formattedCustomersdata);
-  console.log(JSON.stringify(formattedCustomersdata, null, 2));
   const newRoute = new Route({
-    route_id: req.body.route_id,
     from: req.body.from,
     to: req.body.to,
-    distance_km: req.body.distance_km,
-    customers: formattedCustomersdata,
+    distance_km: 0,
+    customers: null,
   });
+
   try {
     console.log("Before saving he new routes : ", newRoute);
     await newRoute.save();
@@ -104,5 +74,4 @@ module.exports = {
   getRouteById,
   updateRoute,
   deleteRoute,
-  addCustomerIdsToRoutes,
 };

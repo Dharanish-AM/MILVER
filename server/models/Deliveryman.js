@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const DeliverymanSchema = new Schema(
   {
     deliveryman_id: {
       type: Number,
-      required: true,
       unique: true,
     },
     name: {
@@ -78,6 +78,9 @@ const DeliverymanSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Enable auto-increment for deliveryman_id
+DeliverymanSchema.plugin(AutoIncrement, { inc_field: "deliveryman_id" });
 
 DeliverymanSchema.index({ location: "2dsphere" });
 

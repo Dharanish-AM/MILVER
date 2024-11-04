@@ -1,37 +1,54 @@
 const Customer = require("../models/Customer");
-
+const Route = require("../models/Route");
 const createCustomer = async (req, res) => {
   try {
     const {
-      customer_id,
       name,
       address,
-      location,
+      location, 
       phone,
-      route,
       estimatedtime,
       deliverytime,
     } = req.body;
 
+    const nearbyRoutes = await Route.find({
+      location: {
+        $near: {
+          $geometry: location,
+          $maxDistance: 10000, 
+        },
+      },
+    });
+
+    if (nearbyRoutes.length === 0) {
+      return res.status(404).json({ error: "No nearby routes found" });
+    }
+
+    nearbyRoutes.sort((a, b) => a.distance_km - b.distance_km);
+
+    const assignedRoute = nearbyRoutes[0];
+
     const customer = new Customer({
-      customer_id,
       name,
       address,
       location,
       phone,
-      route,
+      route: assignedRoute.route_id,
       estimatedtime,
       deliverytime,
     });
-
     await customer.save();
+    assignedRoute.customers.push(customer._id); 
+    await assignedRoute.save();
+
     res
       .status(201)
-      .json({ message: "Customer created successfully", customer });
+      .json({ message: "Customer created and route optimized successfully", customer });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const getAllCustomers = async (req, res) => {
   try {
