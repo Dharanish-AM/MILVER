@@ -1,54 +1,40 @@
 const Customer = require("../models/Customer");
 const Route = require("../models/Route");
 
-const addCustomerIdsToRoutes = async () => {
-  try {
-    for(var i=0;i<130;i++){
-      const customer = await Customer.findBy(i
-        {
-          ""
-        }
-      );
-    }
-  } catch {
-    console.log("Error");
-  }
-};
-
 const createRoute = async (req, res) => {
-  console.log("consoling the data to the enter in the routes : ", req.body);
+  const { route_id } = req.body;
+  console.log("creating the routes : ", req.body);
 
-  const formattedCustomers = req.body.customers.map((customer) => {
-    const roundedCoordinates = customer.location.coordinates.map((coord) =>
-      Number(coord.toFixed(6))
-    );
-    return {
-      customer_id: customer.customer_id,
-      location: {
-        type: "Point",
-        coordinates: roundedCoordinates,
-      },
-    };
-  });
-
-  const formattedCustomersdata = formattedCustomers;
-  console.log("formated data after arranging : ", formattedCustomersdata);
-  console.log(JSON.stringify(formattedCustomersdata, null, 2));
-  const newRoute = new Route({
-    route_id: req.body.route_id,
-    from: req.body.from,
-    to: req.body.to,
-    distance_km: req.body.distance_km,
-    customers: formattedCustomersdata,
-  });
   try {
-    console.log("Before saving he new routes : ", newRoute);
-    await newRoute.save();
-    return res.status(201).json(newRoute);
+    const route = await Route.findOne({route_id: route_id });
+    if (!route) {
+      route = new Route({
+        route_id,
+        from,
+        to,
+        distance_km,
+        from_coordinates,
+        to_coordinates,
+        customers: [],
+      });
+      await route.save();
+    }
+    route.customers = [];
+    const customers = await Customer.find({ route: route_id });
+    const customerIds = customers.map((customer) => customer._id);
+    route.customers.push(...customerIds);
+    await route.save();
+    return res.status(200).json({
+      message: "Customer IDs added to route successfully",
+      route,
+      customers,
+    });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
   }
 };
+// const createRoute
 
 const getAllRoutes = async (req, res) => {
   try {
@@ -104,5 +90,5 @@ module.exports = {
   getRouteById,
   updateRoute,
   deleteRoute,
-  addCustomerIdsToRoutes,
+  createRoute,
 };

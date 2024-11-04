@@ -18,9 +18,35 @@ const routeSchema = new Schema({
     type: Number,
     required: true,
   },
-  customers: [mongoose.Schema.Types.ObjectId],
+  from_coordinates: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  to_coordinates: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+  customers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+    },
+  ],
 });
 
-routeSchema.index({ customers: "2dsphere" });
 const Route = mongoose.model("Route", routeSchema);
 module.exports = Route;

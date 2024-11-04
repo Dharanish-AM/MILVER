@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const routeController = require("../controller/RouteController");
 
-router.post("/acr",routeController.addCustomerIdsToRoutes)
-router.post("/", routeController.createRoute);
+router.post("/createroute",routeController.createRoute)
 router.get("/", routeController.getAllRoutes);
 router.get("/:id", routeController.getRouteById);
 router.put("/:id", routeController.updateRoute);

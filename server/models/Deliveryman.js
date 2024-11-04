@@ -19,6 +19,10 @@ const DeliverymanSchema = new Schema(
     email: {
       type: String,
     },
+    available: {
+      type: Boolean,
+      default: false,
+    },
     address: {
       type: String,
       required: true,
