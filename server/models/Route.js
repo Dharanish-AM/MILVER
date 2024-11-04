@@ -18,23 +18,23 @@ const routeSchema = new Schema({
   from_cords: {
     type: {
       type: String,
-      enum: "Point",
-      require: true,
+      enum: ["Point"],
+      required: true,
     },
     coordinates: {
       type: [Number],
-      require: true,
+      required: true,
     },
   },
   to_cords: {
     type: {
       type: String,
-      enum: "Point",
-      require: true,
+      enum: ["Point"],
+      required: true,
     },
     coordinates: {
       type: [Number],
-      require: true,
+      required: true,
     },
   },
   distance_km: {
@@ -46,7 +46,9 @@ const routeSchema = new Schema({
   },
 });
 
-// Enable auto-increment for route_id
+routeSchema.index({ from_cords: "2dsphere" });
+routeSchema.index({ to_cords: "2dsphere" });
+
 routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
 
 const Route = mongoose.model("Route", routeSchema);

@@ -1,22 +1,50 @@
 const Customer = require("../models/Customer");
 const Route = require("../models/Route");
-
 const createRoute = async (req, res) => {
-  console.log("consoling the data to the enter in the routes : ", req.body);
+  const { from, to, from_cords, to_cords } = req.body;
+  console.log("Creating the route:", req.body);
+  const calculateDistance = (coords1, coords2) => {
+    const [lon1, lat1] = coords1;
+    const [lon2, lat2] = coords2;
+    const toRadians = (degrees) => (degrees * Math.PI) / 180;
+    const R = 6371;
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+  const distance_km = calculateDistance(from_cords, to_cords);
 
   const newRoute = new Route({
-    from: req.body.from,
-    to: req.body.to,
-    distance_km: 0,
-    customers: null,
+    from,
+    to,
+    from_cords: {
+      type: "Point",
+      coordinates: from_cords,
+    },
+    to_cords: {
+      type: "Point",
+      coordinates: to_cords,
+    },
+    distance_km: parseInt(distance_km),
+    customers: [],
   });
 
   try {
-    console.log("Before saving he new routes : ", newRoute);
+    console.log("Before saving the new route:", newRoute);
     await newRoute.save();
     return res.status(201).json(newRoute);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error("Error saving route:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 };
 
