@@ -16,36 +16,18 @@ const routeSchema = new Schema({
     required: true,
   },
   from_cords: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
+    type: { type: String, enum: ["Point"], required: true },
+    coordinates: { type: [Number], required: true },
   },
   to_cords: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
-    },
-    coordinates: {
-      type: [Number],
-      required: true,
-    },
+    type: { type: String, enum: ["Point"], required: true },
+    coordinates: { type: [Number], required: true },
   },
   distance_km: {
     type: Number,
   },
-  customers: {
-    type: [Number],
-    default: null,
-  },
+  customers: [],
 });
-
 routeSchema.index({ from_cords: "2dsphere" });
 routeSchema.index({ to_cords: "2dsphere" });
 

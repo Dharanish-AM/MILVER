@@ -3,12 +3,15 @@ const Route = require("../models/Route");
 const createRoute = async (req, res) => {
   const { from, to, from_cords, to_cords } = req.body;
   console.log("Creating the route:", req.body);
+
+  // Move calculateDistance outside the createRoute function or define it as needed
   const calculateDistance = (coords1, coords2) => {
-    const [lon1, lat1] = coords1;
-    const [lon2, lat2] = coords2;
+    const [lon1, lat1] = coords1; // Expecting an array here
+    const [lon2, lat2] = coords2; // Expecting an array here
     const toRadians = (degrees) => (degrees * Math.PI) / 180;
     const R = 6371;
-
+    const LDistance = R * coords1[0];
+    
     const dLat = toRadians(lat2 - lat1);
     const dLon = toRadians(lon2 - lon1);
     const a =
@@ -21,18 +24,23 @@ const createRoute = async (req, res) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
-  const distance_km = calculateDistance(from_cords, to_cords);
+
+  // Extract coordinates correctly
+  const distance_km = calculateDistance(
+    from_cords.coordinates,
+    to_cords.coordinates
+  );
 
   const newRoute = new Route({
     from,
     to,
     from_cords: {
       type: "Point",
-      coordinates: from_cords,
+      coordinates: from_cords.coordinates,
     },
     to_cords: {
       type: "Point",
-      coordinates: to_cords,
+      coordinates: to_cords.coordinates,
     },
     distance_km: parseInt(distance_km),
     customers: [],
