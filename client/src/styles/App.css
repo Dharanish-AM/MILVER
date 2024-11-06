@@ -302,6 +302,10 @@
   font-weight: 600;
   height: 80%;
   margin-left: 1vw;
+  position:relative;
+  right:60px;
+  bottom:10px;
+
 }
 .Dashboard-left-bottom-right-overview {
   height: 17%;
@@ -358,6 +362,12 @@
   overflow-y: auto;
 }
 
+.Dashboard-right-mapContainer {
+  height: 75%;
+  width: 100%;
+  background-color: white;
+  border-radius: 15px;
+}
 .Dashboard-right {
   height: calc(100% - 8vh);
   width: calc(35% - 2vw);
@@ -370,39 +380,88 @@
   justify-content: space-between;
 
 }
-.Dashboard-right-mapContainer {
-  height: 65%;
-  width: 100%;
-  background-color: white;
-  border-radius: 15px;
-}
 .Dashboard-right-routes {
-  height: 30%;
-  width: 100%;
-  background-color: white;
+  padding: 50px; 
   border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: #f4f4f4;
+  display: inline-block;
+  width: 80%; 
+  max-width: 600px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .Dashboard-right-routes-heading {
-  width: 90%;
-  margin-top: 5%;
   display: flex;
-  flex-direction: row;
-  align-items: end;
+  align-items: center;
+  margin-bottom: 20px;
 }
+
 .Dashboard-right-routes-heading-img {
-  height: 2vw;
-  aspect-ratio: 1;
-  background-image: url("./assets/route.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  background-image: url('/path/to/your/icon.png');
+  background-size: cover;
 }
+
 .Dashboard-right-routes-heading-text {
-  font-size: 1.6vw;
-  font-weight: 600;
-  height: 80%;
-  margin-left: 1vw;
+  font-size: 24px; 
+  font-weight: bold;
+  position: relative;
+  right:60px;
+  bottom:20px;
+}
+
+.Dashboard-right-routes-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 15px;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.route-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.route-name {
+  flex: 1;
+  font-size: 18px; 
+}
+
+.route-percentage {
+  font-size: 18px; 
+  font-weight: bold;
+}
+
+.delivery-details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.delivery-details-table th, .delivery-details-table td {
+  border: 1px solid #ddd;
+  text-align: left;
+  padding: 8px; 
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.delivery-details-table-head th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.delivery-details-table tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.table-responsive {
+  overflow-x: auto; 
 }

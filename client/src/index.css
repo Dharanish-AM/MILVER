@@ -3,3 +3,7 @@ body {
   margin : 0;
   font-family: "Josefin Sans";
 }
+/* src/index.css or src/styles.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities; */
