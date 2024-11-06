@@ -1,41 +1,102 @@
 const Customer = require("../models/Customer");
 const Route = require("../models/Route");
-const { route } = require("../routes/customerRoutes");
-
+const Counter = require("../models/Counter");
 const createCustomer = async (req, res) => {
   try {
     const { name, address, location, phone, estimatedtime, deliverytime } =
       req.body;
-    console.log("body of the customer : ", req.body);
+
+    console.log("Body of the customer: ", req.body);
+    if (
+      !location ||
+      !location.coordinates ||
+      location.coordinates.length !== 2
+    ) {
+      throw new Error("Invalid location data provided");
+    }
+    const locationData = {
+      type: "Point",
+      coordinates: location.coordinates, 
+    };
+    let counter = await Counter.findOne({ field: "customer_id" });
+    if (!counter) {
+      counter = new Counter({ field: "customer_id", count: 0 });
+    }
+    counter.count += 1;
+    await counter.save();
     const newdata = new Customer({
+      customer_id: counter.count,
       name,
       address,
-      location,
+      location: locationData, 
       phone,
       estimatedtime,
       deliverytime,
     });
-    console.log("new customer data  : ", newdata);
-    await newdata.save();
-    const newroute = await Route.find({});
 
-    if (!newroute) {
+    console.log("New customer data created: ", newdata);
+    const routes = await Route.find({});
+    if (!routes || routes.length === 0) {
       return res.status(404).json({ message: "No available route found." });
     }
-    console.log("new route : ", newroute);
-    if (newroute[0]) {
-      console.log("data validated ....");
-      newroute[0].customers.push(newdata.customer_id);
-      console.log("data died ////");
-      await newroute[0].save();
+    let shortestRoute = null;
+    let shortestDistance = Infinity;
+
+    const calculateDistance = (coords1, coords2) => {
+      const toRadians = (degrees) => (degrees * Math.PI) / 180;
+      const [lon1, lat1] = coords1;
+      const [lon2, lat2] = coords2;
+
+      const R = 6371; 
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRadians(lat1)) *
+          Math.cos(toRadians(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; 
+    };
+
+    routes.forEach((route) => {
+      if (
+        !route.location ||
+        !route.location.coordinates ||
+        route.location.coordinates.length !== 2
+      ) {
+        console.log("Invalid route location:", route);
+        return;
+      }
+
+      const distance = calculateDistance(
+        location.coordinates,
+        route.location.coordinates
+      );
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        shortestRoute = route;
+      }
+    });
+
+    if (shortestRoute) {
+      console.log("Shortest route found: ", shortestRoute);
+      shortestRoute.customers.push(newdata.customer_id);
+      await shortestRoute.save();
     }
+
+    await newdata.save();
     res.status(201).json({
-      message: "Customer created and added to route successfully",
+      message: "Customer created and added to the shortest route successfully",
       customer: newdata,
+      route: shortestRoute,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "An error occurred", error });
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
   }
 };
 
@@ -56,6 +117,7 @@ const getCustomerById = async (req, res) => {
     }
     res.status(200).json(customer);
   } catch (error) {
+    console.log("error occoured : ", error);
     res
       .status(500)
       .json(

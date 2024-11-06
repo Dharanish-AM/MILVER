@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 const Schema = mongoose.Schema;
 
 const CustomerSchema = new Schema({
@@ -15,7 +14,6 @@ const CustomerSchema = new Schema({
   deliverytime: { type: Date, required: true },
 });
 
-CustomerSchema.plugin(AutoIncrement, { inc_field: "customer_id" });
 
 CustomerSchema.index({ location: "2dsphere" });
 
