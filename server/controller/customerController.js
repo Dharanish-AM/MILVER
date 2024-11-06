@@ -3,51 +3,23 @@ const Route = require("../models/Route");
 const Counter = require("../models/Counter");
 const createCustomer = async (req, res) => {
   try {
-    const { name, address, location, phone, estimatedtime, deliverytime } =
-      req.body;
+    const customers = req.body.customers;
 
-    console.log("Body of the customer: ", req.body);
-    if (
-      !location ||
-      !location.coordinates ||
-      location.coordinates.length !== 2
-    ) {
-      throw new Error("Invalid location data provided");
+    if (!Array.isArray(customers) || customers.length === 0) {
+      return res.status(400).json({ message: "No customer data provided" });
     }
-    const locationData = {
-      type: "Point",
-      coordinates: location.coordinates, 
-    };
-    let counter = await Counter.findOne({ field: "customer_id" });
-    if (!counter) {
-      counter = new Counter({ field: "customer_id", count: 0 });
-    }
-    counter.count += 1;
-    await counter.save();
-    const newdata = new Customer({
-      customer_id: counter.count,
-      name,
-      address,
-      location: locationData, 
-      phone,
-      estimatedtime,
-      deliverytime,
-    });
 
-    console.log("New customer data created: ", newdata);
     const routes = await Route.find({});
     if (!routes || routes.length === 0) {
       return res.status(404).json({ message: "No available route found." });
     }
-    let shortestRoute = null;
-    let shortestDistance = Infinity;
 
     const calculateDistance = (coords1, coords2) => {
       const toRadians = (degrees) => (degrees * Math.PI) / 180;
       const [lon1, lat1] = coords1;
       const [lon2, lat2] = coords2;
 
-      const R = 6371; 
+      const R = 6371;
       const dLat = toRadians(lat2 - lat1);
       const dLon = toRadians(lon2 - lon1);
       const a =
@@ -57,40 +29,91 @@ const createCustomer = async (req, res) => {
           Math.sin(dLon / 2) *
           Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; 
+      return R * c;
     };
 
-    routes.forEach((route) => {
+    const createdCustomers = [];
+
+    for (const customerData of customers) {
+      const { name, address, location, phone, estimatedtime, deliverytime } =
+        customerData;
+
       if (
-        !route.location ||
-        !route.location.coordinates ||
-        route.location.coordinates.length !== 2
+        !location ||
+        !location.coordinates ||
+        location.coordinates.length !== 2
       ) {
-        console.log("Invalid route location:", route);
-        return;
+        console.error(
+          "Invalid location data provided for customer:",
+          customerData
+        );
+        continue;
       }
 
-      const distance = calculateDistance(
-        location.coordinates,
-        route.location.coordinates
-      );
-      if (distance < shortestDistance) {
-        shortestDistance = distance;
-        shortestRoute = route;
-      }
-    });
+      const locationData = {
+        type: "Point",
+        coordinates: location.coordinates,
+      };
 
-    if (shortestRoute) {
-      console.log("Shortest route found: ", shortestRoute);
-      shortestRoute.customers.push(newdata.customer_id);
-      await shortestRoute.save();
+      let counter = await Counter.findOne({ field: "customer_id" });
+      if (!counter) {
+        counter = new Counter({ field: "customer_id", count: 0 });
+      }
+      counter.count += 1;
+      await counter.save();
+
+      const newCustomer = new Customer({
+        customer_id: counter.count,
+        name,
+        address,
+        location: locationData,
+        phone,
+        estimatedtime,
+        deliverytime,
+      });
+
+      let shortestRoute = null;
+      let shortestDistance = Infinity;
+
+      routes.forEach((route) => {
+        if (
+          !route.to_cords ||
+          !route.to_cords.coordinates ||
+          route.to_cords.coordinates.length !== 2
+        ) {
+          console.log("Invalid route to_cords:", route);
+          return;
+        }
+
+        const distance = calculateDistance(
+          location.coordinates,
+          route.to_cords.coordinates
+        );
+
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+          shortestRoute = route;
+        }
+      });
+
+      if (shortestRoute) {
+        console.log(
+          "Shortest route found for customer:",
+          newCustomer.name,
+          shortestRoute
+        );
+        shortestRoute.customers.push(newCustomer.customer_id);
+        await shortestRoute.save();
+      }
+
+      await newCustomer.save();
+      createdCustomers.push(newCustomer);
     }
 
-    await newdata.save();
     res.status(201).json({
-      message: "Customer created and added to the shortest route successfully",
-      customer: newdata,
-      route: shortestRoute,
+      message:
+        "Customers created and added to the shortest routes successfully",
+      customers: createdCustomers,
     });
   } catch (error) {
     console.error(error);

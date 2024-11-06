@@ -1,15 +1,20 @@
-const Customer = require("../models/Customer");
 const Route = require("../models/Route");
 const createRoute = async (req, res) => {
   const { from, to, from_cords, to_cords } = req.body;
   console.log("Creating the route:", req.body);
+  if (!from_cords.coordinates || from_cords.coordinates.length !== 2) {
+    return res.status(400).json({ error: "Invalid 'from' coordinates" });
+  }
+  if (!to_cords.coordinates || to_cords.coordinates.length !== 2) {
+    return res.status(400).json({ error: "Invalid 'to' coordinates" });
+  }
 
   const calculateDistance = (coords1, coords2) => {
-    const [lon1, lat1] = coords1; 
-    const [lon2, lat2] = coords2; 
+    const [lon1, lat1] = coords1;
+    const [lon2, lat2] = coords2;
     const toRadians = (degrees) => (degrees * Math.PI) / 180;
     const R = 6371;
-    
+
     const dLat = toRadians(lat2 - lat1);
     const dLon = toRadians(lon2 - lon1);
     const a =
@@ -20,26 +25,30 @@ const createRoute = async (req, res) => {
         Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+    return R * c; 
   };
-
   const distance_km = calculateDistance(
     from_cords.coordinates,
     to_cords.coordinates
   );
-
   const newRoute = new Route({
     from,
     to,
     from_cords: {
       type: "Point",
-      coordinates:parseFloat( from_cords.coordinates),
+      coordinates: [
+        parseFloat(from_cords.coordinates[0]), 
+        parseFloat(from_cords.coordinates[1]), 
+      ],
     },
     to_cords: {
       type: "Point",
-      coordinates: parseFloat(to_cords.coordinates),
+      coordinates: [
+        parseFloat(to_cords.coordinates[0]), 
+        parseFloat(to_cords.coordinates[1]), 
+      ],
     },
-    distance_km: parseInt(distance_km),
+    distance_km: parseFloat(distance_km),
     customers: [],
   });
 
@@ -61,8 +70,6 @@ const getAllRoutes = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
-// Get a route by ID
 const getRouteById = async (req, res) => {
   try {
     const route = await Route.findById(req.params.id);
