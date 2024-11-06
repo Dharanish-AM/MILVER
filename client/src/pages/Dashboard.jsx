@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import "../styles/App.css";
+import "../styles/dashboard.css";
 import cow from "../assets/cow.png";
 import tick from "../assets/tick.png";
 import exclamation from "../assets/exclamation.png";

@@ -1,0 +1,127 @@
+
+.deliverymandetails {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #D8D8D8;
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+  }
+  
+  .header-section h1 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .header-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .header-buttons button,
+  .header-buttons .add-employee-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .add-employee-btn {
+    background-color: #007bff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .add-employee-btn img {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-bar select,
+  .filter-bar input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .employee-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+
+  .employee-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    position: relative;
+  }
+  
+  
+  .employee-status {
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 5px 10px;
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8em;
+  }
+  
+  .employee-info {
+    font-size: 0.9em;
+    margin-top: 10px;
+  }
+  
+  .employee-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .employee-details a {
+    font-size: 0.8em;
+    color: #007bff;
+    text-decoration: none;
+  }
+  

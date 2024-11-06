@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/App.css";
+import "../styles/header.css";
 
 import dashboard from "../assets/dashboard.png";
 import customer from "../assets/customer.png";
@@ -9,27 +9,39 @@ import routes from "../assets/routes.png";
 import stats from "../assets/stats.png";
 
 function Header() {
-  const [select, setSelect] = useState(0);
+ 
+  const [select, setSelect] = useState(() => {
+    const path = window.location.pathname;
+    if (path === "/Dashboard") return 0;
+    if (path === "/Customer") return 1;
+    if (path === "/Deliverymandetails") return 2;
+    if (path === "/Routes") return 3;
+    if (path === "/Stats") return 4;
+    return 0;
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentPath = window.location.pathname;
+
+    
     switch (select) {
       case 0:
-        navigate("/Dashboard");
+        if (currentPath !== "/Dashboard") navigate("/Dashboard");
         break;
       case 1:
-        navigate("/Customer");
+        if (currentPath !== "/Customer") navigate("/Customer");
         break;
       case 2:
-        navigate("/Delivery");
+        if (currentPath !== "/Deliverymandetails") navigate("/Deliverymandetails");
         break;
       case 3:
-        navigate("/Routes");
+        if (currentPath !== "/Routes") navigate("/Routes");
         break;
       case 4:
-        navigate("/Stats");
+        if (currentPath !== "/Stats") navigate("/Stats");
         break;
-
       default:
         break;
     }
