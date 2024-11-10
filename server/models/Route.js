@@ -27,6 +27,7 @@ const routeSchema = new Schema({
     type: Number,
   },
   customers: [],
+  Temp_customers:[]
 });
 routeSchema.index({ from_cords: "2dsphere" });
 routeSchema.index({ to_cords: "2dsphere" });

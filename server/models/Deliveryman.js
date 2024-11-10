@@ -19,10 +19,6 @@ const DeliverymanSchema = new Schema(
     email: {
       type: String,
     },
-    available: {
-      type: Boolean,
-      default: false,
-    },
     address: {
       type: String,
       required: true,
@@ -83,7 +79,6 @@ const DeliverymanSchema = new Schema(
   { timestamps: true }
 );
 
-// Enable auto-increment for deliveryman_id
 DeliverymanSchema.plugin(AutoIncrement, { inc_field: "deliveryman_id" });
 
 DeliverymanSchema.index({ location: "2dsphere" });

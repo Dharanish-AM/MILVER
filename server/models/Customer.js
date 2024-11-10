@@ -13,9 +13,6 @@ const CustomerSchema = new Schema({
   estimatedtime: { type: Date, required: true },
   deliverytime: { type: Date, required: true },
 });
-
-
 CustomerSchema.index({ location: "2dsphere" });
-
 const Customer = mongoose.model("Customer", CustomerSchema);
 module.exports = Customer;
