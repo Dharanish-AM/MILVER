@@ -10,9 +10,14 @@ const CustomerSchema = new Schema({
     coordinates: { type: [Number], required: true },
   },
   phone: { type: String, required: true },
-  estimatedtime: { type: Date, required: true },
+  route_id: {
+    type: Number,
+    default: null
+  },
   deliverytime: { type: Date, required: true },
 });
+
 CustomerSchema.index({ location: "2dsphere" });
 const Customer = mongoose.model("Customer", CustomerSchema);
+
 module.exports = Customer;

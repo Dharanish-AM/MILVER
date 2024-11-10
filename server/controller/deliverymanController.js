@@ -1,4 +1,5 @@
 const Deliveryman = require("../models/Deliveryman");
+
 const createDeliveryman = async (req, res) => {
   try {
     const {
@@ -36,66 +37,7 @@ const createDeliveryman = async (req, res) => {
   }
 };
 
-const getAllDeliverymen = async (req, res) => {
-  try {
-    const deliverymen = await Deliveryman.find(); 
-    res.status(200).json(deliverymen);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-const getDeliverymanById = async (req, res) => {
-  try {
-    const Deliveryman = await Deliveryman.findById(req.params.id); // No populate
-    if (!Deliveryman) {
-      return res.status(404).json({ message: "Deliveryman not found" });
-    }
-    res.status(200).json(Deliveryman);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-const updateDeliveryman = async (req, res) => {
-  try {
-    const updatedDeliveryman = await Deliveryman.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedDeliveryman) {
-      return res.status(404).json({ message: "Deliveryman not found" });
-    }
-
-    res.status(200).json({
-      message: "Deliveryman updated successfully",
-      updatedDeliveryman,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-const deleteDeliveryman = async (req, res) => {
-  try {
-    const deletedDeliveryman = await Deliveryman.findByIdAndDelete(req.params.id);
-
-    if (!deletedDeliveryman) {
-      return res.status(404).json({ message: "Deliveryman not found" });
-    }
-
-    res.status(200).json({ message: "Deliveryman deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 module.exports = {
   createDeliveryman,
-  getAllDeliverymen,
-  getDeliverymanById,
-  updateDeliveryman,
-  deleteDeliveryman,
 };

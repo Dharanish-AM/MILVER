@@ -9,30 +9,51 @@ const routeSchema = new Schema({
   },
   from: {
     type: String,
-    required: true,
+    default: "Royapettah"
   },
   to: {
     type: String,
     required: true,
   },
   from_cords: {
-    type: { type: String, enum: ["Point"], required: true },
-    coordinates: { type: [Number], required: true },
+    type: { 
+      type: String, 
+      enum: ["Point"], 
+      required: true, 
+      default: "Point" 
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+      default: [80.26375998957623, 13.054398115031136]
+    }
   },
   to_cords: {
-    type: { type: String, enum: ["Point"], required: true },
-    coordinates: { type: [Number], required: true },
+    type: { 
+      type: String, 
+      enum: ["Point"], 
+      required: false, 
+      default: "Point" 
+    },
+    coordinates: {
+      type: [Number],
+      required: false,
+      default: [80.26375998957623, 13.054398115031136]
+    }
   },
   distance_km: {
     type: Number,
+    default: 0
   },
-  customers: [],
-  Temp_customers:[]
+  customers: {
+    type: [Number],
+    default: null
+  }
 });
+
 routeSchema.index({ from_cords: "2dsphere" });
 routeSchema.index({ to_cords: "2dsphere" });
 
 routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
 
-const Route = mongoose.model("Route", routeSchema);
-module.exports = Route;
+module.exports = mongoose.model("Route", routeSchema);

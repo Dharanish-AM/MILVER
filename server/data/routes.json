@@ -1,24 +1,24 @@
 {
   "central_point": {
     "name": "Royapettah",
-    "coordinates": [80.2392, 13.0551]
+    "coordinates": [80.26375998957623, 13.054398115031136]
   },
   "target_locations": [
     {
       "name": "Velachery",
-      "coordinates": [80.219, 12.996]
+      "coordinates": [80.22045652937292, 12.9750963509262]
     },
     {
       "name": "Mylapore",
-      "coordinates": [80.2491, 13.0405]
+      "coordinates": [80.26707043292204, 13.036722386952256]
+    },
+    {
+      "name": "Abiramapuram",
+      "coordinates": [80.25759056484533, 13.031075015877194]
     },
     {
       "name": "RA Puram",
       "coordinates": [80.2505, 13.0202]
-    },
-    {
-      "name": "Abiramapuram",
-      "coordinates": [80.2498, 13.0283]
     },
     {
       "name": "T Nagar",
