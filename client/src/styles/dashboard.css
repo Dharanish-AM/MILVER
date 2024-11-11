@@ -256,7 +256,7 @@
 .Dashboard-left-bottom-right-heading-img {
   height: 2vw;
   aspect-ratio: 1;
-  background-image: url("./assets/deliveryTruck.png");
+  background-image: url("../assets/deliveryTruck.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -266,7 +266,6 @@
   font-weight: 600;
   height: 80%;
   margin-left: 1vw;
-  position:relative;
   right:60px;
   bottom:10px;
 
@@ -327,10 +326,10 @@
 }
 
 .Dashboard-right-mapContainer {
-  height: 75%;
+  height: 50%;
   width: 100%;
-  background-color: white;
   border-radius: 15px;
+  background-color:aqua;
 }
 .Dashboard-right {
   height: calc(100% - 8vh);
@@ -341,67 +340,51 @@
   margin-bottom: 4vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between; 
 
 }
 .Dashboard-right-routes {
-  padding: 50px; 
+  height: 35%;
+  width: 100%;
+  background-color: white; 
   border-radius: 15px;
-  background-color: #f4f4f4;
-  display: inline-block;
-  width: 80%; 
-  max-width: 600px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .Dashboard-right-routes-heading {
+  width: 90%;
+  margin-top: 5%;
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  flex-direction: row;
+  align-items: end;
 }
 
 .Dashboard-right-routes-heading-img {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  background-image: url('/path/to/your/icon.png');
-  background-size: cover;
+  height: 2vw;
+  aspect-ratio: 1;
+  background-image: url('../assets/route.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .Dashboard-right-routes-heading-text {
-  font-size: 24px; 
-  font-weight: bold;
-  position: relative;
+  font-size: 1.6vw;
+  font-weight: 600;
+  height: 80%;
+  margin-left: 1vw;
   right:60px;
-  bottom:20px;
+  bottom:10px;
 }
-
 .Dashboard-right-routes-content {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 15px;
-}
-
-.route {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.route-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.route-name {
+  display: inline-flex;
+  background-color: #333333;
+  width: 90%;
   flex: 1;
-  font-size: 18px; 
-}
-
-.route-percentage {
-  font-size: 18px; 
-  font-weight: bold;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .delivery-details-table {
@@ -426,6 +409,7 @@
   border-bottom: 1px solid #ddd;
 }
 
-.table-responsive {
-  overflow-x: auto; 
+.Dashboard-left-bottom-right-table {
+  overflow-y: scroll;
+
 }

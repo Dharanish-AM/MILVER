@@ -7,30 +7,96 @@ import supplied from "../assets/supplied.png";
 import collected from "../assets/collected.png";
 import broken from "../assets/broken.png";
 import person from "../assets/person.png";
-import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { LatLngExpression } from 'leaflet';
-import L from 'leaflet';
+import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
 
 function Dashboard() {
   const deliveryDetails = [
-    { no: 1, name: "Ajay", route: "T Nagar", half: 15, full: 10, supplied: 25, collected: 20, damaged: 2, coordinates: [13.0418, 80.2337] },
-    { no: 2, name: "Dharanish", route: "Nungambakkam", half: 12, full: 8, supplied: 20, collected: 18, damaged: 1, coordinates: [13.0604, 80.2411] },
-    { no: 3, name: "jeyaprakash", route: "1000 lights", half: 10, full: 12, supplied: 22, collected: 19, damaged: 0, coordinates: [13.0553, 80.2566] },
-    { no: 4, name: "sabari", route: "Mandaveli", half: 10, full: 12, supplied: 22, collected: 19, damaged: 0, coordinates: [13.0293, 80.2591] },
-    { no: 5, name: "vijayguhan", route: "Santhome", half: 10, full: 12, supplied: 22, collected: 19, damaged: 0, coordinates: [13.0336, 80.2692] },
-    { no: 6, name: "jeyaprakash", route: "1000 lights", half: 10, full: 12, supplied: 22, collected: 19, damaged: 0, coordinates: [13.0553, 80.2566] },
+    {
+      no: 1,
+      name: "Ajay",
+      route: "T Nagar",
+      half: 15,
+      full: 10,
+      supplied: 25,
+      collected: 20,
+      damaged: 2,
+      coordinates: [13.0418, 80.2337],
+    },
+    {
+      no: 2,
+      name: "Dharanish",
+      route: "Nungambakkam",
+      half: 12,
+      full: 8,
+      supplied: 20,
+      collected: 18,
+      damaged: 1,
+      coordinates: [13.0604, 80.2411],
+    },
+    {
+      no: 3,
+      name: "jeyaprakash",
+      route: "1000 lights",
+      half: 10,
+      full: 12,
+      supplied: 22,
+      collected: 19,
+      damaged: 0,
+      coordinates: [13.0553, 80.2566],
+    },
+    {
+      no: 4,
+      name: "sabari",
+      route: "Mandaveli",
+      half: 10,
+      full: 12,
+      supplied: 22,
+      collected: 19,
+      damaged: 0,
+      coordinates: [13.0293, 80.2591],
+    },
+    {
+      no: 5,
+      name: "vijayguhan",
+      route: "Santhome",
+      half: 10,
+      full: 12,
+      supplied: 22,
+      collected: 19,
+      damaged: 0,
+      coordinates: [13.0336, 80.2692],
+    },
+    {
+      no: 6,
+      name: "jeyaprakash",
+      route: "1000 lights",
+      half: 10,
+      full: 12,
+      supplied: 22,
+      collected: 19,
+      damaged: 0,
+      coordinates: [13.0553, 80.2566],
+    },
   ];
-  
+  const routes = [
+    { name: "T Nagar", color: "red", percentage: 40 },
+    { name: "Mandavelli", color: "darkred", percentage: 70 },
+    { name: "Nungambakkam", color: "green", percentage: 30 },
+    { name: "Santhome", color: "orange", percentage: 45 },
+    { name: "1000 lights", color: "blue", percentage: 50 },
+  ];
+
   const [selectedRoute, setSelectedRoute] = useState(null);
-  const[name,setname]=useState();
-  const position = [13.0500, 80.2800];
-  const mapRef=useRef();
+  const [name, setname] = useState();
+  const position = [13.05, 80.28];
+  const mapRef = useRef();
   useEffect(() => {
     if (mapRef.current) {
       const map = mapRef.current;
-      const bounds = L.latLngBounds(deliveryDetails.map(detail => detail.coordinates));
+      const bounds = L.latLngBounds(
+        deliveryDetails.map((detail) => detail.coordinates)
+      );
       map.fitBounds(bounds);
     }
   }, [deliveryDetails]);
@@ -39,13 +105,13 @@ function Dashboard() {
     console.log("coordinates", details.coordinates);
     setname(details.name);
     setSelectedRoute(details.coordinates);
-    
+
     if (mapRef.current) {
-      const map = mapRef.current;  
-      map.setView(details.coordinates, 15);  
+      const map = mapRef.current;
+      map.setView(details.coordinates, 15);
     }
   };
-  
+
   return (
     <section className="Dashboard">
       <Header />
@@ -256,7 +322,7 @@ function Dashboard() {
                         <tr key={index} onClick={() => handleRowClick(detail)}>
                           <td
                             className="delivery-details-table-No"
-                            style={{ padding: "15px 0" }}
+                            style={{ padding: "15px 15px" }}
                           >
                             {detail.no}
                           </td>
@@ -291,24 +357,11 @@ function Dashboard() {
           </div>
         </div>
         <div className="Dashboard-right">
-        <div
-  className="Dashboard-right-mapContainer"
-  style={{ height: "500px", width: "100%" }} 
->
-  <MapContainer
-    center={[13.05, 80.28]}
-    zoom={13}
-    style={{ height: "100%", width: "100%" }}
-    ref={mapRef}
-  >
-    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-    {deliveryDetails.map((detail, index) => (
-      <Marker key={index} position={detail.coordinates}>
-        <Popup>{detail.name}</Popup>
-      </Marker>
-    ))}
-  </MapContainer>
-</div>
+          <div
+            className="Dashboard-right-mapContainer"
+          >
+            
+          </div>
 
           <div className="Dashboard-right-routes">
             <div className="Dashboard-right-routes-heading">
@@ -316,49 +369,20 @@ function Dashboard() {
               <div className="Dashboard-right-routes-heading-text">ROUTES</div>
             </div>
             <div className="Dashboard-right-routes-content">
-              <div className="route">
-                <div
-                  className="route-dot"
-                  style={{ backgroundColor: "red" }}
-                ></div>
-                <span className="route-name">T Nagar</span>
-                <span className="route-percentage">40%</span>
-              </div>
-              <div className="route">
-                <div
-                  className="route-dot"
-                  style={{ backgroundColor: "darkred" }}
-                ></div>
-                <span className="route-name">Mandavelli</span>
-                <span className="route-percentage">70%</span>
-              </div>
-              <div className="route">
-                <div
-                  className="route-dot"
-                  style={{ backgroundColor: "green" }}
-                ></div>
-                <span className="route-name">Nungambakkam</span>
-                <span className="route-percentage">30%</span>
-              </div>
-              <div className="route">
-                <div
-                  className="route-dot"
-                  style={{ backgroundColor: "orange" }}
-                ></div>
-                <span className="route-name">Santhome</span>
-                <span className="route-percentage">45%</span>
-              </div>
-              <div className="route">
-                <div
-                  className="route-dot"
-                  style={{ backgroundColor: "blue" }}
-                ></div>
-                <span className="route-name">1000 lights</span>
-                <span className="route-percentage">50%</span>
-              </div>
+              {routes.map((route, index) => (
+                <div className="route" key={index}>
+                  <div
+                    className="route-dot"
+                    style={{ backgroundColor: route.color }}
+                  ></div>
+                  <span className="route-name">{route.name}</span>
+                  <span className="route-percentage">{route.percentage}%</span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+          </div>
+        
       </section>
     </section>
   );
