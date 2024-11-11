@@ -1,3 +1,4 @@
+const Customer = require("../models/Customer");
 const Route = require("../models/Route");
 
 const createRoute = async (req, res) => {
@@ -14,21 +15,51 @@ const createRoute = async (req, res) => {
   }
 };
 
-const getAllRoutes = async () => {
+const getAllRoutes = async (req, res) => {
   try {
     console.log("Fetching all routes...");
-
     const routes = await Route.find();
 
+    const routesData = [];
+
+    for (let eachRoute of routes) {
+      const routeId = eachRoute.route_id;
+      const customerData = [];
+
+      // Ensure customers is an array before iterating
+      if (Array.isArray(eachRoute.customers)) {
+        for (let customerId of eachRoute.customers) {
+          const customerDetails = await Customer.findOne({ customer_id: customerId });
+
+          if (customerDetails) {
+            customerData.push({
+              customer_id: customerDetails.customer_id,
+              coordinates: customerDetails.location.coordinates
+            });
+          }
+        }
+      }
+
+      routesData.push({
+        route_id: routeId,
+        customers: customerData
+      });
+    }
+
     console.log(`Successfully fetched ${routes.length} routes.`);
-    return routes;
+    res.status(200).json({
+      message: "Successfully fetched all routes data",
+      data: routesData
+    });
+
   } catch (err) {
     console.error("Error fetching routes:", err.message);
-
-    throw new Error("Failed to fetch routes from the database.");
+    res.status(500).json({
+      message: "Failed to fetch routes from the database.",
+      error: err.message
+    });
   }
 };
-
 
 module.exports = {
   createRoute,
