@@ -1,43 +1,40 @@
-const Deliveryman = require("../models/Deliveryman");
+const Deliveryman = require("../models/Deliveryman")
+const Routes=require('../models/Route')
+const Customer=require("../models/Customer")
 
 const createDeliveryman = async (req, res) => {
   try {
     const {
-      Deliveryman_id,
       name,
       phone,
       email,
       address,
-      location,
       primaryroutes,
       externalroutes,
-      status,
-      assigned_customers,
-      delivery_history,
+      status
     } = req.body;
 
-    const Deliveryman = new Deliveryman({
-      Deliveryman_id,
+    const Delivery = new Deliveryman({
       name,
       phone,
       email,
       address,
-      location,
       primaryroutes,
       externalroutes,
-      status,
-      assigned_customers,
-      delivery_history,
+      status
     });
 
-    await Deliveryman.save();
+    await Delivery.save();
     res.status(201).json({ message: "Deliveryman created successfully", Deliveryman });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-
+const deliverymanAllocation=async(req,res)=>{
+  
+}
 module.exports = {
-  createDeliveryman,
+
+  createDeliveryman,deliverymanAllocation
 };

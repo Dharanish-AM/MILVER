@@ -16,7 +16,7 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.use("/api/customer", Customer);
-app.use("/api/deliveryman", Driver);
+app.use("/api/deliverymen", Driver);
 app.use("/api/route", Route);
 
 app.listen(PORT, () => {

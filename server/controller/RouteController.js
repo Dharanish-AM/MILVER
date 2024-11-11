@@ -14,8 +14,24 @@ const createRoute = async (req, res) => {
   }
 };
 
+const getAllRoutes = async () => {
+  try {
+    console.log("Fetching all routes...");
+
+    const routes = await Route.find();
+
+    console.log(`Successfully fetched ${routes.length} routes.`);
+    return routes;
+  } catch (err) {
+    console.error("Error fetching routes:", err.message);
+
+    throw new Error("Failed to fetch routes from the database.");
+  }
+};
+
 
 module.exports = {
   createRoute,
+  getAllRoutes
 
 };

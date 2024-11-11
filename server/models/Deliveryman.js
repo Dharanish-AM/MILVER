@@ -23,18 +23,16 @@ const DeliverymanSchema = new Schema(
       type: String,
       required: true,
     },
-    primaryroutes: [
-      {
-        type: Number,
-        required: true
-      },
-    ],
-    externalroutes: [
-      {
-        type: Number,
-        required: false,
-      },
-    ],
+    primaryroutes:
+    {
+      type: Number,
+      required: true
+    },
+    externalroutes:
+    {
+      type: [Number],
+      required: false,
+    },
     external_status: {
       type: String,
       enum: ["available", "unavailable", "on_leave"],
@@ -67,5 +65,5 @@ const DeliverymanSchema = new Schema(
 
 DeliverymanSchema.plugin(AutoIncrement, { inc_field: "deliveryman_id" });
 DeliverymanSchema.index({ location: "2dsphere" });
-const Deliveryman = mongoose.model("Deliveryman", DeliverymanSchema);
+const Deliveryman = mongoose.model("deliverymen", DeliverymanSchema);
 module.exports = Deliveryman;
