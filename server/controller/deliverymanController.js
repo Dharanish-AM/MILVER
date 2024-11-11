@@ -1,6 +1,9 @@
-const Deliveryman = require("../models/Deliveryman")
-const Routes = require('../models/Route')
-const Customer = require("../models/Customer")
+const axios = require('axios');
+const Deliveryman = require("../models/Deliveryman");
+const Routes = require('../models/Route');
+const Customer = require("../models/Customer");
+
+const API_KEY = '5b3ce3597851110001cf624867ce2f9fc4c040b090d5248aaf23f288';
 
 const createDeliveryman = async (req, res) => {
   try {
@@ -76,9 +79,13 @@ const allocateDeliveryman = async (req, res) => {
       return { coordinate: coordinates, distance };
     }).sort((a, b) => a.distance - b.distance);
 
+    // Now, calculate road distances and times for the sorted coordinates using OpenRouteService
+    const totalDistanceAndTime = await getTotalDistanceAndTime(sortedCoordinates);
+
     res.status(200).json({
-      message: "Coordinates sorted successfully",
+      message: "Coordinates sorted and distances calculated successfully",
       sortedCoordinates,
+      totalDistanceAndTime
     });
 
   } catch (error) {
@@ -101,9 +108,50 @@ const haversineDistance = (coord1, coord2) => {
   return R * c;
 };
 
+const getTotalDistanceAndTime = async (sortedCoordinates) => {
+  try {
+    let totalDistance = 0;
+    let totalDuration = 0;
 
+    // Iterate through the sorted coordinates and calculate the road distances
+    for (let i = 0; i < sortedCoordinates.length - 1; i++) {
+      const start = sortedCoordinates[i].coordinate;
+      const end = sortedCoordinates[i + 1].coordinate;
+
+      // Send a request to OpenRouteService for each pair of coordinates
+      const response = await axios.post(
+        'https://api.openrouteservice.org/v2/directions/driving-car',
+        {
+          coordinates: [start, end]
+        },
+        {
+          headers: {
+            Authorization: API_KEY,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const route = response.data.routes[0];
+      if (route) {
+        totalDistance += route.summary.distance; // In meters
+        totalDuration += route.summary.duration; // In seconds
+      }
+    }
+
+    // Convert total distance to kilometers and duration to minutes
+    return {
+      totalDistance: totalDistance / 1000, // Convert meters to kilometers
+      totalDuration: (totalDuration / 60).toFixed(2) // Convert seconds to minutes
+    };
+
+  } catch (error) {
+    console.error('Error fetching route data from OpenRouteService:', error.message);
+    throw new Error('Failed to fetch route data');
+  }
+};
 
 module.exports = {
-
-  createDeliveryman, allocateDeliveryman
+  createDeliveryman,
+  allocateDeliveryman
 };
