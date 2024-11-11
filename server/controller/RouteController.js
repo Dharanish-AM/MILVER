@@ -26,7 +26,6 @@ const getAllRoutes = async (req, res) => {
       const routeId = eachRoute.route_id;
       const customerData = [];
 
-      // Ensure customers is an array before iterating
       if (Array.isArray(eachRoute.customers)) {
         for (let customerId of eachRoute.customers) {
           const customerDetails = await Customer.findOne({ customer_id: customerId });
