@@ -9,6 +9,7 @@ const DEFAULT_LOCATION = {
 };
 
 const ORS_BASE_URL = "https://api.openrouteservice.org/v2/directions/driving-car";
+MAP_API_KEY = '5b3ce3597851110001cf624867ce2f9fc4c040b090d5248aaf23f288'
 
 const getRoadDistance = async (startCoords, endCoords) => {
   try {
@@ -20,7 +21,7 @@ const getRoadDistance = async (startCoords, endCoords) => {
       },
       {
         headers: {
-          "Authorization": process.env.MAP_API_KEY,
+          "Authorization": MAP_API_KEY,
         },
       }
     );
