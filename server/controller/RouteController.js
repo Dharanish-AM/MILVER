@@ -85,7 +85,7 @@ const getAllRoutes = async (req, res) => {
       message: "Failed to fetch routes from the database.",
       error: err.message,
     });
-  }
+  } 
 };
 
 

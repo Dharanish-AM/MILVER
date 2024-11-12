@@ -3,9 +3,11 @@ const Deliveryman = require("../models/Deliveryman");
 const Route = require('../models/Route');
 const Customer = require("../models/Customer");
 
-const dotenv = require("dotenv").config()
+const dotenv = require("dotenv")
+dotenv.config()
 
 const royapettahCoordinates = [80.26375998957623, 13.054398115031136];
+MAP_API_KEY = '5b3ce3597851110001cf624867ce2f9fc4c040b090d5248aaf23f288'
 
 
 const createDeliveryman = async (req, res) => {
@@ -245,7 +247,7 @@ const getTotalDistanceAndTime = async (sortedCoordinates) => {
         { coordinates: [start, end] },
         {
           headers: {
-            Authorization: process.env.MAP_API_KEY,
+            Authorization: MAP_API_KEY,
           },
         }
       );
