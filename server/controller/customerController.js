@@ -35,6 +35,7 @@ const getRoadDistance = async (startCoords, endCoords) => {
 
 const createCustomerAndOptimizeRoute = async (req, res) => {
   try {
+    console.log(req.body)
     const { name, address, location, phone, deliverytime, route_id, route_name } = req.body;
 
     const customerLocation = location || DEFAULT_LOCATION;
@@ -155,4 +156,16 @@ const haversine = (coord1, coord2) => {
   return distance;
 };
 
-module.exports = { createCustomerAndOptimizeRoute };
+const getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+
+    res.status(200).json(customers);
+  } catch (error) {
+    console.error("Error retrieving customers:", error);
+    res.status(500).json({ message: "Error retrieving customers", error: error.message });
+  }
+};
+
+
+module.exports = { createCustomerAndOptimizeRoute,getAllCustomers};
