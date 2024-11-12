@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import "../styles/mapRoutes.css";
 import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -8,53 +9,71 @@ import L from "leaflet";
 import industry from "../assets/industry.png";
 import "leaflet-routing-machine";
 
-// SVG function that returns an SVG string based on route_id
+const colors = [
+  "#008080", // Teal
+  "#FFA500", // Orange
+  "#800080", // Purple
+  "#32CD32", // Lime Green
+  "#00FFFF", // Cyan
+  "#FF69B4", // Hot Pink
+  "#FF7F50", // Coral
+  "#1E90FF", // Dodger Blue
+  "#DC143C", // Crimson Red
+  "#FF00FF", // Magenta
+  "#00FF00", // Lime Green
+  "#87CEEB", // Sky Blue
+  "#FA8072", // Salmon
+  "#DAA520", // Goldenrod
+  "#6A5ACD", // Slate Blue
+  "#40E0D0", // Turquoise
+  "#DC143C", // Crimson
+  "#4169E1", // Royal Blue
+  "#6B8E23", // Olive Drab
+  "#BA55D3", // Medium Orchid
+];
+
 const getCustomerIconSVG = (route_id) => {
-  switch (route_id) {
-    case 1:
-      return `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="16" fill="red" />
-              </svg>`;
-    case 2:
-      return `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="16" fill="blue" />
-              </svg>`;
-    default:
-      return `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="16" fill="black" />
-              </svg>`;
-  }
+  const color = colors[(route_id - 1) % colors.length];
+
+  return `<svg width="100" height="207" viewBox="0 0 100 207" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Pin Body (outer part) -->
+            <path fill-rule="evenodd" clip-rule="evenodd" 
+              d="M100 50C100 56.1758 98.8804 62.0898 96.833 67.5505L51.0002 207L5.47681 72.7756C1.97559 65.9451 0 58.2034 0 50C0 22.3857 22.3857 0 50 0C77.6143 0 100 22.3857 100 50ZM50 66C59.9412 66 68 57.9412 68 48C68 38.0588 59.9412 30 50 30C40.0588 30 32 38.0588 32 48C32 57.9412 40.0588 66 50 66Z" 
+              fill="${color}"/>
+          </svg>`;
 };
 
-// Custom hook to use the map instance
 const MapWithRouting = ({ routeCoordinates, routeColor }) => {
-  const map = useMap(); // Get the map instance from the MapContainer
+  const map = useMap();
 
   useEffect(() => {
+    // Only add the routing control if the map is defined
+    if (!map) return;
+
     const routingControl = L.Routing.control({
       waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
-      routeWhileDragging: true, // Allow dragging to adjust the route
-      show : false,
+      routeWhileDragging: true,
+      show: false,
       routePopup: false,
       collapsible: false,
       addWaypoints: false,
       showAlternatives: false,
       lineOptions: {
-        styles: [{ color: routeColor, weight: 4, opacity: 0.7 }],
+        styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
       },
-      createMarker: () => null, // Disable the creation of turn-by-turn instruction markers
+      createMarker: () => null,
     }).addTo(map);
-    
 
     return () => {
-      map.removeControl(routingControl); // Clean up the routing control on unmount
+      if (map) {
+        map.removeControl(routingControl);
+      }
     };
   }, [map, routeCoordinates, routeColor]);
 
-  return null; // This component does not render anything visually
+  return null;
 };
 
-// MapRoutes component
 export default function MapRoutes() {
   const [data, setData] = useState([]);
 
@@ -62,7 +81,7 @@ export default function MapRoutes() {
     axios
       .get("http://localhost:8000/api/route/getallroutes")
       .then((res) => {
-        setData(res.data.data); // Store the data in state
+        setData(res.data.data);
       })
       .catch((err) => {
         console.log("Error in getRoutes API request:", err);
@@ -76,33 +95,16 @@ export default function MapRoutes() {
     popupAnchor: [0, -32],
   });
 
-  // Function to dynamically create Leaflet icons from SVG string
   const createCustomerIcon = (route_id) => {
     const svgString = getCustomerIconSVG(route_id);
     const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
     return L.icon({
       iconUrl: svgDataUrl,
-      iconSize: [16, 16],
-      iconAnchor: [8, 16],
-      popupAnchor: [0, -16],
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32],
     });
   };
-
-  // Function to return color based on route_id
-  const getRouteColor = (route_id) => {
-    switch (route_id) {
-      case 1:
-        return "red";
-      case 2:
-        return "blue";
-      default:
-        return "black";
-    }
-  };
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <section className="mapRoutes-container">
@@ -110,8 +112,8 @@ export default function MapRoutes() {
       <section className="mapRoutes-content">
         <div className="mapRoutes-content-mapContainer">
           <MapContainer
-            center={[13.054398115031136, 80.26375998957623]} // Default center
-            zoom={15}
+            center={[13.054398115031136, 80.26375998957623]}
+            zoom={12}
             className="mapRoutes-content-map"
           >
             <TileLayer
@@ -120,20 +122,24 @@ export default function MapRoutes() {
               minZoom={0}
               maxZoom={20}
             />
-            <Marker position={[13.054398115031136, 80.26375998957623]} icon={customIcon}>
+            <Marker
+              position={[13.054398115031136, 80.26375998957623]}
+              icon={customIcon}
+            >
               <Popup>ART Milk Company</Popup>
             </Marker>
 
-            {/* Loop through each route and plot customers, polyline for actual route */}
             {data.map((route) => {
-              const routeCoordinates = [];
+              const routeCoordinates = [
+                [13.054398115031136, 80.26375998957623],
+              ];
+
               route.customers.forEach((customer) => {
                 const coordinates = customer.coordinates;
                 routeCoordinates.push([coordinates[1], coordinates[0]]);
               });
 
-              // Get the route color based on route_id
-              const routeColor = getRouteColor(route.route_id);
+              const routeColor = colors[(route.route_id - 1) % colors.length];
 
               return (
                 <>
@@ -148,7 +154,7 @@ export default function MapRoutes() {
                       <Marker
                         key={customer.customer_id}
                         position={[coordinates[1], coordinates[0]]}
-                        icon={createCustomerIcon(route.route_id)} // Use dynamic icon based on route_id
+                        icon={createCustomerIcon(route.route_id)}
                       >
                         <Popup>Customer ID: {customer.customer_id}</Popup>
                       </Marker>

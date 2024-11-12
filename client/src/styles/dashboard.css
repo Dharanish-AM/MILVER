@@ -326,10 +326,15 @@
 }
 
 .Dashboard-right-mapContainer {
-  height: 50%;
+  height: 60%;
   width: 100%;
   border-radius: 15px;
-  background-color:aqua;
+  background-color: white;
+}
+.Dashboard-right-mapContainer-map {
+  height: 100%;
+  width: 100%;
+  border-radius: 15px;
 }
 .Dashboard-right {
   height: calc(100% - 8vh);
