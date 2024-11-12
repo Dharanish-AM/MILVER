@@ -69,8 +69,8 @@
 
 .export-box {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-end; 
+    margin-bottom: 15px;
 }
 
 .export-btn {
@@ -132,4 +132,29 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+.add-customer-btn:hover {
+    background-color: #45a049; 
+  }
+  .add-customer-btn {
+    padding: 12px 20px;
+    background-color: #673AB7;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  .addcustomer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
 }

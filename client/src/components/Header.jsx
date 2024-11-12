@@ -13,7 +13,7 @@ function Header() {
   const [select, setSelect] = useState(() => {
     const path = window.location.pathname;
     if (path === "/Dashboard") return 0;
-    if (path === "/Customer") return 1;
+    if (path === "/Customers") return 1;
     if (path === "/Deliverymandetails") return 2;
     if (path === "/Routes") return 3;
     if (path === "/Stats") return 4;
@@ -31,7 +31,7 @@ function Header() {
         if (currentPath !== "/Dashboard") navigate("/Dashboard");
         break;
       case 1:
-        if (currentPath !== "/Customer") navigate("/Customer");
+        if (currentPath !== "/Customers") navigate("/Customers");
         break;
       case 2:
         if (currentPath !== "/Deliverymandetails") navigate("/Deliverymandetails");

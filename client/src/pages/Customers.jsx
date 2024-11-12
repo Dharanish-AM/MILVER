@@ -35,9 +35,11 @@
 //       />
 //     </div>
 //   );
-// };import React from 'react';import React from 'react';
+// };
+
+import React from 'react';
 import Header from "../components/Header";
-import '../styles/Customers.css';
+import '../styles/customers.css';
 import { FaUsers, FaStar, FaCheckCircle, FaFileExport } from 'react-icons/fa';
 
 const Customers = () => {
@@ -193,15 +195,24 @@ const Customers = () => {
         <p>Active Subscriptions</p>
       </div>
     </div>
-    <div className="export-box">
+    {/* <div className="export-box">
       <button className="export-btn">
         <FaFileExport className="export-icon" />
         Export
       </button>
-    </div>
+    </div> */}
   </div>
 </div>
 <div className="table-container">
+<div className="addcustomer">
+    <button className="export-btn">
+        <FaFileExport className="export-icon" />
+        Export
+    </button>
+    <button className="add-customer-btn">Add Customer</button>
+</div>
+
+
   <table>
     <thead>
       <tr>
