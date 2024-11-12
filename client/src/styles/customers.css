@@ -1,0 +1,135 @@
+.customers {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    background-color: #F5F5F5;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.top-boxes-container {
+    height: 180px;
+    margin-bottom: 20px;
+}
+
+.top-boxes {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.card {
+    flex: 1;
+    height: 100px; 
+    padding: 20px;
+    border-radius: 12px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.icon {
+    font-size: 30px;
+}
+
+.text h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.text p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.total-customers {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+}
+
+.vip-customers {
+    background: linear-gradient(135deg, #FF9800, #FFC107);
+}
+
+.active-subscriptions {
+    background: linear-gradient(135deg, #2196F3, #42A5F5);
+}
+
+.export-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-btn {
+    padding: 12px 20px;
+    background-color: #673AB7;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.export-btn:hover {
+    background-color: #512DA8;
+}
+
+.export-icon {
+    font-size: 20px;
+}
+
+.table-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+button {
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

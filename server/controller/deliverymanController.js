@@ -1,101 +1,223 @@
 const axios = require('axios');
 const Deliveryman = require("../models/Deliveryman");
-const Routes = require('../models/Route');
+const Route = require('../models/Route');
 const Customer = require("../models/Customer");
 
-const API_KEY = '5b3ce3597851110001cf624867ce2f9fc4c040b090d5248aaf23f288';
+const dotenv = require("dotenv").config()
+
+const royapettahCoordinates = [80.26375998957623, 13.054398115031136];
+
 
 const createDeliveryman = async (req, res) => {
   try {
-    const {
-      name,
-      phone,
-      email,
-      address,
-      primaryroutes,
-      externalroutes,
-      status
-    } = req.body;
+    const { name, phone, email, address, primaryroutes, externalroutes } = req.body;
+    let external_status = externalroutes ? "available" : "unavailable";
 
-    const Delivery = new Deliveryman({
+    // Check if the primary route is already assigned to another deliveryman
+    const existingRoute = await Route.findOne({ route_id: primaryroutes });
+    if (existingRoute && existingRoute.delivery_man_id) {
+      return res.status(400).json({ message: `Route ${primaryroutes} is already assigned to another deliveryman.` });
+    }
+
+    // Create the deliveryman document
+    const deliveryman = new Deliveryman({
       name,
       phone,
       email,
       address,
       primaryroutes,
       externalroutes,
-      status
+      external_status
     });
+    await deliveryman.save();
 
-    await Delivery.save();
-    res.status(201).json({ message: "Deliveryman created successfully", Deliveryman });
+    // Find the route using the primaryroute provided
+    const route = await Route.findOne({ route_id: primaryroutes });
+    if (route) {
+      // Assign the deliveryman_id to the route's delivery_man_id
+      route.delivery_man_id = deliveryman.deliveryman_id;
+      await route.save();
+
+      console.log(`Route ${primaryroutes} updated with deliveryman_id: ${deliveryman.deliveryman_id}`);
+    } else {
+      console.log(`Route with route_id ${primaryroutes} not found`);
+    }
+
+    res.status(201).json({ message: "Deliveryman created successfully", deliveryman });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const allocateDeliveryman = async (req, res) => {
+
+const reassignDeliveryman = async (req, res) => {
   try {
-    const royapettahCoordinates = [80.26375998957623, 13.054398115031136];
-    const { route_id } = req.body;
+    const { deliveryman_id, new_primaryroute, old_primaryroute } = req.body;
 
-    const absentDeliverymen = await Deliveryman.find({ primaryroutes: route_id, status: "on_leave" });
-
-    if (!absentDeliverymen || absentDeliverymen.length === 0) {
-      return res.status(404).json({
-        message: "No absent deliveryman found for the specified route",
-      });
+    // Check if all necessary parameters are provided
+    if (!deliveryman_id || !new_primaryroute || !old_primaryroute) {
+      return res.status(400).json({ message: "Missing required parameters." });
     }
 
-    const route = await Routes.findOne({ route_id });
-    if (!route || route.customers.length === 0) {
-      return res.status(404).json({
-        message: "No customers found for the specified route",
-      });
+    // Find the deliveryman by deliveryman_id
+    const deliveryman = await Deliveryman.findOne({ deliveryman_id });
+    if (!deliveryman) {
+      return res.status(404).json({ message: "Deliveryman not found." });
     }
 
-    const absentCustomerIds = route.customers;
-    const absentCustomers = await Customer.find({ customer_id: { $in: absentCustomerIds } });
-    const absentCustomerCoordinates = absentCustomers.map((customer) => customer.location.coordinates);
-
-    const availableDeliverymen = await Deliveryman.find({ externalroutes: route_id, status: "available" });
-    if (!availableDeliverymen || availableDeliverymen.length === 0) {
-      return res.status(404).json({
-        message: "No available deliverymen with knowledge of the absent deliveryman's route",
-      });
+    // Find the old route and update its delivery_man_id to null
+    const oldRoute = await Route.findOne({ route_id: old_primaryroute });
+    if (oldRoute) {
+      oldRoute.delivery_man_id = null;
+      await oldRoute.save();
+      console.log(`Route ${old_primaryroute} removed from deliveryman ${deliveryman_id}`);
+    } else {
+      console.log(`Old Route with route_id ${old_primaryroute} not found.`);
     }
 
-    const availableDeliveryman = availableDeliverymen[0];
-    const knownRoute = await Routes.findOne({ route_id: { $in: availableDeliveryman.primaryroutes } });
-    const knownCustomerIds = knownRoute ? knownRoute.customers : [];
+    // Find the new route and update its delivery_man_id
+    const newRoute = await Route.findOne({ route_id: new_primaryroute });
+    if (!newRoute) {
+      return res.status(404).json({ message: "New Route not found." });
+    }
 
-    const knownCustomers = await Customer.find({ customer_id: { $in: knownCustomerIds } });
-    const knownCustomerCoordinates = knownCustomers.map((customer) => customer.location.coordinates);
+    // Update the primaryroutes of the deliveryman to include the new primary route
+    deliveryman.primaryroutes = [new_primaryroute]; // Assuming only one primary route
+    await deliveryman.save();
 
-    const allCustomerCoordinates = [...absentCustomerCoordinates, ...knownCustomerCoordinates];
+    // Assign the new route's delivery_man_id to the deliveryman's ID
+    newRoute.delivery_man_id = deliveryman.deliveryman_id;
+    await newRoute.save();
 
-    const sortedCoordinates = allCustomerCoordinates.map((coordinates) => {
-      const distance = haversineDistance(royapettahCoordinates, coordinates);
-      return { coordinate: coordinates, distance };
-    }).sort((a, b) => a.distance - b.distance);
+    console.log(`Route ${new_primaryroute} updated with deliveryman_id: ${deliveryman.deliveryman_id}`);
 
-    // Now, calculate road distances and times for the sorted coordinates using OpenRouteService
-    const totalDistanceAndTime = await getTotalDistanceAndTime(sortedCoordinates);
-
-    res.status(200).json({
-      message: "Coordinates sorted and distances calculated successfully",
-      sortedCoordinates,
-      totalDistanceAndTime
-    });
-
+    res.status(200).json({ message: "Deliveryman reassigned successfully.", deliveryman });
   } catch (error) {
-    console.error("Error during deliveryman allocation:", error.message);
-    res.status(500).json({
-      message: "An error occurred during allocation",
-      error: error.message,
-    });
+    console.error("Error reassigning deliveryman:", error.message);
+    res.status(500).json({ message: "Error reassigning deliveryman.", error: error.message });
   }
 };
+
+
+const allocateDeliveryman = async (req, res) => {
+  try {
+    const { route_id } = req.body;
+
+    // Find the route by route_id
+    const route = await Route.findOne({ route_id });
+    if (!route || route.customers.length === 0) {
+      return res.status(404).json({ message: "No customers found for the specified route" });
+    }
+
+    const customerIds = route.customers;
+    const customers = await Customer.find({ customer_id: { $in: customerIds } });
+    const customerCoordinates = customers.map((customer) => customer.location.coordinates);
+
+    // Check for available deliverymen for the route
+    const availableDeliverymen = await Deliveryman.find({ externalroutes: route_id, status: "available" });
+    if (availableDeliverymen.length === 0) {
+      return findNearestDeliveryman(route, customerCoordinates, res);
+    }
+
+    let minDistanceDriver = null;
+    let minDistance = Infinity;
+    let minRouteDetails = null;
+
+    // Loop through available deliverymen to find the one with the shortest route
+    for (let deliveryman of availableDeliverymen) {
+      const knownRoute = await Route.findOne({ route_id: { $in: deliveryman.primaryroutes } });
+      const knownCustomerIds = knownRoute ? knownRoute.customers : [];
+      const knownCustomers = await Customer.find({ customer_id: { $in: knownCustomerIds } });
+      const knownCustomerCoordinates = knownCustomers.map((customer) => customer.location.coordinates);
+
+      const allCustomerCoordinates = [...customerCoordinates, ...knownCustomerCoordinates];
+      const sortedCoordinates = allCustomerCoordinates.map((coordinates) => {
+        const distance = haversineDistance(royapettahCoordinates, coordinates);
+        return { coordinate: coordinates, distance };
+      }).sort((a, b) => a.distance - b.distance);
+
+      const totalDistanceAndTime = await getTotalDistanceAndTime(sortedCoordinates);
+
+      // Update the minimum distance deliveryman
+      if (totalDistanceAndTime.totalDistance < minDistance) {
+        minDistance = totalDistanceAndTime.totalDistance;
+        minDistanceDriver = deliveryman;
+        minRouteDetails = totalDistanceAndTime;
+      }
+    }
+
+    if (minDistanceDriver) {
+      res.status(200).json({
+        message: "Found the deliveryman with the shortest route",
+        deliveryman: minDistanceDriver,
+        routeDetails: minRouteDetails,
+      });
+    } else {
+      res.status(404).json({ message: "No deliveryman found with a suitable route" });
+    }
+  } catch (error) {
+    console.error("Error during deliveryman allocation:", error.message);
+    res.status(500).json({ message: "An error occurred during allocation", error: error.message });
+  }
+};
+
+
+const findNearestDeliveryman = async (route, customerCoordinates, res) => {
+  try {
+    const availableDeliverymen = await Deliveryman.find({ status: "available" });
+    if (!availableDeliverymen || availableDeliverymen.length === 0) {
+      return res.status(404).json({ message: "No available deliverymen found" });
+    }
+
+    let minDistanceDriver = null;
+    let minDistance = Infinity;
+    let minRouteDetails = null;
+
+    for (let driver of availableDeliverymen) {
+      let allCustomerCoordinates = [];
+
+      for (let externalRouteId of driver.externalroutes) {
+        const externalRoute = await Route.findOne({ route_id: externalRouteId });
+        if (externalRoute) {
+          const externalCustomerIds = externalRoute.customers;
+          const externalCustomers = await Customer.find({ customer_id: { $in: externalCustomerIds } });
+          const externalCustomerCoordinates = externalCustomers.map((customer) => customer.location.coordinates);
+          allCustomerCoordinates = [...allCustomerCoordinates, ...externalCustomerCoordinates];
+        }
+      }
+
+      const combinedCoordinates = [...customerCoordinates, ...allCustomerCoordinates];
+      const sortedCoordinates = combinedCoordinates.map((coordinates) => {
+        const distance = haversineDistance(royapettahCoordinates, coordinates);
+        return { coordinate: coordinates, distance };
+      }).sort((a, b) => a.distance - b.distance);
+
+      console.log(sortedCoordinates)
+
+      const totalDistanceAndTime = await getTotalDistanceAndTime(sortedCoordinates);
+
+      if (totalDistanceAndTime.totalDistance < minDistance) {
+        minDistance = totalDistanceAndTime.totalDistance;
+        minDistanceDriver = driver;
+        minRouteDetails = totalDistanceAndTime;
+      }
+    }
+
+    if (minDistanceDriver) {
+      res.status(200).json({
+        message: "Nearest available deliveryman found",
+        deliveryman: minDistanceDriver,
+        routeDetails: minRouteDetails,
+      });
+    } else {
+      res.status(404).json({ message: "No nearby deliveryman found" });
+    }
+  } catch (error) {
+    console.error("Error finding nearest deliveryman:", error);
+    res.status(500).json({ message: "Error finding nearest deliveryman" });
+  }
+};
+
 
 const haversineDistance = (coord1, coord2) => {
   const R = 6371;
@@ -113,45 +235,41 @@ const getTotalDistanceAndTime = async (sortedCoordinates) => {
     let totalDistance = 0;
     let totalDuration = 0;
 
-    // Iterate through the sorted coordinates and calculate the road distances
     for (let i = 0; i < sortedCoordinates.length - 1; i++) {
       const start = sortedCoordinates[i].coordinate;
       const end = sortedCoordinates[i + 1].coordinate;
 
-      // Send a request to OpenRouteService for each pair of coordinates
+
       const response = await axios.post(
         'https://api.openrouteservice.org/v2/directions/driving-car',
-        {
-          coordinates: [start, end]
-        },
+        { coordinates: [start, end] },
         {
           headers: {
-            Authorization: API_KEY,
-            'Content-Type': 'application/json'
-          }
+            Authorization: process.env.MAP_API_KEY,
+          },
         }
       );
 
-      const route = response.data.routes[0];
-      if (route) {
-        totalDistance += route.summary.distance; // In meters
-        totalDuration += route.summary.duration; // In seconds
+
+      if (response.data.routes && response.data.routes.length > 0) {
+
+        const route = response.data.routes[0].segments[0];
+        totalDistance += route.distance;
+        totalDuration += route.duration;
+      } else {
+        throw new Error('No routes found in response');
       }
     }
 
-    // Convert total distance to kilometers and duration to minutes
     return {
-      totalDistance: totalDistance / 1000, // Convert meters to kilometers
-      totalDuration: (totalDuration / 60).toFixed(2) // Convert seconds to minutes
+      totalDistance: totalDistance / 1000,
+      totalDuration: totalDuration / 60,
     };
-
   } catch (error) {
-    console.error('Error fetching route data from OpenRouteService:', error.message);
-    throw new Error('Failed to fetch route data');
+    console.error('Error getting route details from OpenRouteService:', error);
+    throw new Error('Error fetching route details');
   }
 };
 
-module.exports = {
-  createDeliveryman,
-  allocateDeliveryman
-};
+
+module.exports = { createDeliveryman, allocateDeliveryman };

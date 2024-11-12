@@ -8,47 +8,30 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 import industry from "../assets/industry.png";
 import "leaflet-routing-machine";
+import React from "react";
 
 const colors = [
-  "#008080", // Teal
-  "#FFA500", // Orange
-  "#800080", // Purple
-  "#32CD32", // Lime Green
-  "#00FFFF", // Cyan
-  "#FF69B4", // Hot Pink
-  "#FF7F50", // Coral
-  "#1E90FF", // Dodger Blue
-  "#DC143C", // Crimson Red
-  "#FF00FF", // Magenta
-  "#00FF00", // Lime Green
-  "#87CEEB", // Sky Blue
-  "#FA8072", // Salmon
-  "#DAA520", // Goldenrod
-  "#6A5ACD", // Slate Blue
-  "#40E0D0", // Turquoise
-  "#DC143C", // Crimson
-  "#4169E1", // Royal Blue
-  "#6B8E23", // Olive Drab
-  "#BA55D3", // Medium Orchid
+  "#008080", "#FFA500", "#800080", "#32CD32", "#00FFFF",
+  "#FF69B4", "#FF7F50", "#1E90FF", "#DC143C", "#FF00FF",
+  "#00FF00", "#87CEEB", "#FA8072", "#DAA520", "#6A5ACD",
+  "#40E0D0", "#DC143C", "#4169E1", "#6B8E23", "#BA55D3",
 ];
 
 const getCustomerIconSVG = (route_id) => {
   const color = colors[(route_id - 1) % colors.length];
-
   return `<svg width="100" height="207" viewBox="0 0 100 207" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Pin Body (outer part) -->
             <path fill-rule="evenodd" clip-rule="evenodd" 
               d="M100 50C100 56.1758 98.8804 62.0898 96.833 67.5505L51.0002 207L5.47681 72.7756C1.97559 65.9451 0 58.2034 0 50C0 22.3857 22.3857 0 50 0C77.6143 0 100 22.3857 100 50ZM50 66C59.9412 66 68 57.9412 68 48C68 38.0588 59.9412 30 50 30C40.0588 30 32 38.0588 32 48C32 57.9412 40.0588 66 50 66Z" 
               fill="${color}"/>
           </svg>`;
 };
 
+// MapWithRouting component to handle route drawing on the map
 const MapWithRouting = ({ routeCoordinates, routeColor }) => {
   const map = useMap();
 
   useEffect(() => {
-    // Only add the routing control if the map is defined
-    if (!map) return;
+    if (!map || !routeCoordinates || routeCoordinates.length < 2) return;
 
     const routingControl = L.Routing.control({
       waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
@@ -65,9 +48,7 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
     }).addTo(map);
 
     return () => {
-      if (map) {
-        map.removeControl(routingControl);
-      }
+      routingControl.remove();
     };
   }, [map, routeCoordinates, routeColor]);
 
@@ -81,6 +62,7 @@ export default function MapRoutes() {
     axios
       .get("http://localhost:8000/api/route/getallroutes")
       .then((res) => {
+        console.log(res.data)
         setData(res.data.data);
       })
       .catch((err) => {
@@ -140,27 +122,29 @@ export default function MapRoutes() {
               });
 
               const routeColor = colors[(route.route_id - 1) % colors.length];
+              const hasValidCoordinates = routeCoordinates.length > 1;
 
               return (
-                <>
-                  <MapWithRouting
-                    key={route.route_id}
-                    routeCoordinates={routeCoordinates}
-                    routeColor={routeColor}
-                  />
+                <React.Fragment key={route.route_id}>
+                  {hasValidCoordinates && (
+                    <MapWithRouting
+                      routeCoordinates={routeCoordinates}
+                      routeColor={routeColor}
+                    />
+                  )}
                   {route.customers.map((customer) => {
                     const coordinates = customer.coordinates;
                     return (
                       <Marker
-                        key={customer.customer_id}
+                        key={`customer-${customer.customer_id}`}
                         position={[coordinates[1], coordinates[0]]}
                         icon={createCustomerIcon(route.route_id)}
                       >
-                        <Popup>Customer ID: {customer.customer_id}</Popup>
+                        <Popup >Customer ID: {customer.customer_id}</Popup>
                       </Marker>
                     );
                   })}
-                </>
+                </React.Fragment>
               );
             })}
           </MapContainer>
