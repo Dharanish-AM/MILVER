@@ -10,7 +10,7 @@ const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [customersData, setCustomersData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEventAdded, setIsEventAdded] = useState(false); // Track if a new customer is added
+  const [isEventAdded, setIsEventAdded] = useState(false); 
   const [customerForm, setCustomerForm] = useState({
     name: '',
     address: '',
@@ -31,7 +31,7 @@ const Customers = () => {
     route_name: '',
   });
 
-  // Fetch customer data on mount and whenever a new customer is added
+ 
   useEffect(() => {
     const getCustomerData = async () => {
       try {
@@ -43,25 +43,38 @@ const Customers = () => {
     };
 
     getCustomerData();
-  }, [isEventAdded]); // Re-fetch when `isEventAdded` changes
+  }, [isEventAdded]); 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerForm({ ...customerForm, [name]: value });
   };
+  const [showExportOptions, setShowExportOptions] = useState(false);
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
-
+  const handleExportCSV = () => {
+    toast.info("Exporting as CSV...");
+    // Add your CSV export logic here
+  };
+  
+  const handleExportPDF = () => {
+    toast.info("Exporting as PDF...");
+    // Add your PDF export logic here
+  };
+  
   const handleSubmit = async () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors); 
       return;
     }
-
+    const coordinates = await getCoordinates(customerForm.address);
+    if (coordinates) {
+        customerForm.location.coordinates = [coordinates.longitude, coordinates.latitude];
+    }
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/customer/addcustomer`, customerForm);
-      setIsEventAdded(prevState => !prevState); // Toggle to trigger re-fetch
+      setIsEventAdded(prevState => !prevState);
       toast.success("Customer added successfully!");
 
       setIsModalOpen(false);
@@ -79,6 +92,27 @@ const Customers = () => {
       });
     } catch (error) {
       console.error("Error adding customer: ", error);
+    }
+  };
+  const getCoordinates = async (address) => {
+    const accessToken = 'pk.eyJ1Ijoic2FiYXJpbTYzNjkiLCJhIjoiY20zYWc2ZzdnMG5kZjJrc2F3eXUyczhiaiJ9.KluQuo4u7AMijmoli9HZmg';
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${accessToken}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        const [longitude, latitude] = data.features[0].geometry.coordinates;
+        return { latitude, longitude };
+      } else {
+        toast.error('No coordinates found for the specified address.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching coordinates:', error);
+      toast.error('Error fetching coordinates.');
+      return null;
     }
   };
 
@@ -126,10 +160,23 @@ const Customers = () => {
                 onChange={handleSearchChange}
               />
             </div>
-            <button className="export-btn">
-              <FaFileExport className="export-icon" />
-              Export
-            </button>
+            <div className="export-btn-container">
+  <button
+    className="export-btn"
+    onMouseEnter={() => setShowExportOptions(true)}
+    onMouseLeave={() => setShowExportOptions(false)}
+  >
+    <FaFileExport className="export-icon" />
+    Export
+    {showExportOptions && (
+      <div className="export-dropdown">
+        <button onClick={handleExportCSV}>Export as CSV</button>
+        <button onClick={handleExportPDF}>Export as PDF</button>
+      </div>
+    )}
+  </button>
+</div>
+
             <button className="add-customer-btn" onClick={() => setIsModalOpen(true)}>
               <FaPlus className="add-customer-icon" />
               <span className="add-customer-text">Add Customer</span>

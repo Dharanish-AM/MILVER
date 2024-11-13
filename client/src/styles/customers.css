@@ -93,6 +93,31 @@
   .export-btn .export-icon {
     margin-right: 8px;
   }
+
+.export-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .export-dropdown button {
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .export-dropdown button:hover {
+    background-color: #f0f0f0;
+  }
   
   .export-btn:hover, .add-customer-btn:hover {
     background-color: #5e35b1;
@@ -207,7 +232,8 @@ tbody tr:hover {
 
 
 
-/*code for add customer modal*/
+/*code for add customer modal
+*/
 
 
 .modal-overlay {
@@ -319,4 +345,7 @@ tbody tr:hover {
     font-size: 0.9rem;
     margin-top: 5px;
   }
+
+  
+
   
