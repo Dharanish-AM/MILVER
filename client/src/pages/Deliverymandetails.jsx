@@ -1,193 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Header from "../components/Header";
 import deliveryman from '../assets/deliveryman.jpg';
 import "../styles/deliverymandetails.css";
 import { FaUsers, FaStar, FaCheckCircle, FaFileExport, FaSearch, FaPlus } from 'react-icons/fa';
-
-const employees = [
-  {
-    name: 'James',
-    route: 'Royapettah',
-    phone: '9698564218',
-    type: 'Fulltime',
-    joinDate: '20 Feb 2024',
-    status: 'Active',
-    address: '123 Royapettah St, Chennai',
-    email: 'james@company.com',
-    emergencyContact: '9112345678',
-    profilePicture:deliveryman,
-    dob: '1990-06-15',
-    salary: '₹50000',
-    roleDescription: 'Delivery Executive handling Royapettah routes',
-  },
-  {
-    name: 'Alex',
-    route: 'T Nagar',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '456 T Nagar, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling T Nagar routes',
-  },
-  {
-    name: 'James',
-    route: 'Royapettah',
-    phone: '9698564218',
-    type: 'Fulltime',
-    joinDate: '20 Feb 2024',
-    status: 'Active',
-    address: '123 Royapettah St, Chennai',
-    email: 'james@company.com',
-    emergencyContact: '9112345678',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1990-06-15',
-    salary: '₹50000',
-    roleDescription: 'Delivery Executive handling Royapettah routes',
-  },
-  {
-    name: 'James',
-    route: 'Royapettah',
-    phone: '9698564218',
-    type: 'Fulltime',
-    joinDate: '20 Feb 2024',
-    status: 'Active',
-    address: '123 Royapettah St, Chennai',
-    email: 'james@company.com',
-    emergencyContact: '9112345678',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1990-06-15',
-    salary: '₹50000',
-    roleDescription: 'Delivery Executive handling Royapettah routes',
-  },
-  {
-    name: 'James',
-    route: 'Nungambakkam',
-    phone: '9698564218',
-    type: 'Fulltime',
-    joinDate: '20 Feb 2024',
-    status: 'Active',
-    address: '789 Nungambakkam Rd, Chennai',
-    email: 'james@company.com',
-    emergencyContact: '9112345678',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1990-06-15',
-    salary: '₹50000',
-    roleDescription: 'Delivery Executive handling Nungambakkam routes',
-  },
-  {
-    name: 'James',
-    route: 'Royapettah',
-    phone: '9698564218',
-    type: 'Fulltime',
-    joinDate: '20 Feb 2024',
-    status: 'Active',
-    address: '123 Royapettah St, Chennai',
-    email: 'james@company.com',
-    emergencyContact: '9112345678',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1990-06-15',
-    salary: '₹50000',
-    roleDescription: 'Delivery Executive handling Royapettah routes',
-  },
-  {
-    name: 'Alex',
-    route: 'Kodambakkam',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '101 Kodambakkam, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling Kodambakkam routes',
-  },
-  {
-    name: 'Alex',
-    route: '1000 lights',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '102 1000 Lights, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling 1000 Lights routes',
-  },
-  {
-    name: 'Alex',
-    route: 'Mandaveli',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '103 Mandaveli, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling Mandaveli routes',
-  },
-  {
-    name: 'Alex',
-    route: 'Santhome',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '104 Santhome, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling Santhome routes',
-  },
-  {
-    name: 'Alex',
-    route: 'Kodambakkam',
-    phone: '9876543210',
-    type: 'Parttime', 
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '105 Kodambakkam, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling Kodambakkam routes',
-  },
-  {
-    name: 'Alex',
-    route: 'Kodambakkam',
-    phone: '9876543210',
-    type: 'Parttime',
-    joinDate: '15 Jan 2024',
-    status: 'Inactive',
-    address: '106 Kodambakkam, Chennai',
-    email: 'alex@company.com',
-    emergencyContact: '9119876543',
-    profilePicture: 'https://via.placeholder.com/150',
-    dob: '1992-07-20',
-    salary: '₹30000',
-    roleDescription: 'Part-time delivery executive handling Kodambakkam routes',
-  },
-];
-
-
+import axios from 'axios';
+import { MdClose } from 'react-icons/md';
 function Deliverymandetails() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Status');
@@ -195,29 +12,91 @@ function Deliverymandetails() {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [deliverymendata, setdelivermendata] = useState([]);
+  const [isEventAdded, setIsEventAdded] = useState(false); 
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+const[showDeleteConfirmation,setShowDeleteConfirmation]=useState(false);
+  const handleShowDeleteConfirmation = () => {
+    setShowDeleteConfirmation(true);
+  };
+  
+  const handleCloseDeleteConfirmation = () => {
+    setShowDeleteConfirmation(false);
+    setDeleteConfirmation(""); 
+  };
+  
+  const handleDeleteConfirmationChange = (e) => {
+    setDeleteConfirmation(e.target.value);
+  };
+  
+  const handleDelete = () => {
+    if (deleteConfirmation === selectedEmployee.name) {
+      // Call your delete API or handle the deletion here
+      console.log("Employee deleted:", selectedEmployee.name);
+      handleCloseDeleteConfirmation(); // Close confirmation modal
+    } else {
+      // You can show an error or warning here if the name doesn't match
+      alert("Name does not match for deletion.");
+    }
+  };
+  
+  const [customerForm, setCustomerForm] = useState({
+    name: '',
+    address: '',
+    location: {
+      type: 'Point',
+      coordinates: ['80.2625205', '13.0473059']
+    },
+    phone: '',
+    deliverytime: '10.00',
+    route_id: '1',
+    route_name: '',
+  });
+
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    address: '',
+    phone: '',
+    route_name: '',
+  });
+  useEffect(() => {
+    const getdeliverymendata = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/deliverymen/getalldeliverymen`);
+        setdelivermendata(response.data);
+      } catch (error) {
+        console.error("Error fetching customer data: ", error);
+      }
+    };
+
+    getdeliverymendata();
+  }, [isEventAdded]); 
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
-
+  
   const handleStatusChange = (e) => {
     setStatusFilter(e.target.value);
   };
-
+  
   const handleRouteChange = (e) => {
     setRouteFilter(e.target.value);
   };
+  
+  const filteredEmployees = deliverymendata.filter((employee) => {
+    const matchesSearch =
+      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (employee.primaryRouteName && employee.primaryRouteName.toLowerCase().includes(searchTerm.toLowerCase()));
+  
+    const matchesStatus = statusFilter === 'Status' || employee.status === statusFilter;
+  
 
-  const filteredEmployees = employees.filter(employee => {
-    const matchesSearch = employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          employee.route.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus = statusFilter === 'Status' ? true : employee.status === statusFilter;
-    const matchesRoute = routeFilter === 'Routes' ? true : employee.route === routeFilter;
-
+    const matchesRoute = routeFilter === 'Routes' || (employee.primaryroutes && employee.primaryroutes.toString() === routeFilter);
+  
     return matchesSearch && matchesStatus && matchesRoute;
   });
-
+  
   const handleViewDetails = (employee) => {
     setSelectedEmployee(employee);
     setShowModal(true);
@@ -235,13 +114,17 @@ function Deliverymandetails() {
   const handleExportPDF = () => {
     console.log("Exporting as PDF...");
   };
+const handleEdit=()=>{
+  console.log("editing");
+}
 
   return (
     <section className="deliverymandetails">
       <Header />
       <div className="main-content">
         <div className="header-section">
-          <h1>Employees</h1>
+        <h1 class="gradient-text">Employees</h1>
+
           <div className="header-buttons">
             <div className="export-btn-container">
               <button
@@ -261,39 +144,40 @@ function Deliverymandetails() {
             </div>
             <button className="add-customer-btn" onClick={() => setShowModal(true)}>
               <FaPlus className="add-customer-icon" />
-              <span className="add-customer-text">Add Customer</span>
+              <span className="add-customer-text">Add Employee</span>
             </button>
           </div>
         </div>
-
         <div className="filter-bar">
-          <div className="search-bar">
-            <FaSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search customers..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </div>
+  <div className="search-bar">
+    <FaSearch className="search-icon" />
+    <input
+      type="text"
+      placeholder="Search Employees..."
+      value={searchTerm}
+      onChange={handleSearchChange}
+    />
+  </div>
 
-          <select value={statusFilter} onChange={handleStatusChange}>
-            <option>Status</option>
-            <option>Active</option>
-            <option>Inactive</option>
-          </select>
-          <select value={routeFilter} onChange={handleRouteChange}>
-            <option>Routes</option>
-            <option>T Nagar</option>
-            <option>Nungambakkam</option>
-            <option>1000 lights</option>
-            <option>Mandaveli</option>
-            <option>Santhome</option>
-            <option>Kodambakkam</option>
-            <option>Royapettah </option>
-          </select>
+  <div className="dropdown-container">
+    <select className="status-dropdown" value={statusFilter} onChange={handleStatusChange}>
+      <option>Status</option>
+      <option>available</option>
+      <option>Not available</option>
+    </select>
+    <select className="route-dropdown" value={routeFilter} onChange={handleRouteChange}>
+      <option>Routes</option>
+      <option>T Nagar</option>
+      <option>Nungambakkam</option>
+      <option>1000 lights</option>
+      <option>Mandaveli</option>
+      <option>Santhome</option>
+      <option>Kodambakkam</option>
+      <option>Royapettah</option>
+    </select>
+  </div>
+</div>
 
-        </div>
 
         <div className="employee-list">
           {filteredEmployees.map((employee, index) => (
@@ -309,7 +193,7 @@ function Deliverymandetails() {
                 />
                 <h3>{employee.name}</h3>
                 <div className="employee-details">
-                  <p><strong>Route:</strong> {employee.route} 🛤️</p>
+                  <p><strong>Route:</strong>{employee.primaryRouteName} 🛤️</p>
                   <p><strong>Ph-no:</strong> {employee.phone} 📱</p>
                   <p><strong>Type:</strong> {employee.type} ⏰</p>
                 </div>
@@ -321,18 +205,66 @@ function Deliverymandetails() {
             </div>
           ))}
         </div>
+     
+{showModal && selectedEmployee && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h3>{selectedEmployee.name}</h3>
+        <button className="close-btn" onClick={handleCloseModal}>
+          <MdClose />
+        </button>
+      </div>
+      <div className="modal-body">
+        <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
+        <p><strong>Email:</strong> {selectedEmployee.email}</p>
+        <p><strong>Address:</strong> {selectedEmployee.address}</p>
+        <p><strong>Primary Route:</strong> {selectedEmployee.primaryRouteName}</p>
+        <p><strong>Status:</strong> {selectedEmployee.status}</p>
+        <p><strong>External Status:</strong> {selectedEmployee.external_status}</p>
+      </div>
+      <div className="modal-footer">
+        <button className="edit-btn" onClick={handleEdit}>Edit</button>
+        <button className="delete-btn" onClick={handleShowDeleteConfirmation}>Delete</button>
+        <button className="close-btn" onClick={handleCloseModal}>Close</button>
+      </div>
+    </div>
+  </div>
+)}
+{showDeleteConfirmation && selectedEmployee && (
+  <div className="modal-overlay">
+    <div className="delete-confirmation-modal">
+      <div className="delete-confirmation-header">
+        <h3>Are you sure you want to delete this employee?</h3>
+      </div>
+      <div className="delete-confirmation-body">
+        <p>
+          To confirm, type the name <strong>{selectedEmployee.name}</strong> below:
+        </p>
+        <input
+          type="text"
+          value={deleteConfirmation}
+          onChange={handleDeleteConfirmationChange}
+          placeholder="Enter name to confirm"
+          className="confirmation-input"
+        />
+      </div>
+      <div className="delete-confirmation-footer">
+        <button className="cancel-btn" onClick={handleCloseDeleteConfirmation}>Cancel</button>
+        <button
+          className="confirm-btn"
+          onClick={handleDelete}
+          disabled={deleteConfirmation !== selectedEmployee.name}
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-        {showModal && selectedEmployee && (
-          <div className="modal-overlay">
-            <div className="modal">
-              <h3>{selectedEmployee.name}</h3>
-              <p><strong>Route:</strong> {selectedEmployee.route}</p>
-              <p><strong>Email:</strong> {selectedEmployee.email}</p>
-              <p><strong>Salary:</strong> {selectedEmployee.salary}</p>
-              <button onClick={handleCloseModal}>Close</button>
-            </div>
-          </div>
-        )}
+
+
       </div>
     </section>
   );

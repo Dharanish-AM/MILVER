@@ -370,4 +370,30 @@ const editDeliveryman = async (req, res) => {
   }
 };
 
-module.exports = { createDeliveryman, allocateDeliveryman,deleteDeliveryman,editDeliveryman };
+const getalldeliverymen = async (req, res) => {
+  try {
+    const deliverymen = await Deliveryman.find();
+
+    const routes = await Route.find();
+    const routeMap = new Map(routes.map((route) => [route.route_id, route.to])); 
+
+
+    const deliverymenWithPrimaryRoute = deliverymen.map((deliveryman) => {
+      const primaryRouteName = routeMap.get(deliveryman.primaryroutes); 
+
+      return {
+        ...deliveryman.toObject(),
+        primaryRouteName: primaryRouteName || "No Route Found"
+      };
+    });
+
+    res.status(200).json(deliverymenWithPrimaryRoute);
+  } catch (error) {
+    console.error("Error retrieving deliverymen:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error retrieving deliverymen", error: error.message });
+  }
+};
+
+module.exports = { createDeliveryman, allocateDeliveryman,deleteDeliveryman,editDeliveryman,getalldeliverymen};
