@@ -11,10 +11,26 @@ import "leaflet-routing-machine";
 import React from "react";
 
 const colors = [
-  "#008080", "#FFA500", "#800080", "#32CD32", "#00FFFF",
-  "#FF69B4", "#FF7F50", "#1E90FF", "#DC143C", "#FF00FF",
-  "#00FF00", "#87CEEB", "#FA8072", "#DAA520", "#6A5ACD",
-  "#40E0D0", "#DC143C", "#4169E1", "#6B8E23", "#BA55D3",
+  "#008080",
+  "#FFA500",
+  "#800080",
+  "#32CD32",
+  "#00FFFF",
+  "#FF69B4",
+  "#FF7F50",
+  "#1E90FF",
+  "#DC143C",
+  "#FF00FF",
+  "#00FF00",
+  "#87CEEB",
+  "#FA8072",
+  "#DAA520",
+  "#6A5ACD",
+  "#40E0D0",
+  "#DC143C",
+  "#4169E1",
+  "#6B8E23",
+  "#BA55D3",
 ];
 
 const getCustomerIconSVG = (route_id) => {
@@ -26,29 +42,61 @@ const getCustomerIconSVG = (route_id) => {
           </svg>`;
 };
 
-// MapWithRouting component to handle route drawing on the map
+// eslint-disable-next-line react/prop-types
 const MapWithRouting = ({ routeCoordinates, routeColor }) => {
   const map = useMap();
 
   useEffect(() => {
+    // eslint-disable-next-line react/prop-types
     if (!map || !routeCoordinates || routeCoordinates.length < 2) return;
 
-    const routingControl = L.Routing.control({
-      waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
-      routeWhileDragging: true,
-      show: false,
-      routePopup: false,
-      collapsible: false,
-      addWaypoints: false,
-      showAlternatives: false,
-      lineOptions: {
-        styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
-      },
-      createMarker: () => null,
-    }).addTo(map);
+    // eslint-disable-next-line react/prop-types
+    const waypoints = routeCoordinates.map((coords) => L.latLng(coords));
+
+    // Fetch route from OpenRouteService API and add the route control
+    const fetchRoute = async () => {
+      const response = await axios.post(
+        `https://api.openrouteservice.org/v2/directions/driving-car`,
+        {
+          coordinates: waypoints.map((wp) => [wp.lng, wp.lat]),
+        }
+      );
+
+      const routeGeoJson = response.data.routes[0].geometry;
+
+      // Ensure map is initialized before adding routing control
+      if (map) {
+        const routingControl = L.Routing.control({
+          waypoints,
+          router: L.Routing.osrmv1({
+            geojson: routeGeoJson, // Custom GeoJSON route from ORS
+          }),
+          routeWhileDragging: true,
+          show: false,
+          routePopup: false,
+          collapsible: false,
+          addWaypoints: false,
+          showAlternatives: false,
+          lineOptions: {
+            styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
+          },
+          createMarker: () => null,
+        }).addTo(map);
+
+        return routingControl;
+      }
+    };
+
+    fetchRoute();
 
     return () => {
-      routingControl.remove();
+      if (map) {
+        map.eachLayer((layer) => {
+          if (layer instanceof L.Routing.Control) {
+            map.removeLayer(layer);
+          }
+        });
+      }
     };
   }, [map, routeCoordinates, routeColor]);
 
@@ -57,12 +105,12 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
 
 export default function MapRoutes() {
   const [data, setData] = useState([]);
+  // Replace with your OpenRouteService API key
 
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/route/getallroutes")
       .then((res) => {
-        console.log(res.data)
         setData(res.data.data);
       })
       .catch((err) => {
@@ -134,13 +182,29 @@ export default function MapRoutes() {
                   )}
                   {route.customers.map((customer) => {
                     const coordinates = customer.coordinates;
+                    console.log(customer);
                     return (
                       <Marker
                         key={`customer-${customer.customer_id}`}
                         position={[coordinates[1], coordinates[0]]}
                         icon={createCustomerIcon(route.route_id)}
                       >
-                        <Popup >Customer ID: {customer.customer_id}</Popup>
+                        <Popup>
+                          Customer ID: {customer.customer_id} <br />
+                          Name: {customer.name} <br />
+                          Address: {customer.address} <br />
+                          Phone: {customer.phone} <br />
+                          Coordinates:{" "}
+                          {`${customer.coordinates[0]} , ${customer.coordinates[1]}`}{" "}
+                          <br />
+                          <a
+                            href={`https://www.google.com/maps?q=${customer.coordinates[1]},${customer.coordinates[0]}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Open in Google Maps
+                          </a>
+                        </Popup>
                       </Marker>
                     );
                   })}

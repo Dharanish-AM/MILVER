@@ -19,16 +19,16 @@ const createRoute = async (req, res) => {
 const getAllRoutes = async (req, res) => {
   try {
     console.log("Fetching all routes...");
-    // Fetch all routes from the database
     const routes = await Route.find();
 
     // Resolve driver and customer data for each route
     const routesData = await Promise.all(
       routes.map(async (eachRoute) => {
         const routeId = eachRoute.route_id;
+        const to = eachRoute.to
         let driverData = null;
 
-        // Fetch driver details if `delivery_man` is assigned
+        // Fetch driver details if delivery_man is assigned
         if (eachRoute.delivery_man_id) {
           const deliveryMan = await Deliveryman.findOne({ deliveryman_id: eachRoute.delivery_man_id });
           if (deliveryMan) {
@@ -43,6 +43,7 @@ const getAllRoutes = async (req, res) => {
               external_status: deliveryMan.external_status,
               status: deliveryMan.status,
               location: deliveryMan.location?.coordinates || [], // Location in [longitude, latitude]
+              to:to,
             };
           }
         }
@@ -65,6 +66,10 @@ const getAllRoutes = async (req, res) => {
         // Resolve customer data and filter out null values
         const resolvedCustomers = await Promise.all(customerPromises);
         const filteredCustomers = resolvedCustomers.filter(Boolean);
+
+        // Extract just the coordinates of each customer for the coordinates array
+        const customerCoordinatesArray = filteredCustomers.map((customer) => customer.coordinates);
+
 
         return {
           route_id: routeId,

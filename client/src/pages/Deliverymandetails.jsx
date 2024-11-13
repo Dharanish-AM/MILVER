@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from "../components/Header";
 import deliveryman from '../assets/deliveryman.jpg';
 import "../styles/deliverymandetails.css";
-import {useState,useEffect} from 'react';
+import { FaUsers, FaStar, FaCheckCircle, FaFileExport, FaSearch, FaPlus } from 'react-icons/fa';
+
 const employees = [
   {
     name: 'James',
@@ -158,7 +159,7 @@ const employees = [
     name: 'Alex',
     route: 'Kodambakkam',
     phone: '9876543210',
-    type: 'Parttime',
+    type: 'Parttime', 
     joinDate: '15 Jan 2024',
     status: 'Inactive',
     address: '105 Kodambakkam, Chennai',
@@ -186,37 +187,55 @@ const employees = [
   },
 ];
 
+
 function Deliverymandetails() {
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Status');
   const [routeFilter, setRouteFilter] = useState('Routes');
-  const [selectedEmployee, setSelectedEmployee] = useState(null); 
-  const [showModal, setShowModal] = useState(false); 
-  const handleSearchChange = (e) => setSearch(e.target.value);
-  const handleStatusChange = (e) =>{
-console.log(e.target.value)
-  setStatusFilter(e.target.value);
-  }
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  const handleViewDetails = (employee) => {
-    setSelectedEmployee(employee);
-    setShowModal(true); 
-  };
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedEmployee(null);  
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleRouteChange = (e) => setRouteFilter(e.target.value);
+  const handleStatusChange = (e) => {
+    setStatusFilter(e.target.value);
+  };
+
+  const handleRouteChange = (e) => {
+    setRouteFilter(e.target.value);
+  };
+
   const filteredEmployees = employees.filter(employee => {
-    const matchesSearch = employee.name.toLowerCase().includes(search.toLowerCase()) ||
-                          employee.route.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          employee.route.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = statusFilter === 'Status' ? true : employee.status === statusFilter;
     const matchesRoute = routeFilter === 'Routes' ? true : employee.route === routeFilter;
 
     return matchesSearch && matchesStatus && matchesRoute;
   });
+
+  const handleViewDetails = (employee) => {
+    setSelectedEmployee(employee);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleExportCSV = () => {
+    console.log("Exporting as CSV...");
+  };
+
+  const handleExportPDF = () => {
+    console.log("Exporting as PDF...");
+  };
+
   return (
     <section className="deliverymandetails">
       <Header />
@@ -224,20 +243,40 @@ console.log(e.target.value)
         <div className="header-section">
           <h1>Employees</h1>
           <div className="header-buttons">
-            <button>Export</button>
-            <button className="add-employee-btn">
-              <img src="add-icon.png" alt="Add" /> Add Employee
+            <div className="export-btn-container">
+              <button
+                className="export-btn"
+                onMouseEnter={() => setShowExportOptions(true)}
+                onMouseLeave={() => setShowExportOptions(false)}
+              >
+                <FaFileExport className="export-icon" />
+                Export
+                {showExportOptions && (
+                  <div className="export-dropdown">
+                    <button onClick={handleExportCSV}>Export as CSV</button>
+                    <button onClick={handleExportPDF}>Export as PDF</button>
+                  </div>
+                )}
+              </button>
+            </div>
+            <button className="add-customer-btn" onClick={() => setShowModal(true)}>
+              <FaPlus className="add-customer-icon" />
+              <span className="add-customer-text">Add Customer</span>
             </button>
           </div>
         </div>
 
         <div className="filter-bar">
-          <input
-            type="text"
-            placeholder="Search"
-            value={search}
-            onChange={handleSearchChange}
-          />
+          <div className="search-bar">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search customers..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+
           <select value={statusFilter} onChange={handleStatusChange}>
             <option>Status</option>
             <option>Active</option>
@@ -253,111 +292,47 @@ console.log(e.target.value)
             <option>Kodambakkam</option>
             <option>Royapettah </option>
           </select>
+
         </div>
 
         <div className="employee-list">
           {filteredEmployees.map((employee, index) => (
             <div key={index} className="employee-card">
-              <div
-                className={`employee-status ${
-                  employee.status === "Active" ? "active" : "inactive"
-                }`}
-              >
+              <div className={`employee-status ${employee.status === "Active" ? "active" : "inactive"}`}>
                 {employee.status}
               </div>
               <div className="employee-info">
                 <img
-                  src={deliveryman}
+                  src={employee.profilePicture || deliveryman}
                   alt="Employee"
                   className="employee-avatar"
                 />
                 <h3>{employee.name}</h3>
                 <div className="employee-details">
-                  <p>
-                    <strong className=".bodoni-moda-a">Route:</strong>{" "}
-                    {employee.route} 🛤️
-                  </p>
-                  <p>
-                    <strong>Ph-no:</strong> {employee.phone} 📱
-                  </p>
-                  <p>
-                    <strong>Type:</strong> {employee.type} ⏰
-                  </p>
+                  <p><strong>Route:</strong> {employee.route} 🛤️</p>
+                  <p><strong>Ph-no:</strong> {employee.phone} 📱</p>
+                  <p><strong>Type:</strong> {employee.type} ⏰</p>
                 </div>
                 <p className="employee-joined">
                   Joined at {employee.joinDate}{" "}
-                  <a href="#" onClick={() => handleViewDetails(employee)}>
-                    view details
-                  </a>
+                  <a href="#" onClick={() => handleViewDetails(employee)}>view details</a>
                 </p>
               </div>
             </div>
           ))}
-          {showModal && selectedEmployee && (
-            <div className="modal-overlay" onClick={handleCloseModal}>
-              <div
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="modal-header">
-                  <h2>Employee Details</h2>
-                  <button className="close-btn" onClick={handleCloseModal}>
-                    X
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <img
-                    src={selectedEmployee.profilePicture}
-                    alt="Employee"
-                    className="modal-avatar"
-                  />
-                  <h3>{selectedEmployee.name}</h3>
-                  <p>
-                    <strong>Route:</strong> {selectedEmployee.route}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {selectedEmployee.phone}
-                  </p>
-                  <p>
-                    <strong>Type:</strong> {selectedEmployee.type}
-                  </p>
-                  <p>
-                    <strong>Status:</strong> {selectedEmployee.status}
-                  </p>
-                  <p>
-                    <strong>Join Date:</strong> {selectedEmployee.joinDate}
-                  </p>
-                  <p>
-                    <strong>Date of Birth:</strong> {selectedEmployee.dob}
-                  </p>
-                  <p>
-                    <strong>Salary:</strong> {selectedEmployee.salary}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {selectedEmployee.email}
-                  </p>
-                  <p>
-                    <strong>Emergency Contact:</strong>{" "}
-                    {selectedEmployee.emergencyContact}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {selectedEmployee.address}
-                  </p>
-                  <p>
-                    <strong>Role Description:</strong>{" "}
-                    {selectedEmployee.roleDescription}
-                  </p>
-                </div>
-
-                <div className="modal-footer">
-                  <button className="close-btn" onClick={handleCloseModal}>
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
+
+        {showModal && selectedEmployee && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h3>{selectedEmployee.name}</h3>
+              <p><strong>Route:</strong> {selectedEmployee.route}</p>
+              <p><strong>Email:</strong> {selectedEmployee.email}</p>
+              <p><strong>Salary:</strong> {selectedEmployee.salary}</p>
+              <button onClick={handleCloseModal}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

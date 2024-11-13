@@ -25,7 +25,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #2196F3, #42A5F5);
+    background: linear-gradient(135deg, #FF6A00, #FFB84D);
+
+
     padding: 5px 10px;
     width: 180px;
     height: 50px;

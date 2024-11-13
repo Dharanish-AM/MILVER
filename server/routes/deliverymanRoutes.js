@@ -4,6 +4,9 @@ const deliverymanController = require("../controller/deliverymanController")
 const router = express.Router();
 
 router.post("/createdeliverymen", deliverymanController.createDeliveryman);
+router.post("/deletedeliverymen", deliverymanController.deleteDeliveryman);
+router.post("/editdeliverymen", deliverymanController.editDeliveryman);
 router.post('/absent', deliverymanController.allocateDeliveryman)
 
 module.exports = router;
+ 

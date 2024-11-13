@@ -10,6 +10,7 @@ const royapettahCoordinates = [80.26375998957623, 13.054398115031136];
 MAP_API_KEY = '5b3ce3597851110001cf624867ce2f9fc4c040b090d5248aaf23f288'
 
 
+
 const createDeliveryman = async (req, res) => {
   try {
     const { name, phone, email, address, primaryroutes, externalroutes } = req.body;
@@ -50,6 +51,44 @@ const createDeliveryman = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+const deleteDeliveryman = async (req, res) => {
+  try {
+    const { deliveryman_id } = req.body; // Get the deliveryman_id from the URL parameters
+
+    // Find the deliveryman to delete
+    const deliveryman = await Deliveryman.findOne({ deliveryman_id });
+    if (!deliveryman) {
+      return res.status(404).json({ message: "Deliveryman not found" });
+    }
+
+    console.log(`Deliveryman ${deliveryman.name} found, proceeding to delete.`);
+
+    // Find the route that the deliveryman is assigned to
+    const route = await Route.findOne({ route_id: deliveryman.primaryroutes });
+    if (route) {
+      // Remove the deliveryman_id from the route's delivery_man_id
+      route.delivery_man_id = null; // Set to null or undefined to indicate no deliveryman assigned
+      await route.save();
+
+      console.log(`Route ${route.route_id} updated, deliveryman_id removed.`);
+    } else {
+      console.log(`Route with route_id ${deliveryman.primaryroutes} not found`);
+    }
+
+    // Now delete the deliveryman
+    await deliveryman.remove();
+    console.log(`Deliveryman ${deliveryman.name} deleted successfully.`);
+
+    res.status(200).json({ message: "Deliveryman deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting deliveryman:", error);
+    res.status(500).json({ message: "Error deleting deliveryman", error: error.message });
+  }
+};
+
+
 
 
 const reassignDeliveryman = async (req, res) => {
@@ -272,6 +311,63 @@ const getTotalDistanceAndTime = async (sortedCoordinates) => {
     throw new Error('Error fetching route details');
   }
 };
+const editDeliveryman = async (req, res) => {
+  try {
+    const { deliveryman_id, name, phone, email, address, primaryroutes, externalroutes } = req.body;
 
+    if (!deliveryman_id) {
+      return res.status(400).json({ message: "Missing deliveryman_id" });
+    }
 
-module.exports = { createDeliveryman, allocateDeliveryman };
+    // Find the deliveryman by deliveryman_id
+    const deliveryman = await Deliveryman.findOne({ deliveryman_id });
+    if (!deliveryman) {
+      return res.status(404).json({ message: "Deliveryman not found" });
+    }
+
+    // If a new primary route is provided, check if it's available
+    if (primaryroutes) {
+      const existingRoute = await Route.findOne({ route_id: primaryroutes });
+      if (existingRoute && existingRoute.delivery_man_id && existingRoute.delivery_man_id !== deliveryman.deliveryman_id) {
+        return res.status(400).json({ message: `Route ${primaryroutes} is already assigned to another deliveryman.` });
+      }
+    }
+
+    // Update the deliveryman's details
+    deliveryman.name = name || deliveryman.name;
+    deliveryman.phone = phone || deliveryman.phone;
+    deliveryman.email = email || deliveryman.email;
+    deliveryman.address = address || deliveryman.address;
+    deliveryman.primaryroutes = primaryroutes || deliveryman.primaryroutes;
+    deliveryman.externalroutes = externalroutes || deliveryman.externalroutes;
+
+    // Save the updated deliveryman
+    await deliveryman.save();
+
+    // If the primary route was changed, update the route document
+    if (primaryroutes && primaryroutes !== deliveryman.primaryroutes) {
+      // Find the old route and set its delivery_man_id to null
+      const oldRoute = await Route.findOne({ route_id: deliveryman.primaryroutes });
+      if (oldRoute) {
+        oldRoute.delivery_man_id = null;
+        await oldRoute.save();
+      }
+
+      // Find the new route and update its delivery_man_id
+      const newRoute = await Route.findOne({ route_id: primaryroutes });
+      if (newRoute) {
+        newRoute.delivery_man_id = deliveryman.deliveryman_id;
+        await newRoute.save();
+      } else {
+        console.log(`New Route with route_id ${primaryroutes} not found.`);
+      }
+    }
+
+    res.status(200).json({ message: "Deliveryman updated successfully", deliveryman });
+  } catch (error) {
+    console.error("Error updating deliveryman:", error);
+    res.status(500).json({ message: "Error updating deliveryman", error: error.message });
+  }
+};
+
+module.exports = { createDeliveryman, allocateDeliveryman,deleteDeliveryman,editDeliveryman };

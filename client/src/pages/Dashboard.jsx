@@ -14,79 +14,12 @@ import "leaflet/dist/leaflet.css";
 import industry from "../assets/industry.png";
 import L from "leaflet";
 import axios from "axios";
-import { useMap } from 'react-leaflet';
-
+import { useMap } from "react-leaflet";
+import RouteImg from "../assets/RouteImg";
 
 function Dashboard() {
   const [data, setData] = useState([]);
-  const deliveryDetails = [
-    {
-      no: 1,
-      name: "Ajay",
-      route: "T Nagar",
-      half: 15,
-      full: 10,
-      supplied: 25,
-      collected: 20,
-      damaged: 2,
-      coordinates: [13.0418, 80.2337],
-    },
-    {
-      no: 2,
-      name: "Dharanish",
-      route: "Nungambakkam",
-      half: 12,
-      full: 8,
-      supplied: 20,
-      collected: 18,
-      damaged: 1,
-      coordinates: [13.0604, 80.2411],
-    },
-    {
-      no: 3,
-      name: "jeyaprakash",
-      route: "1000 lights",
-      half: 10,
-      full: 12,
-      supplied: 22,
-      collected: 19,
-      damaged: 0,
-      coordinates: [13.0553, 80.2566],
-    },
-    {
-      no: 4,
-      name: "sabari",
-      route: "Mandaveli",
-      half: 10,
-      full: 12,
-      supplied: 22,
-      collected: 19,
-      damaged: 0,
-      coordinates: [13.0293, 80.2591],
-    },
-    {
-      no: 5,
-      name: "vijayguhan",
-      route: "Santhome",
-      half: 10,
-      full: 12,
-      supplied: 22,
-      collected: 19,
-      damaged: 0,
-      coordinates: [13.0336, 80.2692],
-    },
-    {
-      no: 6,
-      name: "jeyaprakash",
-      route: "1000 lights",
-      half: 10,
-      full: 12,
-      supplied: 22,
-      collected: 19,
-      damaged: 0,
-      coordinates: [13.0553, 80.2566],
-    },
-  ];
+  const [deliveryDetails, setDeliveryDetails] = useState([]);
   const mapRef = useRef();
   const colors = [
     "#008080", // Teal
@@ -112,7 +45,7 @@ function Dashboard() {
   ];
   const getCustomerIconSVG = (route_id) => {
     const color = colors[(route_id - 1) % colors.length];
-  
+
     return `<svg
       width="32"
       height="32"
@@ -122,28 +55,32 @@ function Dashboard() {
       <circle cx="16" cy="16" r="16" fill="${color}"/>
     </svg>`;
   };
-  
+
+  // eslint-disable-next-line react/prop-types
   const MapWithRouting = ({ routeCoordinates, routeColor }) => {
     const map = useMap();
 
     useEffect(() => {
-      const routingControl = L.Routing.control({
-        waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
-        routeWhileDragging: true,
-        show: false,
-        routePopup: false,
-        collapsible: false,
-        addWaypoints: false,
-        showAlternatives: false,
-        lineOptions: {
-          styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
-        },
-        createMarker: () => null,
-      }).addTo(map);
-
-      return () => {
-        map.removeControl(routingControl);
-      };
+      if (routeCoordinates) {
+        const routingControl = L.Routing.control({
+          // eslint-disable-next-line react/prop-types
+          waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
+          routeWhileDragging: true,
+          show: false,
+          routePopup: false,
+          collapsible: false,
+          addWaypoints: false,
+          showAlternatives: false,
+          lineOptions: {
+            styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
+          },
+          createMarker: () => null,
+        }).addTo(map);
+        return () => {
+          map.removeControl(routingControl);
+        };
+      }
+      return null;
     }, [map, routeCoordinates, routeColor]);
 
     return null;
@@ -153,12 +90,23 @@ function Dashboard() {
     axios
       .get("http://localhost:8000/api/route/getallroutes")
       .then((res) => {
-        setData(res.data.data);
+        const routes = res.data.data;
+        console.log(res.data.data);
+        const deliveryDetails = routes.flatMap((route) => {
+          if (route.driver) {
+            console.log(route.driver);
+            return route.driver;
+          }
+          return [];
+        });
+        setDeliveryDetails(deliveryDetails);
+        setData(routes);
       })
       .catch((err) => {
         console.log("Error in getRoutes API request:", err);
       });
   }, []);
+
   const createCustomerIcon = (route_id) => {
     const svgString = getCustomerIconSVG(route_id);
     const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
@@ -397,28 +345,28 @@ function Dashboard() {
                             className="delivery-details-table-No"
                             style={{ padding: "15px 15px" }}
                           >
-                            {detail.no}
+                            {detail.delivery_man_id}
                           </td>
                           <td className="delivery-details-table-Name">
                             {detail.name}
                           </td>
                           <td className="delivery-details-table-Route">
-                            {detail.route}
+                            {detail.to}
                           </td>
                           <td className="delivery-details-table-1/2">
-                            {detail.half}
+                            {detail.half || 0}
                           </td>
                           <td className="delivery-details-table-1">
-                            {detail.full}
+                            {detail.full || 0}
                           </td>
                           <td className="delivery-details-table-supplied">
-                            {detail.supplied}
+                            {detail.supplied || 0}
                           </td>
                           <td className="delivery-details-table-collected">
-                            {detail.collected}
+                            {detail.collected || 0}
                           </td>
                           <td className="delivery-details-table-broken">
-                            {detail.damaged}
+                            {detail.damaged || 0}
                           </td>
                         </tr>
                       ))}
@@ -489,7 +437,21 @@ function Dashboard() {
               <div className="Dashboard-right-routes-heading-img"></div>
               <div className="Dashboard-right-routes-heading-text">ROUTES</div>
             </div>
-            <div className="Dashboard-right-routes-content"></div>
+            <div className="Dashboard-right-routes-content">
+              <div className="Dashboard-right-routes-content">
+                {deliveryDetails.map((detail, index) => (
+                  <div
+                    key={index}
+                    className="Dashboard-right-routes-content-item"
+                  >
+                    <RouteImg route_id={index} colors={colors} />
+                    <div className="Dashboard-right-routes-content-item-route">
+                      {detail.to}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

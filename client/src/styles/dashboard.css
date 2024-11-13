@@ -385,13 +385,25 @@
 }
 .Dashboard-right-routes-content {
   display: inline-flex;
-  background-color: #333333;
-  width: 90%;
-  flex: 1;
+  width: 80%;
+  margin-left: 5%;
   align-items: flex-start;
   justify-content: space-between;
+  overflow-y: auto;
+  flex: 1;
+  justify-content: flex-start;
+  flex-direction: column;
 }
-
+.Dashboard-right-routes-content-item {
+  display: flex;
+  flex-direction: row;
+  margin-top: 2%;  
+  height: 20%;
+  align-items: center;
+}
+.Dashboard-right-routes-content-item-route {
+  margin-left: 2vw;
+}
 .delivery-details-table {
   width: 100%;
   border-collapse: collapse;
