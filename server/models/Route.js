@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const AutoIncrement = require("mongoose-sequence")(mongoose);
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const routeSchema = new Schema({
   route_id: {
@@ -53,7 +56,11 @@ const routeSchema = new Schema({
 
 routeSchema.index({ from_cords: "2dsphere" });
 routeSchema.index({ to_cords: "2dsphere" });
+routeSchema.index({ from_cords: "2dsphere" });
+routeSchema.index({ to_cords: "2dsphere" });
 
 routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
+routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
 
+module.exports = mongoose.model("Route", routeSchema);
 module.exports = mongoose.model("Route", routeSchema);

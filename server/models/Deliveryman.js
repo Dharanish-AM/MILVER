@@ -61,5 +61,8 @@ const DeliverymanSchema = new Schema({
 
 DeliverymanSchema.plugin(AutoIncrement, { inc_field: "deliveryman_id" });
 DeliverymanSchema.index({ location: "2dsphere" });
+
 const Deliveryman = mongoose.model("deliverymen", DeliverymanSchema);
+
 module.exports = Deliveryman;
+

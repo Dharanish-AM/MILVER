@@ -31,3 +31,7 @@
     background-color: white;
     border-radius: 15px;
 }
+.leaflet-routing-container {
+    display: none !important;
+  }
+  

@@ -10,9 +10,11 @@ const CustomerSchema = new Schema({
   name: {
     type: String,
     required: true,
+    required: true,
   },
   address: {
     type: String,
+    required: true,
     required: true,
   },
   location: {
@@ -20,14 +22,17 @@ const CustomerSchema = new Schema({
       type: String,
       enum: ["Point"],
       required: true,
+      required: true,
     },
     coordinates: {
       type: [Number],
+      required: true,
       required: true,
     },
   },
   phone: {
     type: String,
+    required: true,
     required: true,
   },
   route_id: {
@@ -38,6 +43,28 @@ const CustomerSchema = new Schema({
     type: String,
     required: true,
   },
+  history: {
+    type: [
+      {
+        deliveryman_id: {
+          type: Number,
+          required: true,
+        },
+        delivery_status: {
+          type: String,
+          enum: ["delivered", "failed", "returned"],
+          default: "delivered",
+        },
+        delivery_datetime: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    default: []
+    required: true,
+  },
+
 });
 
 // Apply the auto-increment plugin to the `customer_id` field
