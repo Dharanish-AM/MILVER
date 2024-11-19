@@ -9,34 +9,34 @@ const CustomerSchema = new Schema({
   },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   address: {
     type: String,
-    required: true
+    required: true,
   },
   location: {
     type: {
       type: String,
       enum: ["Point"],
-      required: true
+      required: true,
     },
     coordinates: {
       type: [Number],
-      required: true
+      required: true,
     },
   },
   phone: {
     type: String,
-    required: true
+    required: true,
   },
   route_id: {
     type: Number,
-    default: null
+    default: null,
   },
   deliverytime: {
     type: String,
-    required: true
+    required: true,
   },
 });
 
