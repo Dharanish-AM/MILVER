@@ -3,10 +3,27 @@ import Header from "../components/Header";
 import "../styles/fuel.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 export default function Fuel() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("none");
+  
+  const filterOptions = [
+    "none", "Assigned", "Not Assigned"
+  ];
+
+  const handleFilterChange = (option) => {
+    setFilter(option.value);
+  };
+
+  const handleGenerateReport = () => {
+    console.log("Generating report from", fromDate, "to", toDate, "with filter", filter);
+    // Here you can implement the logic for generating the report
+  };
 
   return (
     <div className="fuel">
@@ -58,18 +75,40 @@ export default function Fuel() {
                 </div>
               </div>
               <div className="fuel-overview-report-generate">
-                <div className="fuel-overview-report-generate-button">
-                    <div className="fuel-overview-report-generate-button-img">
-                        
-                    </div>
-                    <div className="fuel-overview-report-generate-button-label">
-                        GENERATE REPORT
-                    </div>
+                <div
+                  className="fuel-overview-report-generate-button"
+                  onClick={handleGenerateReport}
+                >
+                  <div className="fuel-overview-report-generate-button-img"></div>
+                  <div className="fuel-overview-report-generate-button-label">
+                    GENERATE REPORT
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="fuel-data"></div>
+          <div className="fuel-data">
+            <div className="fuel-data-top">
+              <div className="fuel-top-searchbar">
+                <div className="fuel-top-searchbar-img"></div>
+                <input
+                  type="text"
+                  placeholder="search..."
+                  value={search}
+                  onChange={(val) => setSearch(val.target.value)}
+                  className="fuel-top-searchbar-search-searchbar-input"
+                />
+              </div>
+              <div className="fuel-top-filter">
+                <Dropdown
+                  options={filterOptions}
+                  onChange={handleFilterChange}
+                  value={filter}
+                />
+              </div>
+            </div>
+            <div className="fuel-data-bottom"></div>
+          </div>
         </div>
       </div>
     </div>
