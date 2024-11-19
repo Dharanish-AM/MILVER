@@ -6,7 +6,7 @@ import dashboard from "../assets/dashboard.png";
 import customer from "../assets/customer.png";
 import delivery from "../assets/delivery.png";
 import routes from "../assets/routes.png";
-import stats from "../assets/stats.png";
+import fuel from "../assets/fuel.png"
 
 function Header() {
  
@@ -16,7 +16,7 @@ function Header() {
     if (path === "/Customers") return 1;
     if (path === "/Deliverymandetails") return 2;
     if (path === "/Routes") return 3;
-    if (path === "/Stats") return 4;
+    if (path === "/fuel") return 4;
     return 0;
   });
 
@@ -40,7 +40,7 @@ function Header() {
         if (currentPath !== "/Routes") navigate("/Routes");
         break;
       case 4:
-        if (currentPath !== "/Stats") navigate("/Stats");
+        if (currentPath !== "/fuel") navigate("/fuel");
         break;
       default:
         break;
@@ -83,10 +83,10 @@ function Header() {
           onClick={() => setSelect(3)}
         ></div>
         <div
-          className="Header-report"
+          className="Header-fuel"
           style={{
             backgroundColor: select === 4 ? "black" : "initial",
-            backgroundImage: `url(${stats})`,
+            backgroundImage: `url(${fuel})`,
           }}
           onClick={() => setSelect(4)}
         ></div>

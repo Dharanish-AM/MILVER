@@ -1,0 +1,158 @@
+.fuel {
+    height: 100vh;
+    width: 100vw;
+    background-color: #D8D8D8;
+    display: flex;
+    flex-direction: row;
+}
+.fuel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex: 1;
+}
+.fuel-innerContainer {
+    height: 93%;
+    width: 95%;
+    margin-top: 1%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.fuel-header{
+    height: 8%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+.fuel-header-img {
+    height: 65%;
+    aspect-ratio: 1;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url("../assets/fuel-heading.png");
+    margin-right: 1%;
+}
+.fuel-header-text {
+    font-size: 1.8vw;
+    margin-top: 0.7%;
+    font-weight: 600;
+}
+.fuel-overview {
+    height: 18%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.fuel-overview-daily {
+    height: 100%;
+    width: 20%;
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : space-evenly;
+}
+.fuel-overview-total {
+    height: 100%;
+    width: 20%;
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : space-evenly;
+}
+.fuel-overview-daily-content , .fuel-overview-total-content {
+    font-size: 1.7vw;
+    margin-top: 10%;
+}
+.fuel-overview-daily-content span , .fuel-overview-total-content span {
+    color: green;
+    font-weight: 600;
+}
+.fuel-overview-daily-label , .fuel-overview-total-label {
+    font-size: 1vw;
+}
+.fuel-overview-report {
+    height: 100%;
+    width: 55%;
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+.fuel-overview-report-from , .fuel-overview-report-to , .fuel-overview-report-generate{
+    border-right: #D8D8D8 2px solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 33.33333%;
+}
+.fuel-data {
+    height: 67%;
+    width: 100%;
+    background-color: white;
+    border-radius: 15px;
+}
+.fuel-overview-report-to-datepicker , .fuel-overview-report-from-datepicker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70%;
+
+}
+.custom-datepicker-input {
+    display: flex; 
+    border: none; 
+    background-color: #3D4D8F; 
+    color: white;
+    font-family: "Josefin Sans"; 
+    font-size: 16px; 
+    width: 100%; 
+    height: 100%; 
+    padding: 0; 
+    align-items: center;
+    justify-content: center; 
+    text-align: center;
+    cursor: pointer; 
+    padding-top: 5%;
+    padding-bottom: 5%;
+    border-radius: 10px;
+    margin-top: 5%;
+}
+.fuel-overview-report-generate-button {
+    height: 50%;
+    width: 90%;
+    background-color: green;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fuel-overview-report-generate :hover {
+    cursor: pointer;
+}
+.fuel-overview-report-generate-button-label {
+    color: white;
+    font-weight: 600;
+    font-size: 1vw;
+    margin-top: 1%;
+}
+.fuel-overview-report-generate-button-img {
+    height: 45%;
+    aspect-ratio: 1;
+    background-image: url("../assets/stats.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 3%;
+}
