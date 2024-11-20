@@ -2,23 +2,26 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 const db = require("./config/db");
-const bottel = require("./routes/BottelRoute");
-const Customer = require("./routes/customerRoutes");
-const Driver = require("./routes/deliverymanRoutes");
-const Route = require("./routes/routeRoutes");
+
+const customerRoutes = require("./routes/customerRoutes");
+const deliverymenRoutes = require("./routes/deliverymenRoutes");
+const routeRoutes = require("./routes/routeRoutes");
+const bottleRoutes = require("./routes/bottleRoutes");
+const fuelallowance = require("./routes/FuelAllowanceRoutes")
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 db();
 
-// app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-app.use("/api/customer", Customer);
-app.use("/api/deliverymen", Driver);
-app.use("/api/route", Route);
-app.use("/api/bottel", bottel);
+app.use("/api/customer", customerRoutes);
+app.use("/api/deliverymen", deliverymenRoutes);
+app.use("/api/route", routeRoutes);
+app.use("/api/bottle", bottleRoutes);
+app.use("/api/fuelallowance",fuelallowance)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

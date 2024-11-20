@@ -1,8 +1,20 @@
 const express = require("express");
-const router = express.Router();
-const routeController = require("../controller/RouteController");
+const {
+  getAllRoutes,
+  getRouteById,
+  createRoute,
+  updateRoute,
+  deleteRoute,
+  shuffleDeliveryman,
+} = require("../controllers/RouteController");
 
-router.post("/createroute", routeController.createRoute);
-router.get("/getallroutes", routeController.getAllRoutes)
+const router = express.Router();
+
+router.get("/", getAllRoutes);
+router.get("/:id", getRouteById);
+router.post("/", createRoute);
+router.put("/:id", updateRoute);
+router.delete("/:id", deleteRoute);
+router.post("/shuffledeliverymen", shuffleDeliveryman);
 
 module.exports = router;

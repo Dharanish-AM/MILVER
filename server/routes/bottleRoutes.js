@@ -1,20 +1,18 @@
 const express = require("express");
+const {
+  getAllBottles,
+  getBottleById,
+  createBottle,
+  updateBottle,
+  deleteBottle,
+} = require("../controllers/bottleController");
+
 const router = express.Router();
-const bottleController = require("../controller/bottleController");
 
-// Create a new bottle transaction
-router.post("/transactions", bottleController.createBottleTransaction);
-
-// Get all bottle transactions
-router.get("/transactions", bottleController.getAllBottleTransactions);
-
-// Get a bottle transaction by route_id
-router.get("/transactions/:route_id", bottleController.getBottleTransactionByRouteId);
-
-// Update bottle transaction details (delivery, collection, or broken)
-router.put("/transactions/details", bottleController.updateBottleTransactionDetails);
-
-// Delete a bottle transaction by route_id
-router.delete("/transactions/:route_id", bottleController.deleteBottleTransaction);
+router.get("/", getAllBottles);
+router.post("/getById", getBottleById); 
+router.post("/", createBottle);
+router.put("/update", updateBottle); 
+router.delete("/delete", deleteBottle); 
 
 module.exports = router;
