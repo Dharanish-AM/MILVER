@@ -6,7 +6,7 @@ const db = require("./config/db");
 const customerRoutes = require("./routes/customerRoutes");
 const deliverymenRoutes = require("./routes/deliverymenRoutes");
 const routeRoutes = require("./routes/routeRoutes");
-const bottleRoutes = require("./routes/bottleRoutes");
+const bottleRoutes = require("./routes/bottleRoutes");  
 const fuelallowance = require("./routes/FuelAllowanceRoutes")
 
 const app = express();

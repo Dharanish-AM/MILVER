@@ -1,5 +1,6 @@
 const Deliverymen = require("../models/Deliverymen");
 const Route = require("../models/Route");
+const cron = require("node-cron");
 
 const getAllDeliverymen = async (req, res) => {
   try {
@@ -28,8 +29,6 @@ const getDeliverymanById = async (req, res) => {
       .json({ message: "Error fetching deliveryman record", error });
   }
 };
-
-const shuffleDeliveryman = () => {};
 
 const createDeliveryman = async (req, res) => {
   const { name, phone, email, address, routes, category } = req.body;
@@ -116,6 +115,44 @@ const createDeliveryman = async (req, res) => {
       message: "Error creating deliveryman record",
       error: error.message,
     });
+  }
+};
+
+const attendencedeliverymen = async (req, res) => {
+  try {
+    const { driver_id, is_present } = req.body;
+
+    if (!driver_id) {
+      return res.status(400).json({ message: "Driver ID is required" });
+    }
+
+    let status = "unavailable";
+
+    if (is_present !== undefined) {
+      status = is_present ? "available" : "on_leave";
+    }
+
+    const updatedDriver = await Deliverymen.findOneAndUpdate(
+      { _id: driver_id },
+      { status },
+      { new: true }
+    );
+
+    if (!updatedDriver) {
+      return res
+        .status(404)
+        .json({ message: `Driver with ID ${driver_id} not found` });
+    }
+
+    return res.status(200).json({
+      message: "Attendance updated successfully",
+      updatedDriver,
+    });
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+    return res
+      .status(500)
+      .json({ message: "Error updating attendance", error: error.message });
   }
 };
 

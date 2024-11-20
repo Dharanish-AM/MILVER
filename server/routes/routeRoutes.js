@@ -6,6 +6,7 @@ const {
   updateRoute,
   deleteRoute,
   shuffleDeliveryman,
+  assignDeliverymenManual,
 } = require("../controllers/RouteController");
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.get("/:id", getRouteById);
 router.post("/", createRoute);
 router.put("/:id", updateRoute);
 router.delete("/:id", deleteRoute);
-router.post("/shuffledeliverymen", shuffleDeliveryman);
+router.get("/shuffle", shuffleDeliveryman);
+router.post("/assigndeliverymenmanual", assignDeliverymenManual);
 
 module.exports = router;

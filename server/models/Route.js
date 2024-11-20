@@ -28,7 +28,7 @@ const routeSchema = new mongoose.Schema({
   driver: {
     type: mongoose.Schema.ObjectId,
     ref: "Deliverymen",
-    default: [],
+    default: null,
   },
   distance: {
     type: Number,

@@ -22,7 +22,6 @@ export default function Fuel() {
 
   const handleGenerateReport = () => {
     console.log("Generating report from", fromDate, "to", toDate, "with filter", filter);
-    // Here you can implement the logic for generating the report
   };
 
   return (

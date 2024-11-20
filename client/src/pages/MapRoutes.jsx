@@ -36,10 +36,10 @@ const colors = [
 const getCustomerIconSVG = (route_id) => {
   const color = colors[(route_id - 1) % colors.length];
   return `<svg width="100" height="207" viewBox="0 0 100 207" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" 
-              d="M100 50C100 56.1758 98.8804 62.0898 96.833 67.5505L51.0002 207L5.47681 72.7756C1.97559 65.9451 0 58.2034 0 50C0 22.3857 22.3857 0 50 0C77.6143 0 100 22.3857 100 50ZM50 66C59.9412 66 68 57.9412 68 48C68 38.0588 59.9412 30 50 30C40.0588 30 32 38.0588 32 48C32 57.9412 40.0588 66 50 66Z" 
-              fill="${color}"/>
-          </svg>`;
+              <path fill-rule="evenodd" clip-rule="evenodd" 
+                d="M100 50C100 56.1758 98.8804 62.0898 96.833 67.5505L51.0002 207L5.47681 72.7756C1.97559 65.9451 0 58.2034 0 50C0 22.3857 22.3857 0 50 0C77.6143 0 100 22.3857 100 50ZM50 66C59.9412 66 68 57.9412 68 48C68 38.0588 59.9412 30 50 30C40.0588 30 32 38.0588 32 48C32 57.9412 40.0588 66 50 66Z" 
+                fill="${color}"/>
+            </svg>`;
 };
 
 // eslint-disable-next-line react/prop-types
@@ -52,8 +52,6 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
 
     // eslint-disable-next-line react/prop-types
     const waypoints = routeCoordinates.map((coords) => L.latLng(coords));
-
-    // Fetch route from OpenRouteService API and add the route control
     const fetchRoute = async () => {
       const response = await axios.post(
         `https://api.openrouteservice.org/v2/directions/driving-car`,
@@ -64,12 +62,11 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
 
       const routeGeoJson = response.data.routes[0].geometry;
 
-      // Ensure map is initialized before adding routing control
       if (map) {
         const routingControl = L.Routing.control({
           waypoints,
           router: L.Routing.osrmv1({
-            geojson: routeGeoJson, // Custom GeoJSON route from ORS
+            geojson: routeGeoJson,
           }),
           routeWhileDragging: true,
           show: false,
@@ -105,17 +102,28 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
 
 export default function MapRoutes() {
   const [data, setData] = useState([]);
-  // Replace with your OpenRouteService API key
+  const [deliveryMan, setDeliveryMan] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/route/getallroutes")
+      .get("http://localhost:8000/api/route/")
       .then((res) => {
-        setData(res.data.data);
+        console.log(res.data);
+        setData(res.data);
       })
       .catch((err) => {
         console.log("Error in getRoutes API request:", err);
       });
+    axios
+      .get("http://localhost:8000/api/deliverymen")
+      .then((res) => {
+        console.log(res.data);
+        setDeliveryMan(res.data);
+      })
+      .catch((err) => console.log("Error in getDeliveryDetails " + err));
+    // axios.get("http://localhost:8000/api/route/shuffle").then((res) => {
+    //   console.log(res);
+    // });
   }, []);
 
   const customIcon = L.icon({
@@ -141,7 +149,7 @@ export default function MapRoutes() {
       <Header />
       <section className="mapRoutes-content">
         <div className="mapRoutes-content-mapContainer">
-          <MapContainer
+          {/* <MapContainer
             center={[13.054398115031136, 80.26375998957623]}
             zoom={12}
             className="mapRoutes-content-map"
@@ -211,9 +219,75 @@ export default function MapRoutes() {
                 </React.Fragment>
               );
             })}
-          </MapContainer>
+          </MapContainer> */}
         </div>
-        <div className="mapRoutes-content-details"></div>
+        <div className="mapRoutes-content-details">
+          <div className="mapRoutes-content-details-top">
+            <div className="mapRoutes-content-details-top-search"></div>
+            <div className="mapRoutes-content-details-top-filter"></div>
+          </div>
+          <div className="mapRoutes-content-details-bottom">
+            {deliveryMan.map((man) => {
+              // Get today's date in ISO format (without time)
+              const today = new Date().toISOString().split("T")[0];
+
+              // Filter routes for the dropdown
+              const routeNames = man.routes
+                .map((routeId) => {
+                  const route = data.find((r) => r._id === routeId);
+
+                  // Check if today's date exists in the delivery history
+                  const hasToday = route?.delivery_history.some((history) => {
+                    const deliveryDate = new Date(history)
+                      .toISOString()
+                      .split("T")[0];
+                    return deliveryDate === today;
+                  });
+
+                  return !hasToday && route ? route.route_name : null; // Exclude if today's date exists
+                })
+                .filter((routeName) => routeName !== null); // Remove null values
+
+              return (
+                <div key={man._id} className="deliveryman-details-card">
+                  <p>
+                    <strong>Driver ID:</strong> {man.driver_id}
+                  </p>
+                  <p>
+                    <strong>Name:</strong> {man.name}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {man.phone}
+                  </p>
+                  <p>
+                    <strong>Routes:</strong>
+                  </p>
+                  <select className="routes-dropdown">
+                    <option value="" disabled selected>
+                      -
+                    </option>
+                    {routeNames.map((routeName, index) => (
+                      <option
+                        key={`${man._id}-route-${index}`}
+                        value={routeName}
+                      >
+                        {routeName}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    onClick={() => {
+                      console.log(`Deliveryman ${man.driver_id} selected`);
+                    }}
+                  >
+                    Submit
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
     </section>
   );
