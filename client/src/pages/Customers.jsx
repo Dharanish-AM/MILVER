@@ -38,8 +38,10 @@ const Customers = () => {
   useEffect(() => {
     const getCustomerData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/customer/getallcustomers`);
+        console.log("consoled");
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/customer/`);
         setCustomersData(response.data);
+        console.log(customersData)
       } catch (error) {
         console.error("Error fetching customer data: ", error);
       }

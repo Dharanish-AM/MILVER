@@ -25,91 +25,8 @@ const getRouteById = async (req, res) => {
   }
 };
 
-const SDT = async (req, res) => {
-  console.log("req");
-  console.log("used");
-  try {
-    const availableDeliverymen = await Deliverymen.find({
-      status: { $ne: "on_leave", $ne: "unavailable" },
-      category: "main_driver",
-    }).populate("routes"); // Ensure the 'routes' field is properly populated in the schema
 
-    console.log(availableDeliverymen);
 
-    if (availableDeliverymen.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "No available deliverymen to assign" });
-    }
-
-    const shuffledAssignments = [];
-    const assignedRoutes = new Set();
-
-    for (let i = 0; i < availableDeliverymen.length; i++) {
-      const driver = availableDeliverymen[i];
-
-      if (!driver.routes || driver.routes.length === 0) {
-        console.log(`Driver ${driver.name} has no routes`);
-        continue; // Skip if the driver has no routes
-      }
-
-      const shuffledRoutes = driver.routes.sort(() => Math.random() - 0.5);
-
-      let currentRoute = await Route.findOne({ driver: driver._id });
-
-      let nextRouteIndex = 0;
-      if (currentRoute) {
-        const currentRouteIndex = shuffledRoutes.findIndex(
-          (route) => route._id.toString() === currentRoute._id.toString()
-        );
-        nextRouteIndex = (currentRouteIndex + 1) % shuffledRoutes.length;
-      }
-
-      let nextRoute = shuffledRoutes[nextRouteIndex];
-
-      while (assignedRoutes.has(nextRoute._id.toString())) {
-        nextRouteIndex = (nextRouteIndex + 1) % shuffledRoutes.length;
-        nextRoute = shuffledRoutes[nextRouteIndex];
-      }
-
-      if (nextRoute) {
-        shuffledAssignments.push({
-          driver: driver._id,
-          route: nextRoute._id,
-        });
-
-        assignedRoutes.add(nextRoute._id.toString());
-        console.log(
-          `Driver ${driver.name} will be assigned to route ${nextRoute._id}`
-        );
-      }
-    }
-
-    const allRoutes = await Route.find(); // Fetch all routes
-    const unassignedRoutes = allRoutes.filter(
-      (route) => !assignedRoutes.has(route._id.toString())
-    );
-
-    if (unassignedRoutes.length > 0) {
-      return res.status(400).json({
-        message: "Not all routes have been assigned a driver.",
-        unassignedRoutes,
-      });
-    }
-
-    return res.status(200).json({
-      message:
-        "Routes shuffled successfully. Awaiting client confirmation to update.",
-      shuffledAssignments,
-    });
-  } catch (error) {
-    console.error("Error in shuffleDeliveryman:", error);
-    return res
-      .status(500)
-      .json({ message: "Error in shuffleDeliveryman", error: error.message });
-  }
- 
-};
 
 const confirmAndSaveAssignments = async (req, res) => {
   try {
@@ -256,7 +173,6 @@ module.exports = {
   updateRoute,
   deleteRoute,
   removeDeliverymanFromRoute,
-  SDT,
   assignDeliverymenManual,
   confirmAndSaveAssignments,
 };

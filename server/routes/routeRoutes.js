@@ -16,7 +16,7 @@ router.get("/:id", getRouteById);
 router.post("/", createRoute);
 router.put("/:id", updateRoute);
 router.delete("/:id", deleteRoute);
-router.get("/check/shuffle", SDT);
+
 router.post("/assigndeliverymenmanual", assignDeliverymenManual);
 
 module.exports = router;
