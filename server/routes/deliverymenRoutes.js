@@ -10,9 +10,9 @@ const {
 const router = express.Router();
 
 router.get("/", getAllDeliverymen);
-router.get("/:id", getDeliverymanById);
+router.get("/", getDeliverymanById); // Adjusted route to reflect changes
 router.post("/", createDeliveryman);
-router.put("/:id", updateDeliveryman);
-router.delete("/:id", deleteDeliveryman);
+router.put("/", updateDeliveryman); // Adjusted route to reflect changes
+router.delete("/", deleteDeliveryman); // Adjusted route to reflect changes
 
 module.exports = router;

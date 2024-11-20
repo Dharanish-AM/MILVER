@@ -24,18 +24,16 @@ const getCustomerById = async (req, res) => {
 
 const createCustomer = async (req, res) => {
   try {
-    const { name, address, location, phone, deliverytime, route_id } = req.body;
+    const { name, address, latitude, longitude, phone, deliverytime, route_id } = req.body;
 
-    if (!name || !address || !phone || !deliverytime) {
+    if (!name || !address || !phone || !deliverytime || !latitude || !longitude) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const { latitude, longitude } = location || {};
-    if (!latitude || !longitude) {
-      return res
-        .status(400)
-        .json({ message: "Latitude and longitude are required" });
-    }
+    const location = {
+      type: 'Point',
+      coordinates: [longitude, latitude],
+    };
 
     const route = await Route.findOne({ route_id });
     if (!route) {
@@ -45,6 +43,7 @@ const createCustomer = async (req, res) => {
     const customer = new Customer({
       name,
       address,
+      location,
       latitude,
       longitude,
       phone,
@@ -58,9 +57,7 @@ const createCustomer = async (req, res) => {
     route.customers.push(savedCustomer._id);
     await route.save();
 
-    res
-      .status(201)
-      .json({ message: "Customer created", customer: savedCustomer });
+    res.status(201).json({ message: "Customer created", customer: savedCustomer });
   } catch (error) {
     console.error("Error in createCustomer:", error.message);
     res.status(500).json({
@@ -69,6 +66,8 @@ const createCustomer = async (req, res) => {
     });
   }
 };
+
+
 const updateCustomer = async (req, res) => {
   try {
     const {
@@ -85,7 +84,6 @@ const updateCustomer = async (req, res) => {
       return res.status(400).json({ message: "Customer ID is required" });
     }
 
-    // Validate required fields
     if (!name || !address || !phone || !deliverytime) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -97,23 +95,19 @@ const updateCustomer = async (req, res) => {
         .json({ message: "Latitude and longitude are required" });
     }
 
-    // Find the customer to update
     const customer = await Customer.findById(id);
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    // Check if the route_id is being updated
-    if (route_id && customer.route_id !== route_id) {
-      // Find the new route by its numeric route_id
+    if (route_id && customer.route_id.toString() !== route_id.toString()) {
       const newRoute = await Route.findOne({ route_id });
       if (!newRoute) {
         return res.status(404).json({ message: "New route not found" });
       }
 
-      // Remove the customer from the old route
       if (customer.route_id) {
-        const oldRoute = await Route.findOne({ route_id: customer.route_id });
+        const oldRoute = await Route.findById(customer.route_id);
         if (oldRoute) {
           oldRoute.customers = oldRoute.customers.filter(
             (custId) => String(custId) !== String(customer._id)
@@ -122,16 +116,13 @@ const updateCustomer = async (req, res) => {
         }
       }
 
-      // Add the customer to the new route's customers list
       newRoute.customers = newRoute.customers || [];
       newRoute.customers.push(customer._id);
       await newRoute.save();
 
-      // Update the customer's route_id
-      customer.route_id = newRoute.route_id;
+      customer.route_id = newRoute._id;
     }
 
-    // Update customer details
     customer.name = name;
     customer.address = address;
     customer.latitude = latitude;
@@ -156,90 +147,35 @@ const updateCustomer = async (req, res) => {
   }
 };
 
-// const updateCustomer = async (req, res) => {
-//   try {
-//     const {
-//       id,
-//       name,
-//       address,
-//       location,
-//       phone,
-//       deliverytime,
-//       route_id,
-//     } = req.body;
-
-//     if (!id) {
-//       return res.status(400).json({ message: "Customer ID is required" });
-//     }
-
-//     if (!name || !address || !phone || !deliverytime) {
-//       return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     const { latitude, longitude } = location || {};
-//     if (!latitude || !longitude) {
-//       return res
-//         .status(400)
-//         .json({ message: "Latitude and longitude are required" });
-//     }
-
-//     const customer = await Customer.findById(id);
-//     if (!customer) {
-//       return res.status(404).json({ message: "Customer not found" });
-//     }
-
-//     if (route_id && String(customer.route_id) !== String(route_id)) {
-//       if (customer.route_id) {
-//         const oldRoute = await Route.findById(customer.route_id);
-//         if (oldRoute) {
-//           oldRoute.customers = oldRoute.customers.filter(
-//             (custId) => String(custId) !== String(customer._id)
-//           );
-//           await oldRoute.save();
-//         }
-//       }
-
-//       const newRoute = await Route.findOne({ route_id });
-//       if (!newRoute) {
-//         return res.status(404).json({ message: "New route not found" });
-//       }
-//       newRoute.customers = newRoute.customers || [];
-//       newRoute.customers.push(customer._id);
-//       await newRoute.save();
-//       customer.route_id = newRoute._id;
-//     }
-
-//     customer.name = name;
-//     customer.address = address;
-//     customer.latitude = latitude;
-//     customer.longitude = longitude;
-//     customer.phone = phone;
-//     customer.deliverytime = deliverytime;
-
-//     const updatedCustomer = await customer.save();
-
-//     res
-//       .status(200)
-//       .json({ message: "Customer updated successfully", customer: updatedCustomer });
-//   } catch (error) {
-//     console.error("Error in updateCustomer:", error.message);
-//     res.status(500).json({
-//       message: "Error updating customer",
-//       error: error.message,
-//     });
-//   }
-// };
 
 const deleteCustomer = async (req, res) => {
   try {
-    const deletedCustomer = await Customer.findByIdAndDelete(req.body.id);
-    if (!deletedCustomer)
+    const { id } = req.body;
+
+    const customer = await Customer.findById(id);
+    if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
+    }
+
+    if (customer.route_id) {
+      const route = await Route.findById(customer.route_id);
+      if (route) {
+        route.customers = route.customers.filter(
+          (custId) => String(custId) !== String(customer._id)
+        );
+        await route.save();
+      }
+    }
+
+    await Customer.findByIdAndDelete(id);
+
     res.json({ message: "Customer deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting customer", error });
+    console.error("Error deleting customer:", error.message);
+    res.status(500).json({ message: "Error deleting customer", error: error.message });
   }
 };
+
 
 module.exports = {
   getAllCustomers,

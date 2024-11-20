@@ -25,11 +25,10 @@ const getRouteById = async (req, res) => {
   }
 };
 
-const shuffleDeliveryman = async (req, res) => {
+const SDT = async (req, res) => {
   console.log("req");
   console.log("used");
   try {
-    // Fetch available deliverymen (drivers) and populate the routes
     const availableDeliverymen = await Deliverymen.find({
       status: { $ne: "on_leave", $ne: "unavailable" },
       category: "main_driver",
@@ -98,17 +97,18 @@ const shuffleDeliveryman = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message:
         "Routes shuffled successfully. Awaiting client confirmation to update.",
       shuffledAssignments,
     });
   } catch (error) {
     console.error("Error in shuffleDeliveryman:", error);
-    res
+    return res
       .status(500)
       .json({ message: "Error in shuffleDeliveryman", error: error.message });
   }
+ 
 };
 
 const confirmAndSaveAssignments = async (req, res) => {
@@ -256,7 +256,7 @@ module.exports = {
   updateRoute,
   deleteRoute,
   removeDeliverymanFromRoute,
-  shuffleDeliveryman,
+  SDT,
   assignDeliverymenManual,
   confirmAndSaveAssignments,
 };

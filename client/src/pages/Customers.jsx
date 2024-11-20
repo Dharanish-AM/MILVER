@@ -14,15 +14,18 @@ const Customers = () => {
   const [customerForm, setCustomerForm] = useState({
     name: '',
     address: '',
+    latitude: '13.0473059', // Separate latitude field
+    longitude: '80.2625205', // Separate longitude field
     location: {
       type: 'Point',
-      coordinates: ['80.2625205', '13.0473059']
+      coordinates: ['80.2625205', '13.0473059'], 
     },
     phone: '',
     deliverytime: '10.00',
     route_id: '1',
     route_name: '',
   });
+  
 
   const [formErrors, setFormErrors] = useState({
     name: '',
@@ -65,35 +68,62 @@ const Customers = () => {
   const handleSubmit = async () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
-      setFormErrors(errors); 
+      setFormErrors(errors);
       return;
     }
+  
     const coordinates = await getCoordinates(customerForm.address);
     if (coordinates) {
-        customerForm.location.coordinates = [coordinates.longitude, coordinates.latitude];
+      setCustomerForm((prevState) => ({
+        ...prevState,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        location: {
+          type: 'Point',
+          coordinates: [coordinates.longitude, coordinates.latitude], // GeoJSON format
+        },
+      }));
+    } else {
+      toast.error("Failed to fetch coordinates for the address.");
+      return;
     }
+  
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/customer/addcustomer`, customerForm);
-      setIsEventAdded(prevState => !prevState);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/customer/`, {
+        ...customerForm,
+        location: {
+          type: 'Point',
+          coordinates: [customerForm.longitude, customerForm.latitude],
+        },
+      });
+      console.log("Customer added:", response.data);
+  
       toast.success("Customer added successfully!");
-
       setIsModalOpen(false);
       setCustomerForm({
         name: '',
         address: '',
+        latitude: '13.0473059',
+        longitude: '80.2625205',
         location: {
           type: 'Point',
-          coordinates: ['80.2625205', '13.0473059']
+          coordinates: ['80.2625205', '13.0473059'],
         },
         phone: '',
         deliverytime: '10.00',
-        route_id: '1',
+        route_id: '2',
         route_name: '',
       });
     } catch (error) {
       console.error("Error adding customer: ", error);
+      if (error.response) {
+        toast.error(`Error: ${error.response.data.message || 'An unknown error occurred.'}`);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
+  
   const getCoordinates = async (address) => {
     const accessToken = 'pk.eyJ1Ijoic2FiYXJpbTYzNjkiLCJhIjoiY20zYWc2ZzdnMG5kZjJrc2F3eXUyczhiaiJ9.KluQuo4u7AMijmoli9HZmg';
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${accessToken}`;

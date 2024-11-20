@@ -17,7 +17,7 @@ const getAllDeliverymen = async (req, res) => {
 
 const getDeliverymanById = async (req, res) => {
   try {
-    const deliveryman = await Deliverymen.findById(req.params.id).populate(
+    const deliveryman = await Deliverymen.findById(req.body.id).populate(
       "delivery_history.customer"
     );
     if (!deliveryman)
@@ -159,7 +159,7 @@ const attendencedeliverymen = async (req, res) => {
 const updateDeliveryman = async (req, res) => {
   try {
     const updatedDeliveryman = await Deliverymen.findByIdAndUpdate(
-      req.params.id,
+      req.body.id,  // Changed req.params.id to req.body.id
       req.body,
       { new: true }
     ).populate("delivery_history.customer");
@@ -177,7 +177,7 @@ const updateDeliveryman = async (req, res) => {
 const deleteDeliveryman = async (req, res) => {
   try {
     const deletedDeliveryman = await Deliverymen.findByIdAndDelete(
-      req.params.id
+      req.body.id // Changed req.params.id to req.body.id
     );
     if (!deletedDeliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
@@ -192,7 +192,7 @@ const deleteDeliveryman = async (req, res) => {
 const addDeliveryHistory = async (req, res) => {
   try {
     const { customer, delivered_at, status } = req.body;
-    const deliveryman = await Deliverymen.findById(req.params.id);
+    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
@@ -215,12 +215,12 @@ const addDeliveryHistory = async (req, res) => {
 const updateDeliveryHistory = async (req, res) => {
   try {
     const { customer, delivered_at, status } = req.body;
-    const deliveryman = await Deliverymen.findById(req.params.id);
+    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
 
-    const historyEntry = deliveryman.delivery_history.id(req.params.historyId);
+    const historyEntry = deliveryman.delivery_history.id(req.body.historyId); // Changed req.params.historyId to req.body.historyId
 
     if (!historyEntry)
       return res.status(404).json({ message: "History entry not found" });
@@ -238,12 +238,12 @@ const updateDeliveryHistory = async (req, res) => {
 
 const deleteDeliveryHistory = async (req, res) => {
   try {
-    const deliveryman = await Deliverymen.findById(req.params.id);
+    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
 
-    const historyEntry = deliveryman.delivery_history.id(req.params.historyId);
+    const historyEntry = deliveryman.delivery_history.id(req.body.historyId); // Changed req.params.historyId to req.body.historyId
 
     if (!historyEntry)
       return res.status(404).json({ message: "History entry not found" });
