@@ -40,7 +40,7 @@ const routeSchema = new mongoose.Schema({
         driver: {
           type: mongoose.Schema.ObjectId,
           ref: "Deliverymen",
-          default: null,
+          default: null,  
         },
         assigned_at: {
           type: Date,
@@ -49,6 +49,10 @@ const routeSchema = new mongoose.Schema({
       },
     ],
     default: [],
+  },
+  defaultAmount: { 
+    type: Number,
+    default: 0,
   },
 });
 

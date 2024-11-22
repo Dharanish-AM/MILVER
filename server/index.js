@@ -11,7 +11,7 @@ const fuelallowance = require("./routes/FuelAllowanceRoutes")
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-
+ 
 db();
 
 app.use(cors({ origin: "*" }));

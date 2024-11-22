@@ -15,6 +15,10 @@ const FuelAllowanceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  extra_amount: { 
+    type: Number,
+    default: 0,
+  },
   distance: {
     type: Number,
     required: true,
@@ -22,6 +26,7 @@ const FuelAllowanceSchema = new mongoose.Schema({
   payment_status: {
     type: String,
     enum: ["Paid", "Not Paid"],
+    default: "Not Paid",
   },
   payment_mode: {
     type: String,

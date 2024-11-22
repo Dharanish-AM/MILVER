@@ -12,11 +12,11 @@ const {
 const router = express.Router();
 
 router.get("/", getAllRoutes);
-router.get("/:id", getRouteById);
+router.post("/getroute", getRouteById); 
 router.post("/", createRoute);
-router.put("/:id", updateRoute);
-router.delete("/:id", deleteRoute);
 
+router.put("/", updateRoute); 
+router.delete("/", deleteRoute);
 router.post("/assigndeliverymenmanual", assignDeliverymenManual);
 
 module.exports = router;
