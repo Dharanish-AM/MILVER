@@ -45,6 +45,7 @@ const getCustomerIconSVG = (route_id) => {
 // eslint-disable-next-line react/prop-types
 const MapWithRouting = ({ routeCoordinates, routeColor }) => {
   const map = useMap();
+  
 
   useEffect(() => {
     // eslint-disable-next-line react/prop-types
@@ -87,6 +88,7 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
     fetchRoute();
 
     return () => {
+
       if (map) {
         map.eachLayer((layer) => {
           if (layer instanceof L.Routing.Control) {
