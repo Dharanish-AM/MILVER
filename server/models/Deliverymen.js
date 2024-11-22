@@ -24,7 +24,7 @@ const DeliverymenSchema = new Schema({
     required: true,
   },
   routes: [{ type: Schema.Types.ObjectId, ref: "Route", required: true }],
-  category: { 
+  category: {
     type: String,
     enum: ["main_driver", "backup_driver"],
     require: true,
@@ -51,19 +51,24 @@ const DeliverymenSchema = new Schema({
       },
     },
   ],
-  balance: {  
-    type: Number,
-    default: 0,
+  fuel_allowance: {
+    type: [
+      {
+        amount: {
+          type: Number,
+        },
+        route_id: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Route",
+        },
+        date:{
+          type: Date
+          
+        }
+      },
+    ],
+    default: [],
   },
-  totalamount:{
-    type:Number,
-    default:0
-  },
-  extraAmount: {
-    type: Number,
-    default: 0,
-  },
-  
 });
 
 DeliverymenSchema.plugin(AutoIncrement, { inc_field: "driver_id" });

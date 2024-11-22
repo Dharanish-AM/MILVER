@@ -103,6 +103,8 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
 export default function MapRoutes() {
   const [data, setData] = useState([]);
   const [deliveryMan, setDeliveryMan] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("");
 
   useEffect(() => {
     axios
@@ -223,8 +225,31 @@ export default function MapRoutes() {
         </div>
         <div className="mapRoutes-content-details">
           <div className="mapRoutes-content-details-top">
-            <div className="mapRoutes-content-details-top-search"></div>
-            <div className="mapRoutes-content-details-top-filter"></div>
+            <div className="mapRoutes-content-details-top-search">
+              <div className="mapRoutes-content-details-top-search-container">
+                <div className="mapRoutes-content-details-top-search-container-img"></div>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(val) => setSearch(val.target.value)}
+                  className="mapRoutes-content-details-top-search-container-input"
+                  placeholder="search ..."
+                ></input>
+              </div>
+            </div>
+            <div className="mapRoutes-content-details-top-filter">
+              <select
+                value={filter}
+                onChange={(val) => setFilter(val.target.value)}
+              >
+                <option value="">filter?</option>
+                <option value="assigned">Assigned</option>
+                <option value="notAssigned">NotAssigned</option>
+              </select>
+            </div>
+            <div className="mapRoutes-content-details-top-add">
+              
+            </div>
           </div>
           <div className="mapRoutes-content-details-bottom">
             {deliveryMan.map((man) => {

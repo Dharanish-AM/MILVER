@@ -15,13 +15,13 @@ const getAllRoutes = async (req, res) => {
 
 const getRouteById = async (req, res) => {
   try {
-    const { route_id } = req.body; 
-    const route = await Route.findOne({ route_id }) 
+    const { route_id } = req.body;
+    const route = await Route.findOne({ route_id })
       .populate("customers")
       .populate("drivers");
-    
+
     if (!route) return res.status(404).json({ message: "Route not found" });
-    
+
     res.json(route);
   } catch (error) {
     res.status(500).json({ message: "Error fetching route", error });
@@ -55,10 +55,10 @@ const confirmAndSaveAssignments = async (req, res) => {
 
 const assignDeliverymenManual = async (req, res) => {
   try {
-    const { driver_objid, route_objid } = req.body; 
+    const { driver_objid, route_objid } = req.body;
 
-    const route = await Route.findById(route_objid); // route_objid from body
-    const driver = await Deliverymen.findById(driver_objid); // driver_objid from body
+    const route = await Route.findById(route_objid);
+    const driver = await Deliverymen.findById(driver_objid);
 
     if (!route || !driver) {
       return res.status(404).json({ message: "Route or driver not found" });
@@ -84,7 +84,16 @@ const assignDeliverymenManual = async (req, res) => {
 
 const createRoute = async (req, res) => {
   try {
-    const { route_name, customers, drivers, distance, location } = req.body;
+    const {
+      route_name,
+      customers,
+      drivers,
+      distance,
+      location,
+      defaultAmount,
+    } = req.body;
+
+    const calculatedDefaultAmount = defaultAmount * distance;
 
     const newRoute = new Route({
       route_name,
@@ -92,6 +101,7 @@ const createRoute = async (req, res) => {
       drivers,
       distance,
       location,
+      defaultAmount: calculatedDefaultAmount,
     });
 
     await newRoute.save();
@@ -103,7 +113,15 @@ const createRoute = async (req, res) => {
 
 const updateRoute = async (req, res) => {
   try {
-    const { route_id, route_name, customers, drivers, distance, location } = req.body;
+    const {
+      route_id,
+      route_name,
+      customers,
+      drivers,
+      distance,
+      location,
+      defaultAmount,
+    } = req.body;
 
     const route = await Route.findOne({ route_id });
 
@@ -119,6 +137,10 @@ const updateRoute = async (req, res) => {
       if (location.latitude) route.location.latitude = location.latitude;
       if (location.longitude) route.location.longitude = location.longitude;
     }
+    if (defaultAmount) {
+      const calculatedDefaultAmount = defaultAmount * distance;
+      route.defaultAmount = calculatedDefaultAmount;
+    }
 
     await route.save();
 
@@ -131,7 +153,7 @@ const updateRoute = async (req, res) => {
 
 const deleteRoute = async (req, res) => {
   try {
-    const { route_id } = req.body; // Changed to req.body
+    const { route_id } = req.body;
 
     const route = await Route.findOne({ route_id });
 
@@ -149,8 +171,8 @@ const deleteRoute = async (req, res) => {
 
 const removeDeliverymanFromRoute = async (req, res) => {
   try {
-    const { deliveryman_id } = req.body; // Changed to req.body
-    const { route_id } = req.body; // Changed to req.body
+    const { deliveryman_id } = req.body;
+    const { route_id } = req.body;
 
     const route = await Route.findOne({ route_id });
 

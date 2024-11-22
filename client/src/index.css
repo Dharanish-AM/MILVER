@@ -1,6 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
 body {
-  margin : 0;
+  margin: 0;
+  font-family: "Josefin Sans";
+}
+button , input {
   font-family: "Josefin Sans";
 }
 /* src/index.css or src/styles.css
