@@ -13,9 +13,10 @@ const getAllBottles = async (req, res) => {
 const getBottleById = async (req, res) => {
 
   try {
-
     const { bottleId } = req.body;
-    const bottle = await Bottle.findById(bottleId).populate("delivery_id route_id");
+    const bottle = await Bottle.findById(bottleId).populate(
+      "delivery_id route_id"
+    );
     if (!bottle)
       return res.status(404).json({ message: "Bottle record not found" });
     res.json(bottle);
@@ -44,11 +45,9 @@ const createBottle = async (req, res) => {
 const updateBottle = async (req, res) => {
   try {
     const { bottleId, ...updateData } = req.body;
-    const updatedBottle = await Bottle.findByIdAndUpdate(
-      bottleId,
-      updateData,
-      { new: true }
-    ).populate("delivery_id route_id");
+    const updatedBottle = await Bottle.findByIdAndUpdate(bottleId, updateData, {
+      new: true,
+    }).populate("delivery_id route_id");
 
     if (!updatedBottle)
       return res.status(404).json({ message: "Bottle record not found" });
@@ -60,7 +59,7 @@ const updateBottle = async (req, res) => {
 
 const deleteBottle = async (req, res) => {
   try {
-    const { bottleId } = req.body; 
+    const { bottleId } = req.body;
     const deletedBottle = await Bottle.findByIdAndDelete(bottleId);
     if (!deletedBottle)
       return res.status(404).json({ message: "Bottle record not found" });
