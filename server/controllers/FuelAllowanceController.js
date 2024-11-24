@@ -2,7 +2,7 @@ const Deliverymen = require("../models/Deliverymen");
 const Route = require("../models/Route");
 
 const addFuelAllowance = async (req, res) => {
-  const { driverId, amount } = req.body;
+  const { driverId, routeId, amount } = req.body;
 
   if (!driverId || !routeId || amount === undefined) {
     return res.status(400).json({

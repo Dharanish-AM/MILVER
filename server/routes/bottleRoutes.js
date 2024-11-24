@@ -1,27 +1,23 @@
 const express = require("express");
+const router = express.Router();
 const {
-  createBottle,
-  getAllBottles,
-  getBottleById,
   addBottleDetail,
-  updateBottleDetails,
+  getBottlesByRoute,
+  getBottleDetailById,
+  updateBottleDetail,
   deleteBottle,
   deleteBottleDetail,
-} = require("../controllers/BottleController");
+} = require("../controllers/bottleController");
 
-const router = express.Router();
+router.post("/addDetail", addBottleDetail);
 
-router.post("/", createBottle);
+router.post("/byRoute", getBottlesByRoute);
 
-router.get("/", getAllBottles);
+router.post("/getDetail", getBottleDetailById);
 
-router.post("/getById", getBottleById);
+router.put("/updateDetail", updateBottleDetail);
 
-router.put("/addDetail", addBottleDetail);
-
-router.put("/updateDetails", updateBottleDetails);
-
-router.delete("/", deleteBottle);
+router.delete("/deleteBottle", deleteBottle);
 
 router.delete("/deleteDetail", deleteBottleDetail);
 
