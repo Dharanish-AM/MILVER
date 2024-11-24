@@ -158,8 +158,10 @@ const attendencedeliverymen = async (req, res) => {
 
 const updateDeliveryman = async (req, res) => {
   try {
+    console.log("update deliverymen")
+    console.log(req.body)
     const updatedDeliveryman = await Deliverymen.findByIdAndUpdate(
-      req.body.id,  // Changed req.params.id to req.body.id
+      req.body.id,  
       req.body,
       { new: true }
     ).populate("delivery_history.customer");

@@ -26,6 +26,7 @@ function Deliverymandetails() {
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 const [editForm, setEditForm] = useState({
+  id:"",
   name: "",
   phone: "",
   address: "",
@@ -146,6 +147,7 @@ const [editForm, setEditForm] = useState({
   const handleEdit = () => {
     if (selectedEmployee) {
       setEditForm({
+        id:selectedEmployee._id,
         name: selectedEmployee.name,
         phone: selectedEmployee.phone,
         address: selectedEmployee.address,
@@ -161,11 +163,30 @@ const [editForm, setEditForm] = useState({
     setEditForm({ ...editForm, [name]: value });
   };
   
-  const handleSaveEdit = () => {
-    console.log("Updated employee data:", editForm);
-    
-    setIsEditModalOpen(false);
-  };  
+  const handleSaveEdit = async () => {
+    try {
+      console.log("Updated employee data:", editForm);
+        const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/deliverymen/`,
+        {
+          id: editForm.id, 
+          name: editForm.name,
+          phone: editForm.phone,
+          address: editForm.address,
+          primaryRouteName: editForm.primaryRouteName,
+          status: editForm.status,
+        }
+      );
+  
+      console.log("Response from server:", response.data);
+  
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error updating deliveryman:", error.response?.data || error.message);
+  
+    }
+  };
+   
   return (
     <section className="deliverymandetails">
       <Header />
