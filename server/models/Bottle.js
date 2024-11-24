@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const BottleSchema = new mongoose.Schema({
-  bottledetails: {
+  route_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Route",
+  },
+  bottle_details: {
     type: [
       {
         delivered: {
@@ -24,7 +28,7 @@ const BottleSchema = new mongoose.Schema({
         },
         date: {
           type: Date,
-          default: Date.now, 
+          default: Date.now,
         },
       },
     ],
