@@ -1,89 +1,121 @@
-
 .mapRoutes-container {
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    background-color: #D8D8D8;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  background-color: #d8d8d8;
 }
 .mapRoutes-content {
-    height: 100%;
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;  
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
 }
 .mapRoutes-content-mapContainer {
-    height: 90%;
-    width: 50%;
-    background-color: white;
-    border-radius: 15px;
+  height: 90%;
+  width: 50%;
+  background-color: white;
+  border-radius: 15px;
 }
 .mapRoutes-content-map {
-    height: 100%;
-    width: 100%;
-    border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  border-radius: 15px;
 }
 .mapRoutes-content-details {
-    height: 90%;
-    width: 45%;
-    background-color: white;
-    border-radius: 15px;
+  height: 90%;
+  width: 45%;
+  background-color: white;
+  border-radius: 15px;
 }
 .leaflet-routing-container {
-    display: none !important;
+  display: none !important;
 }
 
 .mapRoutes-content-details-top {
-    height: 10%;
-    padding-top: 2%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
+  height: 10%;
+  padding-top: 2%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 .mapRoutes-content-details-top-search {
-    height: 100%;
-    width: 60%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
+  height: 100%;
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
 }
+
 .mapRoutes-content-details-top-search-container-img {
-    height: 40%;
-    aspect-ratio: 1;
-    background-image: url("../assets/fuel-search.png");
-    background-position: center;
-    background-size: contain;
-    margin-left: 5%;
-    margin-right: 3%;
+  height: 40%;
+  aspect-ratio: 1;
+  background-image: url("../assets/fuel-search.png");
+  background-position: center;
+  background-size: contain;
+  margin-left: 5%;
+  margin-right: 3%;
 }
 .mapRoutes-content-details-top-search-container {
-    height: 60%;
-    width: 90%;
-    border-radius: 100px;
-    background-color: #D8D8D8;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  height: 60%;
+  width: 90%;
+  border-radius: 100px;
+  background-color: #d8d8d8;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 .mapRoutes-content-details-top-search-container-input {
-    background-color: transparent;
-    border: none;
-    outline: none;
-    margin-top: 0.5%;
-    flex: 1;
-
+  background-color: transparent;
+  border: none;
+  outline: none;
+  margin-top: 0.5%;
+  flex: 1;
+  font-size: 1vw;
 }
 .mapRoutes-content-details-top-filter {
-    height: 100%;
-    flex: 1;
-    background-color: antiquewhite;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 1vw;
+}
+.mapRoutes-content-details-top-filter select {
+  background-color: #d8d8d8;
+  height: 60%;
+  border-radius: 100px;
+  display: flex;
+  text-align: center;
+  font-family: "Josefin Sans";
+  padding-left: 12px;
+  padding-right: 5px;
+  border: none;
+  font-size: 1vw;
+}
+.mapRoutes-content-details-top-filter select:hover {
+  cursor: pointer;
 }
 .mapRoutes-content-details-top-add {
-    height: 100%;
-    aspect-ratio: 1;
-    margin-right: 3%;
-    background-color: darkgrey;
+  height: 100%;
+  aspect-ratio: 1;
+  margin-right: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mapRoutes-content-details-top-add button {
+  height: 60%;
+  aspect-ratio: 1;
+  border-radius: 100px;
+  border: none;
+  font-size: 1vw;
+
+  background-color: #d8d8d8;
+}
+.mapRoutes-content-details-top-add button:hover {
+  cursor: pointer;
 }

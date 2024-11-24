@@ -45,7 +45,6 @@ const getCustomerIconSVG = (route_id) => {
 // eslint-disable-next-line react/prop-types
 const MapWithRouting = ({ routeCoordinates, routeColor }) => {
   const map = useMap();
-  
 
   useEffect(() => {
     // eslint-disable-next-line react/prop-types
@@ -88,7 +87,6 @@ const MapWithRouting = ({ routeCoordinates, routeColor }) => {
     fetchRoute();
 
     return () => {
-
       if (map) {
         map.eachLayer((layer) => {
           if (layer instanceof L.Routing.Control) {
@@ -244,75 +242,59 @@ export default function MapRoutes() {
                 value={filter}
                 onChange={(val) => setFilter(val.target.value)}
               >
-                <option value="">filter?</option>
+                <option value="">Filter</option>
                 <option value="assigned">Assigned</option>
                 <option value="notAssigned">NotAssigned</option>
               </select>
             </div>
             <div className="mapRoutes-content-details-top-add">
-              
+              <button>+</button>
             </div>
           </div>
           <div className="mapRoutes-content-details-bottom">
-            {deliveryMan.map((man) => {
-              // Get today's date in ISO format (without time)
-              const today = new Date().toISOString().split("T")[0];
+            {data.length > 0 ? (
+              data.map((route) => {
+                const assignedDeliveryMen = deliveryMan.filter((man) =>
+                  man.routes.includes(route._id)
+                );
 
-              // Filter routes for the dropdown
-              const routeNames = man.routes
-                .map((routeId) => {
-                  const route = data.find((r) => r._id === routeId);
-
-                  // Check if today's date exists in the delivery history
-                  const hasToday = route?.delivery_history.some((history) => {
-                    const deliveryDate = new Date(history)
-                      .toISOString()
-                      .split("T")[0];
-                    return deliveryDate === today;
-                  });
-
-                  return !hasToday && route ? route.route_name : null; // Exclude if today's date exists
-                })
-                .filter((routeName) => routeName !== null); // Remove null values
-
-              return (
-                <div key={man._id} className="deliveryman-details-card">
-                  <p>
-                    <strong>Driver ID:</strong> {man.driver_id}
-                  </p>
-                  <p>
-                    <strong>Name:</strong> {man.name}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {man.phone}
-                  </p>
-                  <p>
-                    <strong>Routes:</strong>
-                  </p>
-                  <select className="routes-dropdown">
-                    <option value="" disabled selected>
-                      -
-                    </option>
-                    {routeNames.map((routeName, index) => (
-                      <option
-                        key={`${man._id}-route-${index}`}
-                        value={routeName}
-                      >
-                        {routeName}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    onClick={() => {
-                      console.log(`Deliveryman ${man.driver_id} selected`);
-                    }}
-                  >
-                    Submit
-                  </button>
-                </div>
-              );
-            })}
+                return (
+                  <div key={route._id} className="route-card">
+                    <h3 className="route-card-title">{route.route_name}</h3>
+                    <div className="route-card-details">
+                      <p>
+                        <strong>Route ID:</strong> {route.route_id}
+                      </p>
+                      <p>
+                        <strong>Distance:</strong>{" "}
+                        {route.distance ? `${route.distance} km` : "N/A"}
+                      </p>
+                      
+                      <p>
+                        <strong>Available Delivery Men:</strong>
+                      </p>
+                      <select>
+                        <option value="" disabled selected>
+                          Select Delivery Man
+                        </option>
+                        {assignedDeliveryMen.map((man) => (
+                          <option key={man._id} value={man._id}>
+                            {man.name} ({man.phone})
+                          </option>
+                        ))}
+                        {assignedDeliveryMen.length === 0 && (
+                          <option value="" disabled>
+                            No delivery men assigned
+                          </option>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p>No routes available</p>
+            )}
           </div>
         </div>
       </section>
