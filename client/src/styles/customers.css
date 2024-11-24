@@ -61,6 +61,8 @@
   color: #a0a0a0;
   margin-right: 10px;
   font-size: 18px;
+
+  
 }
 
 .search-bar input {
@@ -96,14 +98,15 @@
 
 .export-dropdown {
   position: absolute;
-  top: 100%;
+  top: auto;
   left: 0;
   background-color: #ffffff;
   border: 1px solid #ddd;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1;
   display: flex;
-  flex-direction: column;
+  z-index: 1000;
+  flex-direction: column;  
 }
 
 .export-dropdown button {
@@ -227,108 +230,156 @@ tbody tr:hover {
   background-color: #26a85e;
   transform: scale(1.05);
 }
-
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.modal {
+.modal-popup {
   background: #ffffff;
-  padding: 40px;
-  border-radius: 16px;
-  width: 450px;
-  max-width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
-  color: #333;
-  text-align: center;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s ease-out;
+  overflow: hidden; 
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
-.modal h2 {
-  margin-top: 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #333;
-  background: linear-gradient(135deg, #007acc, #6c63ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.modal-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
-.modal-close {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: transparent;
-  color: #888;
+.modal-popup-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-popup-close {
+  background: none;
   border: none;
-  font-size: 22px;
+  font-size: 24px;
+  color: #666;
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
-.modal-close:hover {
-  color: #ff4d4f;
+.modal-popup-close:hover {
+  color: #e63946;
 }
 
-.modal input {
+.modal-popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 14px;
-  margin: 12px 0;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  background: #f9f9f9;
-  font-size: 15px;
-  outline: none;
-  color: #333;
-  transition: border-color 0.3s ease, box-shadow 0.2s ease;
 }
 
-.modal input:focus {
-  border-color: #007acc;
-  box-shadow: 0 0 6px rgba(0, 122, 204, 0.3);
+.form-field label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: 500;
 }
 
-.modal-submit {
-  background: #007acc;
+.form-field input,
+.form-field select {
+  width: 100%;
   padding: 12px;
-  width: 100%;
-  border: none;
+  font-size: 14px;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box; 
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+}
+
+.modal-popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px; 
   margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.modal-submit:hover {
-  background: #005fa3;
-  box-shadow: 0 4px 12px rgba(0, 95, 163, 0.2);
+.button-save {
+  background: #007bff;
+  color: #fff;
+  border: none;
 }
 
-.modal-submit:active {
-  transform: scale(0.97);
-}
-.input-error {
-  border: 2px solid red;
+.button-save:hover {
+  background: #0056b3;
+  transform: scale(1.05);
 }
 
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 5px;
+.button-cancel {
+  background: #e63946;
+  color: #fff;
+  border: none;
 }
+
+.button-cancel:hover {
+  background: #c92a3b;
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
