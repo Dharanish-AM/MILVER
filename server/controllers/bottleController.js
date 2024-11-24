@@ -1,4 +1,4 @@
-const Bottle = require("../models/BottleModel");
+const Bottle = require("../models/Bottle");
 
 // Create a new Bottle
 const createBottle = async (req, res) => {

@@ -33,4 +33,3 @@ const BottleSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Bottle", BottleSchema);
-ate.now()
