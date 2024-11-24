@@ -131,5 +131,16 @@
 .mapRoutes-content-details-bottom-container {
   height: 20%;
   width : 100%;
-  background-color: "#333333";
+  border-bottom: 1px solid #d8d8d8;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.mapRoutes-content-details-bottom-left {
+  width: 50%;
+  height: 90%;
+  background-color: #d8d8d8;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }

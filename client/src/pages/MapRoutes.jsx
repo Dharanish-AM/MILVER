@@ -261,8 +261,20 @@ export default function MapRoutes() {
 
                 return (
                   <div key={route._id} className="mapRoutes-content-details-bottom-container">
-                    <div className="mapRoutes-content-details-bottom-header">
-
+                    <div className="mapRoutes-content-details-bottom-left">
+                      <div className="mapRoutes-content-details-bottom-left-status-container">
+                        <span>Status : </span>
+                        {
+                          route.driver === null ? <div style={{color : 'orange'}}> Not Assigned </div> : <div style={{color : 'green'}}> Available </div>
+                        }
+                      </div>
+                      <div className="mapRoutes-content-details-bottom-left-routeid"></div>
+                      <div className="mapRoutes-content-details-bottom-left-routename"></div>
+                      <div className="mapRoutes-content-details-bottom-left-distance"></div>
+                    </div>
+                    <div className="mapRoutes-content-details-bottom-right">
+                      <div className="mapRoutes-content-details-bottom-right-list"></div>
+                      <button className="mapRoutes-content-details-bottom-right-button"></button>
                     </div>
                     {/* <h3 className="route-card-title">{route.route_name}</h3>
                     <div className="route-card-details">
