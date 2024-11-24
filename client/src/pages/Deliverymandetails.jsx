@@ -24,6 +24,14 @@ function Deliverymandetails() {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+const [editForm, setEditForm] = useState({
+  name: "",
+  phone: "",
+  address: "",
+  primaryRouteName: "",
+  status: "",
+});
   const handleShowDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);
   };
@@ -136,9 +144,28 @@ function Deliverymandetails() {
     console.log("Exporting as PDF...");
   };
   const handleEdit = () => {
-    console.log("editing");
-  };
+    if (selectedEmployee) {
+      setEditForm({
+        name: selectedEmployee.name,
+        phone: selectedEmployee.phone,
+        address: selectedEmployee.address,
+        primaryRouteName: selectedEmployee.primaryRouteName,
+        status: selectedEmployee.status,
+      });
 
+      setIsEditModalOpen(true);
+    }
+  };
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm({ ...editForm, [name]: value });
+  };
+  
+  const handleSaveEdit = () => {
+    console.log("Updated employee data:", editForm);
+    
+    setIsEditModalOpen(false);
+  };  
   return (
     <section className="deliverymandetails">
       <Header />
@@ -434,6 +461,91 @@ function Deliverymandetails() {
             </div>
           </div>
         )}
+   {isEditModalOpen && (
+  <div className="modal-overlay">
+    <div className="modal-popup">
+      <div className="modal-popup-header">
+        <h2 className="modal-popup-title">Edit Employee Details</h2>
+        <button
+          className="modal-popup-close"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          <MdClose />
+        </button>
+      </div>
+      <div className="modal-popup-body">
+        <div className="form-field">
+          <label htmlFor="employeeName">Employee Name</label>
+          <input
+            id="employeeName"
+            type="text"
+            name="name"
+            placeholder="Enter Employee Name"
+            value={editForm.name}
+            onChange={handleEditFormChange}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="phone">Phone</label>
+          <input
+            id="phone"
+            type="text"
+            name="phone"
+            placeholder="Enter Phone Number"
+            value={editForm.phone}
+            onChange={handleEditFormChange}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="address">Address</label>
+          <input
+            id="address"
+            type="text"
+            name="address"
+            placeholder="Enter Address"
+            value={editForm.address}
+            onChange={handleEditFormChange}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="primaryRouteName">Primary Route</label>
+          <input
+            id="primaryRouteName"
+            type="text"
+            name="primaryRouteName"
+            placeholder="Enter Primary Route"
+            value={editForm.primaryRouteName}
+            onChange={handleEditFormChange}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="status">Status</label>
+          <select
+            id="status"
+            name="status"
+            value={editForm.status}
+            onChange={handleEditFormChange}
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div className="modal-popup-footer">
+        <button className="button button-save" onClick={handleSaveEdit}>
+          Save
+        </button>
+        <button
+          className="button button-cancel"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </section>
   );
