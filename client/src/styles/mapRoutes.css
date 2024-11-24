@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: row;
   background-color: #d8d8d8;
+  overflow: hidden;
 }
 .mapRoutes-content {
   height: 100%;
@@ -29,6 +30,9 @@
   width: 45%;
   background-color: white;
   border-radius: 15px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 .leaflet-routing-container {
   display: none !important;
@@ -118,4 +122,14 @@
 }
 .mapRoutes-content-details-top-add button:hover {
   cursor: pointer;
+}
+.mapRoutes-content-details-bottom {
+  overflow: scroll;
+  width: 90%;
+  flex: 1;
+}
+.mapRoutes-content-details-bottom-container {
+  height: 20%;
+  width : 100%;
+  background-color: "#333333";
 }

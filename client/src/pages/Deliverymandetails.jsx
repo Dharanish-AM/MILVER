@@ -12,6 +12,9 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { MdClose } from "react-icons/md";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function Deliverymandetails() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("Status");
@@ -177,7 +180,8 @@ const [editForm, setEditForm] = useState({
           status: editForm.status,
         }
       );
-  
+      toast.success(" Deliverymen details updated successfully");
+
       console.log("Response from server:", response.data);
   
       setIsEditModalOpen(false);
@@ -566,6 +570,8 @@ const [editForm, setEditForm] = useState({
     </div>
   </div>
 )}
+      <ToastContainer />
+
 
       </div>
     </section>

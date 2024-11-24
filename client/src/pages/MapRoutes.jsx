@@ -260,8 +260,11 @@ export default function MapRoutes() {
                 );
 
                 return (
-                  <div key={route._id} className="route-card">
-                    <h3 className="route-card-title">{route.route_name}</h3>
+                  <div key={route._id} className="mapRoutes-content-details-bottom-container">
+                    <div className="mapRoutes-content-details-bottom-header">
+
+                    </div>
+                    {/* <h3 className="route-card-title">{route.route_name}</h3>
                     <div className="route-card-details">
                       <p>
                         <strong>Route ID:</strong> {route.route_id}
@@ -288,7 +291,7 @@ export default function MapRoutes() {
                           </option>
                         )}
                       </select>
-                    </div>
+                    </div> */}
                   </div>
                 );
               })
