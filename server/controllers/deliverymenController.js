@@ -32,6 +32,7 @@ const getDeliverymanById = async (req, res) => {
 
 const createDeliveryman = async (req, res) => {
   const { name, phone, email, address, routes, category } = req.body;
+  console.log(req.body)
 
   try {
     if (!Array.isArray(routes) || routes.length === 0) {
@@ -178,18 +179,21 @@ const updateDeliveryman = async (req, res) => {
 
 const deleteDeliveryman = async (req, res) => {
   try {
-    const deletedDeliveryman = await Deliverymen.findByIdAndDelete(
-      req.body.id // Changed req.params.id to req.body.id
-    );
-    if (!deletedDeliveryman)
+    console.log("Delete request received for ID:", req.body.id);
+
+    const deletedDeliveryman = await Deliverymen.findByIdAndDelete(req.body.id);
+
+    if (!deletedDeliveryman) {
       return res.status(404).json({ message: "Deliveryman not found" });
+    }
+
     res.json({ message: "Deliveryman record deleted successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting deliveryman record", error });
+    console.error("Error deleting deliveryman record:", error);
+    res.status(500).json({ message: "Error deleting deliveryman record", error });
   }
 };
+
 
 const addDeliveryHistory = async (req, res) => {
   try {

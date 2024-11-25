@@ -68,84 +68,84 @@ const createCustomer = async (req, res) => {
 };
 
 
-const updateCustomer = async (req, res) => {
-  try {
-    const {
-      id, // Customer ID to update
-      name,
-      address,
-      location,
-      phone,
-      deliverytime,
-      route_id, // Numeric route_id
-    } = req.body;
+  const updateCustomer = async (req, res) => {
+    try {
+      const {
+        id, // Customer ID to update
+        name,
+        address,
+        location,
+        phone,
+        deliverytime,
+        route_id, // Numeric route_id
+      } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: "Customer ID is required" });
-    }
-
-    if (!name || !address || !phone || !deliverytime) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const { latitude, longitude } = location || {};
-    if (!latitude || !longitude) {
-      return res
-        .status(400)
-        .json({ message: "Latitude and longitude are required" });
-    }
-
-    const customer = await Customer.findById(id);
-    if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
-    }
-
-    if (route_id && customer.route_id.toString() !== route_id.toString()) {
-      const newRoute = await Route.findOne({ route_id });
-      if (!newRoute) {
-        return res.status(404).json({ message: "New route not found" });
+      if (!id) {
+        return res.status(400).json({ message: "Customer ID is required" });
       }
 
-      if (customer.route_id) {
-        const oldRoute = await Route.findById(customer.route_id);
-        if (oldRoute) {
-          oldRoute.customers = oldRoute.customers.filter(
-            (custId) => String(custId) !== String(customer._id)
-          );
-          await oldRoute.save();
+      if (!name || !address || !phone || !deliverytime) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const { latitude, longitude } = location || {};
+      if (!latitude || !longitude) {
+        return res
+          .status(400)
+          .json({ message: "Latitude and longitude are required" });
+      }
+
+      const customer = await Customer.findById(id);
+      if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
+
+      if (route_id && customer.route_id.toString() !== route_id.toString()) {
+        const newRoute = await Route.findOne({ route_id });
+        if (!newRoute) {
+          return res.status(404).json({ message: "New route not found" });
         }
+
+        if (customer.route_id) {
+          const oldRoute = await Route.findById(customer.route_id);
+          if (oldRoute) {
+            oldRoute.customers = oldRoute.customers.filter(
+              (custId) => String(custId) !== String(customer._id)
+            );
+            await oldRoute.save();
+          }
+        }
+
+        newRoute.customers = newRoute.customers || [];
+        newRoute.customers.push(customer._id);
+        await newRoute.save();
+
+        customer.route_id = newRoute._id;
       }
 
-      newRoute.customers = newRoute.customers || [];
-      newRoute.customers.push(customer._id);
-      await newRoute.save();
+      customer.name = name;
+      customer.address = address;
+      customer.latitude = latitude;
+      customer.longitude = longitude;
+      customer.phone = phone;
+      customer.deliverytime = deliverytime;
 
-      customer.route_id = newRoute._id;
-    }
+      const updatedCustomer = await customer.save();
 
-    customer.name = name;
-    customer.address = address;
-    customer.latitude = latitude;
-    customer.longitude = longitude;
-    customer.phone = phone;
-    customer.deliverytime = deliverytime;
-
-    const updatedCustomer = await customer.save();
-
-    res
-      .status(200)
-      .json({
-        message: "Customer updated successfully",
-        customer: updatedCustomer,
+      res
+        .status(200)
+        .json({
+          message: "Customer updated successfully",
+          customer: updatedCustomer,
+        });
+    } catch (error) {
+      console.error("Error in updateCustomer:", error.message);
+      res.status(500).json({
+        message: "Error updating customer",
+        error: error.message,
       });
-  } catch (error) {
-    console.error("Error in updateCustomer:", error.message);
-    res.status(500).json({
-      message: "Error updating customer",
-      error: error.message,
-    });
-  }
-};
+    }
+  };
 
 
 const deleteCustomer = async (req, res) => {
