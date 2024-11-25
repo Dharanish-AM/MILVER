@@ -10,12 +10,16 @@ const Customers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [customersData, setCustomersData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEventAdded, setIsEventAdded] = useState(false); 
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const[isviewmoreopen,setisviewmoreopen]=useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
+
+  const [isEventAdded, setIsEventAdded] = useState(false);
   const [customerForm, setCustomerForm] = useState({
     name: '',
     address: '',
-    latitude: '13.0473059', // Separate latitude field
-    longitude: '80.2625205', // Separate longitude field
+    latitude: '13.0473059',
+    longitude: '80.2625205', 
     location: {
       type: 'Point',
       coordinates: ['80.2625205', '13.0473059'], 
@@ -26,7 +30,11 @@ const Customers = () => {
     route_name: '',
   });
   
-
+ 
+  const handleDelete = (customer) => {
+    setSelectedCustomer(customer);
+    setIsDeleteModalOpen(true); 
+  };
   const [formErrors, setFormErrors] = useState({
     name: '',
     address: '',
@@ -41,7 +49,7 @@ const Customers = () => {
         console.log("consoled");
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/customer/`);
         setCustomersData(response.data);
-        console.log(customersData)
+        console.log(response.data,"customerdata")
       } catch (error) {
         console.error("Error fetching customer data: ", error);
       }
@@ -59,12 +67,10 @@ const Customers = () => {
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
   const handleExportCSV = () => {
     toast.info("Exporting as CSV...");
-    // Add your CSV export logic here
   };
   
   const handleExportPDF = () => {
     toast.info("Exporting as PDF...");
-    // Add your PDF export logic here
   };
   
   const handleSubmit = async () => {
@@ -125,7 +131,11 @@ const Customers = () => {
       }
     }
   };
-  
+  const handleCloseDeleteConfirmation = () => {
+    setShowDeleteConfirmation(false);
+    setDeleteConfirmation("");
+  };
+ 
   const getCoordinates = async (address) => {
     const accessToken = 'pk.eyJ1Ijoic2FiYXJpbTYzNjkiLCJhIjoiY20zYWc2ZzdnMG5kZjJrc2F3eXUyczhiaiJ9.KluQuo4u7AMijmoli9HZmg';
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${accessToken}`;
@@ -147,7 +157,31 @@ const Customers = () => {
       return null;
     }
   };
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const [editCustomerForm, setEditCustomerForm] = useState({
+    name: '',
+  address: '',
+  phone: '',
+  route_name: '',
+  latitude: '13.0473059',  
+  longitude: '80.2625205',
+  location: {
+    type: 'Point',
+    coordinates: ['80.2625205', '13.0473059'], 
+  },
+  deliverytime: '10.00',  
+  route_id: '1',          
+  });
+
+  const handleEditCustomer = () => {
+    setEditCustomerForm({ ...selectedCustomer }); 
+    setIsEditModalOpen(true); 
+  };
+  
+  
+
+  
   const validateForm = () => {
     const errors = {};
     if (!customerForm.name) errors.name = 'Name is required';
@@ -173,7 +207,60 @@ const Customers = () => {
     setIsModalOpen(false);
     setFormErrors({});
   };
-
+  const handleViewMore = (customer) => {
+    setSelectedCustomer(customer);
+    setisviewmoreopen(true);
+  };
+  const closeModal = () => {
+    setSelectedCustomer(null);
+    setisviewmoreopen(false);
+  };
+  const handleSubmitEdit = async () => {
+    const coordinates = await getCoordinates(editCustomerForm.address);
+    if (coordinates) {
+      setEditCustomerForm((prevState) => ({
+        ...prevState,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        location: {
+          type: 'Point',
+          coordinates: [coordinates.longitude, coordinates.latitude], 
+        },
+      }));
+    } else {
+      toast.error("Failed to fetch coordinates for the address.");
+      return;
+    }
+  
+    const updatedCustomer = {
+      id: selectedCustomer._id, 
+      name: editCustomerForm.name,
+      address: editCustomerForm.address,
+      phone: editCustomerForm.phone,
+      route_name: editCustomerForm.route_name,
+      deliverytime: editCustomerForm.deliverytime,
+      location: {
+        latitude: editCustomerForm.latitude,
+        longitude: editCustomerForm.longitude,
+      },
+      route_id: selectedCustomer.route_id, 
+    };
+  
+    try {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/customer/`, updatedCustomer); // Removed the customer ID from the URL
+      console.log("Customer updated:", response.data);
+  
+      toast.success("Customer updated successfully!");
+      setIsEditModalOpen(false);
+      setIsEventAdded(true);
+    } catch (error) {
+      console.error("Error updating customer:", error);
+      toast.error("Error updating customer.");
+    }
+  };
+  
+  
+  
   return (
     <section className="customers">
       <Header />
@@ -232,27 +319,47 @@ const Customers = () => {
                 </tr>
               </thead>
               <tbody>
-  {customersData
+              {customersData.length === 0 ? (
+  <tr>
+    <td colSpan="9">Loading customers...</td>
+  </tr>
+) : (
+  customersData
     .filter((customer) =>
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.phone.includes(searchTerm) ||
-      customer.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.route_name.toLowerCase().includes(searchTerm.toLowerCase())
+      (customer.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (customer.phone || "").includes(searchTerm) ||
+      (customer.address?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (customer.route_name?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     )
     .map((customer, index) => (
       <tr key={customer._id}>
         <td>{index + 1}</td>
         <td>{customer.customer_id}</td>
-        <td>{customer.name}</td>
-        <td>{customer.phone}</td>
-        <td>{customer.address}</td>
-        <td>{customer.route_id}</td>
-        <td>{customer.route_name}</td>
-        <td>{customer.status}</td>
-        <td><button className="viewmore">View More</button></td>
+        <td>{customer.name || "N/A"}</td>
+        <td>{customer.phone || "N/A"}</td>
+        <td>{customer.address || "N/A"}</td>
+        <td>{customer.route_id || "N/A"}</td>
+        <td>{customer.route_name || "N/A"}</td>
+        <td>{customer.status || "N/A"}</td>
+        <td><button className="viewmore" onClick={() => handleViewMore(customer)}>View More</button></td>
       </tr>
-    ))}
+    ))
+)}
+
+
+  {customersData.filter(customer =>
+    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.phone.includes(searchTerm) ||
+    customer.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    customer.route_name.toLowerCase().includes(searchTerm.toLowerCase())
+  ).length === 0 && searchTerm && (
+    <tr>
+      <td colSpan="9">No customers found matching the search term.</td>
+    </tr>
+  )}
 </tbody>
+
+
 
             </table>
           </div>
@@ -310,7 +417,94 @@ const Customers = () => {
           </div>
         </div>
       )}
-      <ToastContainer />
+   
+
+      {isviewmoreopen && selectedCustomer && (
+  <div className="customer-popup-overlay" onClick={closeModal}>
+    <div className="customer-popup-modal" onClick={(e) => e.stopPropagation()}>
+      <button className="customer-popup-close" onClick={closeModal}>×</button>
+      <h2 className="customer-popup-title">Customer Details</h2>
+      <div className="customer-popup-details">
+        <div className="customer-detail-item">
+          <strong>Customer ID:</strong> {selectedCustomer.customer_id || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Name:</strong> {selectedCustomer.name || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Phone:</strong> {selectedCustomer.phone || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Address:</strong> {selectedCustomer.address || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Route ID:</strong> {selectedCustomer.route_id || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Route Name:</strong> {selectedCustomer.route_name || "N/A"}
+        </div>
+        <div className="customer-detail-item">
+          <strong>Status:</strong> {selectedCustomer.status || "N/A"}
+        </div>
+      </div>
+      <div className="customer-popup-actions">
+        <button className="customer-popup-edit-btn" onClick={handleEditCustomer}>Edit</button>
+        <button className="customer-popup-delete-btn" onClick={handleDelete}>Delete</button>
+      </div>
+      <button className="customer-popup-close-btn" onClick={closeModal}>Close</button>
+    </div>
+  </div>
+)}
+{isEditModalOpen && (
+  <div className="edit-modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+    <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+      <button className="edit-modal-close-btn" onClick={() => setIsEditModalOpen(false)}>×</button>
+      <h2 className="edit-modal-title">Edit Customer</h2>
+      <div className="edit-modal-form">
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={editCustomerForm.name}
+          onChange={(e) => setEditCustomerForm({ ...editCustomerForm, name: e.target.value })}
+          className="edit-modal-input"
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="Address"
+          value={editCustomerForm.address}
+          onChange={(e) => setEditCustomerForm({ ...editCustomerForm, address: e.target.value })}
+          className="edit-modal-input"
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          value={editCustomerForm.phone}
+          onChange={(e) => setEditCustomerForm({ ...editCustomerForm, phone: e.target.value })}
+          className="edit-modal-input"
+        />
+        <input
+          type="text"
+          name="route_name"
+          placeholder="Route Name"
+          value={editCustomerForm.route_name}
+          onChange={(e) => setEditCustomerForm({ ...editCustomerForm, route_name: e.target.value })}
+          className="edit-modal-input"
+        />
+        {/* Add other fields as necessary */}
+
+        <button className="edit-modal-submit-btn" onClick={handleSubmitEdit}>Submit</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
+      <ToastContainer />  
     </section>
   );
 };
