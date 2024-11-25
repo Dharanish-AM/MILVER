@@ -6,12 +6,12 @@ const db = require("./config/db");
 const customerRoutes = require("./routes/customerRoutes");
 const deliverymenRoutes = require("./routes/deliverymenRoutes");
 const routeRoutes = require("./routes/routeRoutes");
-const bottleRoutes = require("./routes/bottleRoutes");  
-const fuelallowance = require("./routes/FuelAllowanceRoutes")
+const bottleRoutes = require("./routes/bottleRoutes");
+const fuelallowance = require("./routes/FuelAllowanceRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
- 
+
 db();
 
 app.use(cors({ origin: "*" }));
@@ -21,7 +21,7 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/deliverymen", deliverymenRoutes);
 app.use("/api/route", routeRoutes);
 app.use("/api/bottle", bottleRoutes);
-app.use("/api/fuelallowance",fuelallowance)
+app.use("/api/fuelallowance", fuelallowance);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
