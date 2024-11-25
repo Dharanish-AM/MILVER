@@ -24,11 +24,11 @@ const CustomerSchema = new Schema({
     required: true,
   },
   phone: {
-    type: String,
+    type: String, 
     required: true,
   },
   route_id: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.ObjectId, 
     ref: "Route",
     default: null,
   },
@@ -63,3 +63,4 @@ CustomerSchema.plugin(AutoIncrement, { inc_field: "customer_id" });
 const Customer = mongoose.model("Customer", CustomerSchema);
 
 module.exports = Customer;
+  

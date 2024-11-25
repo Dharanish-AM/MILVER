@@ -9,7 +9,7 @@
 .mapRoutes-content {
   height: 100%;
   display: flex;
-  flex: 1;
+  flex: 1; 
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
@@ -64,6 +64,7 @@
   background-size: contain;
   margin-left: 5%;
   margin-right: 3%;
+  background-repeat: no-repeat;
 }
 .mapRoutes-content-details-top-search-container {
   height: 60%;
@@ -124,10 +125,40 @@
   cursor: pointer;
 }
 .mapRoutes-content-details-bottom {
-  overflow: scroll;
+  overflow: auto;
   width: 90%;
   flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  scroll-behavior: smooth;
 }
+
+.mapRoutes-content-details-bottom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mapRoutes-content-details-bottom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mapRoutes-content-details-bottom::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.mapRoutes-content-details-bottom::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.mapRoutes-content-details-bottom::-webkit-scrollbar {
+  display: none;
+}
+
+.mapRoutes-content-details-bottom:hover::-webkit-scrollbar {
+  display: block;
+}
+
 .mapRoutes-content-details-bottom-container {
   height: 20%;
   width : 100%;
@@ -136,11 +167,71 @@
   flex-direction: row;
   align-items: center;
 }
+.mapRoutes-content-details-bottom-container span {
+  font-weight: 800;
+  margin-left: 2%;
+  margin-right: 2%;
+}
 .mapRoutes-content-details-bottom-left {
   width: 50%;
   height: 90%;
-  background-color: #d8d8d8;
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
+}
+.mapRoutes-content-details-bottom-left-status-container {
+  display: flex;
+  flex-direction: row;
+}
+.mapRoutes-content-details-bottom-left-routeid{
+  display: flex;
+  flex-direction: row;
+}
+.mapRoutes-content-details-bottom-left-routename {
+  display: flex;
+  flex-direction: row;
+}
+.mapRoutes-content-details-bottom-left-distance {
+  display: flex;
+  flex-direction: row;
+}
+.mapRoutes-content-details-bottom-right {
+  flex: 1;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.mapRoutes-content-details-bottom-right-list {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mapRoutes-content-details-bottom-right-list select {
+  height: 100%;
+  width: 90%;
+  background-color: white;
+  border-radius: 5px;
+  font-family: "Josefin Sans";
+  border: 1px solid black;
+  padding-top: 1%;
+}
+.mapRoutes-content-details-bottom-right-button {
+  height: 25%;
+  width: 40%;
+  padding-top: 1%;
+  background-color: #d8d8d8;
+  border: none;
+  border-radius: 5px;
+}
+.mapRoutes-content-details-bottom-right-Assigned {
+  height: 50%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: space-evenly;
 }
