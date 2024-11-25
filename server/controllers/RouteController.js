@@ -93,15 +93,13 @@ const createRoute = async (req, res) => {
       defaultAmount,
     } = req.body;
 
-    const calculatedDefaultAmount = defaultAmount * distance;
-
     const newRoute = new Route({
       route_name,
       customers,
       drivers,
       distance,
       location,
-      defaultAmount: calculatedDefaultAmount,
+      defaultAmount,
     });
 
     await newRoute.save();
@@ -130,7 +128,7 @@ const updateRoute = async (req, res) => {
     }
 
     if (route_name) route.route_name = route_name;
-    if (customers) route.customers = customers;
+    if (customers) route.customers = customers; 
     if (drivers) route.drivers = drivers;
     if (distance) route.distance = distance;
     if (location) {
@@ -138,8 +136,7 @@ const updateRoute = async (req, res) => {
       if (location.longitude) route.location.longitude = location.longitude;
     }
     if (defaultAmount) {
-      const calculatedDefaultAmount = defaultAmount * distance;
-      route.defaultAmount = calculatedDefaultAmount;
+      route.defaultAmount = defaultAmount;
     }
 
     await route.save();

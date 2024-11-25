@@ -15,7 +15,7 @@ import { MdClose } from "react-icons/md";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CSVLink } from 'react-csv';  
-import { jsPDF } from 'jspdf';  
+import { jsPDF } from 'jspdf';   
 import { useRef } from "react";
 
 

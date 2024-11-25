@@ -9,14 +9,14 @@
 .mapRoutes-content {
   height: 100%;
   display: flex;
-  flex: 1; 
+  flex: 1;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
 }
 .mapRoutes-content-mapContainer {
-  height: 90%;
-  width: 50%;
+  height: 95%;
+  width: 40%;
   background-color: white;
   border-radius: 15px;
 }
@@ -26,8 +26,8 @@
   border-radius: 15px;
 }
 .mapRoutes-content-details {
-  height: 90%;
-  width: 45%;
+  height: 95%;
+  width: 55%;
   background-color: white;
   border-radius: 15px;
   display: flex;
@@ -90,20 +90,31 @@
   font-size: 1vw;
 }
 .mapRoutes-content-details-top-filter select {
-  background-color: #d8d8d8;
+  background-color: #333;
   height: 60%;
   border-radius: 100px;
   display: flex;
-  text-align: center;
+  padding-left: 1vw;
   font-family: "Josefin Sans";
-  padding-left: 12px;
-  padding-right: 5px;
   border: none;
   font-size: 1vw;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  align-items: center;
+  justify-content: center;
 }
 .mapRoutes-content-details-top-filter select:hover {
   cursor: pointer;
 }
+
+.mapRoutes-content-details-top-filter {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
 .mapRoutes-content-details-top-add {
   height: 100%;
   aspect-ratio: 1;
@@ -117,9 +128,9 @@
   aspect-ratio: 1;
   border-radius: 100px;
   border: none;
-  font-size: 1vw;
-
-  background-color: #d8d8d8;
+  font-size: 2vw;
+  background-color: #333;
+  color: white;
 }
 .mapRoutes-content-details-top-add button:hover {
   cursor: pointer;
@@ -128,49 +139,36 @@
   overflow: auto;
   width: 90%;
   flex: 1;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  scroll-behavior: smooth;
+  padding-right: 3%;
 }
-
 .mapRoutes-content-details-bottom::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  background-color: #f5f5f5;
 }
-
-.mapRoutes-content-details-bottom::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 .mapRoutes-content-details-bottom::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #d8d8d8;
+}
+.mapRoutes-content-details-bottom::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
   border-radius: 10px;
 }
-
-.mapRoutes-content-details-bottom::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.mapRoutes-content-details-bottom::-webkit-scrollbar {
-  display: none;
-}
-
-.mapRoutes-content-details-bottom:hover::-webkit-scrollbar {
-  display: block;
-}
-
 .mapRoutes-content-details-bottom-container {
   height: 20%;
-  width : 100%;
+  width: 100%;
   border-bottom: 1px solid #d8d8d8;
   display: flex;
   flex-direction: row;
   align-items: center;
+  font-size: 1.1vw;
 }
 .mapRoutes-content-details-bottom-container span {
   font-weight: 800;
   margin-left: 2%;
   margin-right: 2%;
+  font-size: 1.1vw;
 }
 .mapRoutes-content-details-bottom-left {
   width: 50%;
@@ -183,7 +181,7 @@
   display: flex;
   flex-direction: row;
 }
-.mapRoutes-content-details-bottom-left-routeid{
+.mapRoutes-content-details-bottom-left-routeid {
   display: flex;
   flex-direction: row;
 }
@@ -204,7 +202,7 @@
   justify-content: space-evenly;
 }
 .mapRoutes-content-details-bottom-right-list {
-  height: 20%;
+  height: 25%;
   width: 100%;
   display: flex;
   align-items: center;
@@ -218,14 +216,18 @@
   font-family: "Josefin Sans";
   border: 1px solid black;
   padding-top: 1%;
+  font-size: 1vw;
 }
 .mapRoutes-content-details-bottom-right-button {
-  height: 25%;
+  height: 30%;
   width: 40%;
   padding-top: 1%;
-  background-color: #d8d8d8;
+  background-color: #9b4444;
   border: none;
   border-radius: 5px;
+  color: white;
+  font-size: 1vw;
+  cursor: pointer;
 }
 .mapRoutes-content-details-bottom-right-Assigned {
   height: 50%;
@@ -234,4 +236,27 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+}
+.mapRoutes-content-details-bottom-container {
+  position: relative;
+}
+
+.mapRoutes-content-details-bottom-info {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;
+  color: white;
+  background-image: url("../assets/info.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 22%;
+  aspect-ratio: 1;
+  cursor: pointer;
+}
+.mapRoutes-content-routeDetails {
+  height: 95%;
+  width: 40%;
+  background-color: white;
+  border-radius: 15px;
 }
