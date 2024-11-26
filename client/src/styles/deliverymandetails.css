@@ -306,6 +306,28 @@
     font-size: 0.85em;
   }
 }
+.attendance-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s;
+}
+
+.attendance-btn.present {
+  background-color: #28a745;
+}
+
+.attendance-btn.absent {
+  background-color: #d9534f;
+}
+
+.attendance-btn:hover {
+  background-color: #0056b3;
+}
 
 .itim-regular {
 font-family: "Itim", cursive;

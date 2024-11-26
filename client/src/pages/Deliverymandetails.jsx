@@ -282,6 +282,11 @@ const [editForm, setEditForm] = useState({
     // Save the PDF
     doc.save("employee_data.pdf");
   };
+  const handleAttendance = (employee) => {
+    // Logic to toggle attendance
+    employee.attendance = employee.attendance === "Present" ? "Absent" : "Present";
+    // Update the state or make an API call to save the changes
+  };
   
   
   
@@ -408,44 +413,49 @@ const [editForm, setEditForm] = useState({
         </div>
 
         <div className="employee-list">
-          {filteredEmployees.map((employee, index) => (
-            <div key={index} className="employee-card">
-              <div
-                className={`employee-status ${
-                  employee.status === "Active" ? "active" : "inactive"
-                }`}
-              >
-                {employee.status}
-              </div>
-              <div className="employee-info">
-                <img
-                  src={employee.profilePicture || deliveryman}
-                  alt="Employee"
-                  className="employee-avatar"
-                />
-                <h3>{employee.name}</h3>
-                <div className="employee-details">
-                  <p>
-                    <strong>Route:</strong>
-                    {employee.primaryRouteName} 🛤️
-                  </p>
-                  <p>
-                    <strong>Ph-no:</strong> {employee.phone} 📱
-                  </p>
-                  <p>
-                    <strong>Type:</strong> {employee.category} ⏰
-                  </p>
-                </div>
-                <p className="employee-joined">
-                  Joined at {employee.joinDate}{" "}
-                  <a href="#" onClick={() => handleViewDetails(employee)}>
-                    view details
-                  </a>
-                </p>
-              </div>
-            </div>
-          ))}
+  {filteredEmployees.map((employee, index) => (
+    <div key={index} className="employee-card">
+      <div
+        className={`employee-status ${
+          employee.status === "Active" ? "active" : "inactive"
+        }`}
+      >
+        {employee.status}
+      </div>
+      <div className="employee-info">
+        <img
+          src={employee.profilePicture || deliveryman}
+          alt="Employee"
+          className="employee-avatar"
+        />
+        <h3>{employee.name}</h3>
+        <div className="employee-details">
+          <p>
+            <strong>Route:</strong> {employee.primaryRouteName} 🛤️
+          </p>
+          <p>
+            <strong>Ph-no:</strong> {employee.phone} 📱
+          </p>
+          <p>
+            <strong>Type:</strong> {employee.category} ⏰
+          </p>
         </div>
+        <button className={`attendance-btn ${
+          employee.attendance === "Present" ? "present" : "absent"
+        }`} onClick={() => handleAttendance(employee)}>
+          {employee.attendance === "Present" ? "Mark Absent" : "Mark Present"}
+        </button>
+        <p className="employee-joined">
+          Joined at {employee.joinDate}{" "}
+          <a href="#" onClick={() => handleViewDetails(employee)}>
+            view details
+          </a>
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
 
         {showModal && selectedEmployee && (
   <div className="modal-overlay">
