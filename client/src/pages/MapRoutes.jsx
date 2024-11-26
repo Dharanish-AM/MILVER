@@ -60,7 +60,7 @@ export default function MapRoutes() {
     } else if (filterValue === "notAssigned") {
       setFilteredData(data.filter((route) => route.driver === null));
     } else {
-      setFilteredData(data);  
+      setFilteredData(data);
     }
   };
 
@@ -145,8 +145,18 @@ export default function MapRoutes() {
       <section className="mapRoutes-content">
         {selectedRoute ? (
           <div className="mapRoutes-content-routeDetails">
-            <button onClick={() => setSelectedRoute(null)}>Back to Map</button>
-            <h2>Route Details</h2>
+            <div className="mapRoutes-content-routeDetails-Container">
+              <div className="mapRoutes-content-routeDetails-Container-header">
+                <button
+                  onClick={() => setSelectedRoute(null)}
+                  className="mapRoutes-content-routeDetails-Container-Backbutton"
+                ></button>
+                <div className="mapRoutes-content-routeDetails-Container-header-title">
+                  {selectedRoute.route_name.toUpperCase()}
+                </div>
+              </div>
+            </div>
+            {/* <h2>Route Details</h2>
             <p>
               <strong>Route ID:</strong> {selectedRoute.route_id}
             </p>
@@ -165,7 +175,7 @@ export default function MapRoutes() {
               ) : (
                 <span style={{ color: "orange" }}>Not Assigned</span>
               )}
-            </p>
+            </p> */}
           </div>
         ) : (
           <div className="mapRoutes-content-mapContainer">
@@ -187,7 +197,7 @@ export default function MapRoutes() {
                 <Popup>ART Milk Company</Popup>
               </Marker>
 
-              {filteredData.map((route, index) => {
+              {filteredData.map((route) => {
                 const routePosition = [
                   route.location.latitude,
                   route.location.longitude,
