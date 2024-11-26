@@ -128,7 +128,7 @@ const updateRoute = async (req, res) => {
     }
 
     if (route_name) route.route_name = route_name;
-    if (customers) route.customers = customers; 
+    if (customers) route.customers = customers;
     if (drivers) route.drivers = drivers;
     if (distance) route.distance = distance;
     if (location) {

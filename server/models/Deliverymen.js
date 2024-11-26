@@ -61,10 +61,25 @@ const DeliverymenSchema = new Schema({
           type: mongoose.Schema.ObjectId,
           ref: "Route",
         },
-        date:{
-          type: Date
-          
-        }
+        date: {
+          type: Date,
+        },
+      },
+    ],
+    default: [],
+  },
+  attendence: {
+    type: [
+      {
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        status: {
+          type: String,
+          enum: ["present", "absent"],
+          default: null,
+        },
       },
     ],
     default: [],

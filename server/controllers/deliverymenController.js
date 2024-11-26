@@ -32,7 +32,7 @@ const getDeliverymanById = async (req, res) => {
 
 const createDeliveryman = async (req, res) => {
   const { name, phone, email, address, routes, category } = req.body;
-  console.log(req.body)
+  console.log(req.body);
 
   try {
     if (!Array.isArray(routes) || routes.length === 0) {
@@ -123,35 +123,44 @@ const attendencedeliverymen = async (req, res) => {
   try {
     const { driver_id, is_present } = req.body;
 
-    if (!driver_id) {
-      return res.status(400).json({ message: "Driver ID is required" });
+    if (!driver_id || is_present === undefined) {
+      res.status(400).json({
+        message: "Driver ID and attendance status are required",
+      });
+      return;
     }
 
-    let status = "unavailable";
-
-    if (is_present !== undefined) {
-      status = is_present ? "available" : "on_leave";
-    }
+    const attendanceStatus = is_present ? "present" : "absent";
+    const deliverymenStatus = is_present ? "available" : "on_leave";
 
     const updatedDriver = await Deliverymen.findOneAndUpdate(
       { _id: driver_id },
-      { status },
+      {
+        $push: {
+          attendence: {
+            date: new Date(),
+            status: attendanceStatus,
+          },
+        },
+        status: deliverymenStatus,
+      },
       { new: true }
     );
 
     if (!updatedDriver) {
-      return res
+      res
         .status(404)
         .json({ message: `Driver with ID ${driver_id} not found` });
+      return;
     }
 
-    return res.status(200).json({
-      message: "Attendance updated successfully",
+    res.status(200).json({
+      message: "Attendance and status updated successfully",
       updatedDriver,
     });
   } catch (error) {
     console.error("Error updating attendance:", error);
-    return res
+    res
       .status(500)
       .json({ message: "Error updating attendance", error: error.message });
   }
@@ -159,10 +168,10 @@ const attendencedeliverymen = async (req, res) => {
 
 const updateDeliveryman = async (req, res) => {
   try {
-    console.log("update deliverymen")
-    console.log(req.body)
+    console.log("update deliverymen");
+    console.log(req.body);
     const updatedDeliveryman = await Deliverymen.findByIdAndUpdate(
-      req.body.id,  
+      req.body.id,
       req.body,
       { new: true }
     ).populate("delivery_history.customer");
@@ -190,15 +199,16 @@ const deleteDeliveryman = async (req, res) => {
     res.json({ message: "Deliveryman record deleted successfully" });
   } catch (error) {
     console.error("Error deleting deliveryman record:", error);
-    res.status(500).json({ message: "Error deleting deliveryman record", error });
+    res
+      .status(500)
+      .json({ message: "Error deleting deliveryman record", error });
   }
 };
-
 
 const addDeliveryHistory = async (req, res) => {
   try {
     const { customer, delivered_at, status } = req.body;
-    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
+    const deliveryman = await Deliverymen.findById(req.body.id);
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
@@ -221,12 +231,12 @@ const addDeliveryHistory = async (req, res) => {
 const updateDeliveryHistory = async (req, res) => {
   try {
     const { customer, delivered_at, status } = req.body;
-    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
+    const deliveryman = await Deliverymen.findById(req.body.id);
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
 
-    const historyEntry = deliveryman.delivery_history.id(req.body.historyId); // Changed req.params.historyId to req.body.historyId
+    const historyEntry = deliveryman.delivery_history.id(req.body.historyId);
 
     if (!historyEntry)
       return res.status(404).json({ message: "History entry not found" });
@@ -244,12 +254,12 @@ const updateDeliveryHistory = async (req, res) => {
 
 const deleteDeliveryHistory = async (req, res) => {
   try {
-    const deliveryman = await Deliverymen.findById(req.body.id); // Changed req.params.id to req.body.id
+    const deliveryman = await Deliverymen.findById(req.body.id);
 
     if (!deliveryman)
       return res.status(404).json({ message: "Deliveryman not found" });
 
-    const historyEntry = deliveryman.delivery_history.id(req.body.historyId); // Changed req.params.historyId to req.body.historyId
+    const historyEntry = deliveryman.delivery_history.id(req.body.historyId);
 
     if (!historyEntry)
       return res.status(404).json({ message: "History entry not found" });
@@ -263,6 +273,30 @@ const deleteDeliveryHistory = async (req, res) => {
   }
 };
 
+const resetDriverStatusAndRoutes = () => {
+  cron.schedule("0 15 * * *", async () => {
+    try {
+      console.log(
+        "Running scheduled task to reset driver statuses and routes."
+      );
+ 
+      
+      await Deliverymen.updateMany({}, { status: "available" });
+      console.log("All deliverymen statuses updated to 'available'.");
+
+      
+      await Route.updateMany({}, { driver: null });
+      console.log("All routes have been reset to have no assigned driver.");
+    } catch (error) {
+      console.error("Error during scheduled task execution:", error);
+    }
+  });
+
+  console.log(
+    "Scheduled task for resetting driver statuses and routes initialized."
+  );
+};
+
 module.exports = {
   getAllDeliverymen,
   getDeliverymanById,
@@ -272,4 +306,6 @@ module.exports = {
   addDeliveryHistory,
   updateDeliveryHistory,
   deleteDeliveryHistory,
+  attendencedeliverymen,
+  resetDriverStatusAndRoutes,
 };

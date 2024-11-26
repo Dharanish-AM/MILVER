@@ -33,6 +33,8 @@ export default function MapRoutes() {
   const [filter, setFilter] = useState("");
   const [selectedDeliveryMan, setSelectedDeliveryMan] = useState({});
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [updatedRouteData, setUpdatedRouteData] = useState(null);
 
   useEffect(() => {
     axios
@@ -40,6 +42,7 @@ export default function MapRoutes() {
       .then((res) => {
         setData(res.data);
         setFilteredData(res.data);
+        console.log(res.data);
       })
       .catch((err) => console.log("Error in getRoutes API request:", err));
 
@@ -47,6 +50,7 @@ export default function MapRoutes() {
       .get("http://localhost:8000/api/deliverymen")
       .then((res) => {
         setDeliveryMan(res.data);
+        console.log(res.data);
       })
       .catch((err) => console.log("Error in getDeliveryDetails " + err));
   }, []);
@@ -136,7 +140,33 @@ export default function MapRoutes() {
   const handleRouteInfoClick = (route) => {
     setSelectedRoute(route);
   };
+  const handleEditClick = () => {
+    setEditMode(!editMode);
+    if (!editMode) {
+      setUpdatedRouteData({
+        route_name: selectedRoute.route_name,
+        status: selectedRoute.driver ? "Assigned" : "Not Assigned",
+        route_id: selectedRoute.route_id,
+        distance: selectedRoute.distance,
+        phone: "1234567890",
+        latitude: selectedRoute.location.latitude,
+        longitude: selectedRoute.location.longitude,
+      });
+    }
+  };
 
+  const handleFieldChange = (field, value) => {
+    setUpdatedRouteData((prevState) => ({ ...prevState, [field]: value }));
+  };
+  const handleSubmitChanges = () => {
+    axios
+      .post("http://localhost:8000/", updatedRouteData)
+      .then((res) => {
+        console.log("Data updated successfully:", res.data);
+        setEditMode(false);
+      })
+      .catch((err) => console.error("Error updating data:", err));
+  };
   const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
 
   return (
@@ -152,30 +182,179 @@ export default function MapRoutes() {
                   className="mapRoutes-content-routeDetails-Container-Backbutton"
                 ></button>
                 <div className="mapRoutes-content-routeDetails-Container-header-title">
-                  {selectedRoute.route_name.toUpperCase()}
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={updatedRouteData.route_name}
+                      onChange={(e) =>
+                        handleFieldChange("route_name", e.target.value)
+                      }
+                      placeholder="Enter Route Name"
+                    />
+                  ) : (
+                    selectedRoute.route_name.toUpperCase()
+                  )}
                 </div>
               </div>
-            </div>
-            {/* <h2>Route Details</h2>
-            <p>
-              <strong>Route ID:</strong> {selectedRoute.route_id}
-            </p>
-            <p>
-              <strong>Route Name:</strong> {selectedRoute.route_name}
-            </p>
-            <p>
-              <strong>Distance:</strong> {selectedRoute.distance} km
-            </p>
-            <p>
-              <strong>Status:</strong>{" "}
-              {selectedRoute.driver ? (
-                <span style={{ color: "green" }}>
-                  Assigned to {selectedRoute.driver.name}
-                </span>
-              ) : (
-                <span style={{ color: "orange" }}>Not Assigned</span>
+              <section className="mapRoutes-content-routeDetails-Container-content">
+                <div
+                  className="mapRoutes-content-routeDetatils-Container-content-editButton"
+                  onClick={handleEditClick}
+                ></div>
+                <section>
+                  <span>STATUS : </span>
+
+                  <div
+                    style={{ color: selectedRoute.driver ? "green" : "orange" }}
+                  >
+                    {selectedRoute.driver ? "Assigned" : "Not Assigned"}
+                  </div>
+                </section>
+                <section>
+                  <span>ROUTE ID : </span>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={updatedRouteData.route_id}
+                      onChange={(e) =>
+                        handleFieldChange("route_id", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <div>{selectedRoute.route_id}</div>
+                  )}
+                </section>
+                <section>
+                  <span>DISTANCE : </span>
+                  {editMode ? (
+                    <input
+                      type="number"
+                      value={updatedRouteData.distance}
+                      onChange={(e) =>
+                        handleFieldChange("distance", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <div>{selectedRoute.distance} km</div>
+                  )}
+                </section>
+                <section>
+                  <span>ROUTE PHONE NUMBER : </span>
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={updatedRouteData.phone}
+                      onChange={(e) =>
+                        handleFieldChange("phone", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <div>1234567890</div>
+                  )}
+                </section>
+                <section>
+                  <span>COORDINATES : </span>
+                  {editMode ? (
+                    <div>
+                      <input
+                        type="number"
+                        value={updatedRouteData.latitude}
+                        onChange={(e) =>
+                          handleFieldChange("latitude", e.target.value)
+                        }
+                        placeholder="Latitude"
+                      />
+                      <input
+                        type="number"
+                        value={updatedRouteData.longitude}
+                        onChange={(e) =>
+                          handleFieldChange("longitude", e.target.value)
+                        }
+                        placeholder="Longitude"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      {selectedRoute.location.latitude} °N,{" "}
+                      {selectedRoute.location.longitude} °E
+                    </div>
+                  )}
+                </section>
+              </section>
+              {editMode && (
+                <button
+                  className="mapRoutes-content-routeDetatils-Container-content-submitButton"
+                  onClick={handleSubmitChanges}
+                >
+                  Make Changes
+                </button>
               )}
-            </p> */}
+
+              {selectedRoute.driver === null ? null : (
+                <div className="mapRoutes-content-routeDetails-driverContainer">
+                  <header>DRIVER DETAILS</header>
+                  <section>
+                    <span>Name :</span>
+                    <div>{selectedRoute.driver.name}</div>
+                  </section>
+                  <section>
+                    <span>Primary Phone Number :</span>
+                    <div>{selectedRoute.driver.phone}</div>
+                  </section>
+                  <section>
+                    <span>Secondary Phone Number :</span>
+                    <div>1234567890</div>
+                  </section>
+                  <section>
+                    <span>Address :</span>
+                    <div>{selectedRoute.driver.address}</div>
+                  </section>
+                  <section>
+                    <span>Category :</span>
+                    <div>{selectedRoute.driver.category}</div>
+                  </section>
+                </div>
+              )}
+              <div className="mapRoutes-content-routeDetails-historyContainer">
+                <header>DELIVERY HISTORY</header>
+                {selectedRoute.delivery_history &&
+                selectedRoute.delivery_history.length > 0 ? (
+                  <table className="delivery-history-table">
+                    <thead>
+                      <tr>
+                        <th>S.No</th>
+                        <th>Date</th>
+                        <th>Driver Name</th>
+                        <th>Phone</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedRoute.delivery_history.map((history, index) => {
+                        const driverDetails = deliveryMan.find(
+                          (man) => man._id === history.driver
+                        );
+                        return (
+                          <tr key={history._id}>
+                            <td>{index + 1}</td>
+                            <td>
+                              {new Date(history.assigned_at).toLocaleString()}
+                            </td>
+                            <td>
+                              {driverDetails ? driverDetails.name : "Unknown"}
+                            </td>
+                            <td>
+                              {driverDetails ? driverDetails.phone : "N/A"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No delivery history available</p>
+                )}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="mapRoutes-content-mapContainer">

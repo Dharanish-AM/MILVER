@@ -12,15 +12,15 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { MdClose } from "react-icons/md";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { CSVLink } from 'react-csv';  
-import { jsPDF } from 'jspdf';   
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { CSVLink } from "react-csv";
+import { jsPDF } from "jspdf";
 import { useRef } from "react";
-
+import calender from "../assets/calendar.png";
+import DeliveryManImg from "../assets/delivery-man.png";
 
 function Deliverymandetails() {
-  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("Status");
   const [routeFilter, setRouteFilter] = useState("Routes");
@@ -33,14 +33,14 @@ function Deliverymandetails() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-const [editForm, setEditForm] = useState({
-  id:"",
-  name: "",
-  phone: "",
-  address: "",
-  primaryRouteName: "",
-  status: "",
-});
+  const [editForm, setEditForm] = useState({
+    id: "",
+    name: "",
+    phone: "",
+    address: "",
+    primaryRouteName: "",
+    status: "",
+  });
   const handleShowDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);
   };
@@ -59,34 +59,42 @@ const [editForm, setEditForm] = useState({
       console.log("Attempting to delete deliveryman...");
       if (deleteConfirmation === selectedEmployee.name) {
         console.log("Selected employee ID:", selectedEmployee._id);
-  
-        const response = await axios.delete(`${import.meta.env.VITE_API_URL}/deliverymen/`, {
-          data: { id: selectedEmployee._id }, 
-        });
-  
+
+        const response = await axios.delete(
+          `${import.meta.env.VITE_API_URL}/deliverymen/`,
+          {
+            data: { id: selectedEmployee._id },
+          }
+        );
+
         console.log("Employee deleted:", selectedEmployee.name);
-        toast.success(response.data.message || "Deliveryman deleted successfully");
-  
+        toast.success(
+          response.data.message || "Deliveryman deleted successfully"
+        );
+
         handleCloseDeleteConfirmation();
-        setIsEventAdded((prev) => !prev); 
+        setIsEventAdded((prev) => !prev);
       } else {
         alert("Name does not match for deletion.");
       }
     } catch (error) {
-      console.error("Error deleting deliveryman:", error.response?.data || error.message);
+      console.error(
+        "Error deleting deliveryman:",
+        error.response?.data || error.message
+      );
       toast.error("Failed to delete deliveryman record");
     }
   };
-  
+
   const [customerForm, setCustomerForm] = useState({
     name: "",
     phone: "",
     email: "",
     address: "",
-    routes: [], 
-    category: "", 
+    routes: [],
+    category: "",
   });
-  
+
   const [formErrors, setFormErrors] = useState({
     name: "",
     address: "",
@@ -100,7 +108,7 @@ const [editForm, setEditForm] = useState({
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/deliverymen/`
         );
-        console.log(response.data)
+        console.log(response.data);
         if (isMounted) {
           setdelivermendata(response.data);
         }
@@ -108,13 +116,13 @@ const [editForm, setEditForm] = useState({
         console.error("Error fetching deliverymen data: ", error);
       }
     };
-  
+
     getDeliverymenData();
-  
+
     return () => {
       isMounted = false;
     };
-  }, [isEventAdded]); 
+  }, [isEventAdded]);
   const handleAddEmployee = async () => {
     const errors = {};
     if (!customerForm.name) errors.name = "Name is required.";
@@ -124,15 +132,14 @@ const [editForm, setEditForm] = useState({
     if (!customerForm.routes || customerForm.routes.length === 0)
       errors.routes = "At least one route must be selected.";
     if (!customerForm.category) errors.category = "Category is required.";
-    
-  
+
     setFormErrors(errors);
-  
+
     if (Object.keys(errors).length > 0) {
       toast.error("Please fix the errors in the form.");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/deliverymen/`,
@@ -140,15 +147,16 @@ const [editForm, setEditForm] = useState({
       );
       toast.success("Employee added successfully!");
       setIsAddEmployeeModalOpen(false);
-      setIsEventAdded((prev) => !prev); 
+      setIsEventAdded((prev) => !prev);
     } catch (error) {
-      console.error("Error adding employee:", error.response?.data || error.message);
-      toast.error(
-        error.response?.data?.message || "Failed to add employee."
+      console.error(
+        "Error adding employee:",
+        error.response?.data || error.message
       );
+      toast.error(error.response?.data?.message || "Failed to add employee.");
     }
   };
-  
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -202,62 +210,58 @@ const [editForm, setEditForm] = useState({
     ];
 
     return (
-      <CSVLink data={deliverymendata} headers={headers} filename={"employee_data.csv"}>
+      <CSVLink
+        data={deliverymendata}
+        headers={headers}
+        filename={"employee_data.csv"}
+      >
         <button>Download CSV</button>
       </CSVLink>
     );
   };
   const handleExportPDF = () => {
     console.log(deliverymendata, "Exporting data to PDF");
-  
+
     toast.info("PDF Export Started!");
-  
+
     const doc = new jsPDF();
-  
-    // Set font and title
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
     doc.text("Employee Data", 20, 20);
-  
-    // Set the starting position for employee data
+
     let yPosition = 30;
     const marginBottom = 20;
-  
+
     deliverymendata.forEach((item) => {
-      // Add a new page if the content overflows
       if (yPosition + 60 > doc.internal.pageSize.height - marginBottom) {
         doc.addPage();
         yPosition = 20;
       }
-  
-      // Employee name with bold style
+
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
       doc.text(`Name: ${item.name}`, 20, yPosition);
       yPosition += 10;
-  
-      // Employee details in normal style
+
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-  
+
       doc.text(`Email: ${item.email}`, 20, yPosition);
       yPosition += 10;
-  
+
       doc.text(`Phone: ${item.phone}`, 20, yPosition);
       yPosition += 10;
-  
+
       doc.text(`Status: ${item.status}`, 20, yPosition);
       yPosition += 10;
-  
-      // Address with a bit more spacing
+
       doc.text(`Address: ${item.address}`, 20, yPosition);
-      yPosition += 15; // Extra space after address
-  
-      // Category and routes
+      yPosition += 15;
+
       doc.text(`Category: ${item.category}`, 20, yPosition);
       yPosition += 10;
-  
-      // If there are routes, list them
+
       if (item.routes && item.routes.length > 0) {
         doc.text("Routes: ", 20, yPosition);
         item.routes.forEach((route, idx) => {
@@ -265,35 +269,51 @@ const [editForm, setEditForm] = useState({
           doc.text(`${idx + 1}. ${route}`, 30, yPosition);
         });
       }
-      yPosition += 15; // Extra space after routes
-  
-      // If there are no delivery history or fuel allowance, print a message
+      yPosition += 15;
+
       if (!item.delivery_history.length && !item.fuel_allowance.length) {
-        doc.text("No delivery history or fuel allowance available.", 20, yPosition);
+        doc.text(
+          "No delivery history or fuel allowance available.",
+          20,
+          yPosition
+        );
         yPosition += 10;
       }
-  
-      // Add some space between employees
+
       yPosition += 20;
     });
-  
+
     console.log("Exporting PDF complete");
-  
-    // Save the PDF
+
     doc.save("employee_data.pdf");
   };
-  const handleAttendance = (employee) => {
-    // Logic to toggle attendance
-    employee.attendance = employee.attendance === "Present" ? "Absent" : "Present";
-    // Update the state or make an API call to save the changes
+  const handleAttendanceChange = async (employee, empid) => {
+    console.log("❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥");
+    console.log(`Current Attendance: ${employee}`);
+    console.log(empid);
+    var choice = false;
+    try {
+      if (employee === "Present") {
+        choice = true;
+      } else if (employee === "Absent") {
+        choice = false;
+      }
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/deliverymen/attendence`,
+        { driver_id: empid, is_present: choice }
+      );
+      if (response.status === 200) {
+        toast.success("attendence updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+    }
   };
-  
-  
-  
+
   const handleEdit = () => {
     if (selectedEmployee) {
       setEditForm({
-        id:selectedEmployee._id,
+        id: selectedEmployee._id,
         name: selectedEmployee.name,
         phone: selectedEmployee.phone,
         address: selectedEmployee.address,
@@ -308,7 +328,7 @@ const [editForm, setEditForm] = useState({
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
   };
-  
+
   const handleSaveEdit = async () => {
     try {
       const response = await axios.put(
@@ -323,24 +343,22 @@ const [editForm, setEditForm] = useState({
         }
       );
       toast.success("Deliveryman details updated successfully");
-  
+
       setSelectedEmployee({
         ...selectedEmployee,
         ...editForm,
       });
-  
+
       setIsEventAdded((prev) => !prev);
-  
+
       setIsEditModalOpen(false);
-      setShowModal(true); 
+      setShowModal(true);
     } catch (error) {
       console.error("Error updating deliveryman:", error);
       toast.error("Failed to update deliveryman details");
     }
   };
-  
-  
-   
+
   return (
     <section className="deliverymandetails">
       <Header />
@@ -375,8 +393,8 @@ const [editForm, setEditForm] = useState({
           </div>
         </div>
         <div className="filter-bar">
-          <div className="search-bar">
-            <FaSearch className="search-icon" />
+          <div className="search-barmain">
+            <FaSearch className="search-baricon" />
             <input
               type="text"
               placeholder="Search Employees..."
@@ -413,96 +431,131 @@ const [editForm, setEditForm] = useState({
         </div>
 
         <div className="employee-list">
-  {filteredEmployees.map((employee, index) => (
-    <div key={index} className="employee-card">
-      <div
-        className={`employee-status ${
-          employee.status === "Active" ? "active" : "inactive"
-        }`}
-      >
-        {employee.status}
-      </div>
-      <div className="employee-info">
-        <img
-          src={employee.profilePicture || deliveryman}
-          alt="Employee"
-          className="employee-avatar"
-        />
-        <h3>{employee.name}</h3>
-        <div className="employee-details">
-          <p>
-            <strong>Route:</strong> {employee.primaryRouteName} 🛤️
-          </p>
-          <p>
-            <strong>Ph-no:</strong> {employee.phone} 📱
-          </p>
-          <p>
-            <strong>Type:</strong> {employee.category} ⏰
-          </p>
-        </div>
-        <button className={`attendance-btn ${
-          employee.attendance === "Present" ? "present" : "absent"
-        }`} onClick={() => handleAttendance(employee)}>
-          {employee.attendance === "Present" ? "Mark Absent" : "Mark Present"}
-        </button>
-        <p className="employee-joined">
-          Joined at {employee.joinDate}{" "}
-          <a href="#" onClick={() => handleViewDetails(employee)}>
-            view details
-          </a>
-        </p>
-      </div>
-    </div>
-  ))}
-</div>
+          {filteredEmployees.map((employee, index) => {
+            const presentCount = Array.isArray(employee.attendence)
+              ? employee.attendence.filter(
+                  (att) => att.status.toLowerCase() === "present"
+                ).length
+              : 0;
 
+            return (
+              <div key={index} className="employee-card">
+                <div
+                  className={`employee-status ${
+                    employee.status === "Active" ? "active" : "inactive"
+                  }`}
+                >
+                  {employee.status}
+                </div>
+                <div className="attendance-dropdown">
+                  <button className="attendance-icon">
+                    <img
+                      src={calender}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </button>
+                  <div className="dropdown-menu">
+                    <button
+                      onClick={() =>
+                        handleAttendanceChange("Present", employee._id) }
+                        style={{padding:'12px 20px',  fontSize: "1.1em",fontWeight:"bold"}}
+                    >
+                      Present
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleAttendanceChange("Absent", employee._id)
+                      }
+                      style={{padding:'12px 20px',  fontSize: "1.1em",fontWeight:"bold"}}
+                    >
+                      Absent
+                    </button>
+                  </div>
+                </div>
+                <div className="employee-info">
+                  <img
+                    src={DeliveryManImg}
+                    alt="Employee"
+                    className="employee-avatar"
+                  />
+                  <h3>{employee.name}</h3>
+                  <div className="employee-details">
+                    <p>
+                      <strong>Route:</strong> {employee.primaryRouteName} 🛤️
+                    </p>
+                    <p>
+                      <strong>Ph-no:</strong> {employee.phone} 📱
+                    </p>
+                    <p>
+                      <strong>Type:</strong> {employee.category} ⏰
+                    </p>
+                    <p>
+                      <strong>Attendance:</strong> {presentCount} Present
+                    </p>
+                  </div>
+                  <p className="employee-joined">
+                    <a href="#" onClick={() => handleViewDetails(employee)}>
+                      View More
+                    </a>
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
         {showModal && selectedEmployee && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h3>{selectedEmployee.name}</h3>
-        <button className="close-btn" onClick={handleCloseModal}>
-          <MdClose />
-        </button>
-      </div>
-      <div className="modal-body">
-        <p>
-          <strong>Phone:</strong> {selectedEmployee.phone}
-        </p>
-        <p>
-          <strong>Email:</strong> {selectedEmployee.email}
-        </p>
-        <p>
-          <strong>Address:</strong> {selectedEmployee.address}
-        </p>
-        <p>
-          <strong>Primary Route:</strong> {selectedEmployee.primaryRouteName}
-        </p>
-        <p>
-          <strong>Status:</strong> {selectedEmployee.status}
-        </p>
-        <p>
-          <strong>External Status:</strong> {selectedEmployee.external_status}
-        </p>
-      </div>
-      <div className="modal-footer">
-        <button className="edit-btn" onClick={handleEdit}>
-          Edit
-        </button>
-        <button
-          className="delete-btn"
-          onClick={handleShowDeleteConfirmation}
-        >
-          Delete
-        </button>
-        <button className="close-btn" onClick={handleCloseModal}>
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3>{selectedEmployee.name}</h3>
+                <button className="close-btn" onClick={handleCloseModal}>
+                  <MdClose />
+                </button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  <strong>Phone:</strong> {selectedEmployee.phone}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedEmployee.email}
+                </p>
+                <p>
+                  <strong>Address:</strong> {selectedEmployee.address}
+                </p>
+                <p>
+                  <strong>Primary Route:</strong>{" "}
+                  {selectedEmployee.primaryRouteName}
+                </p>
+                <p>
+                  <strong>Status:</strong> {selectedEmployee.status}
+                </p>
+                <p>
+                  <strong>External Status:</strong>{" "}
+                  {selectedEmployee.external_status}
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button className="edit-btn" onClick={handleEdit}>
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={handleShowDeleteConfirmation}
+                >
+                  Delete
+                </button>
+                <button className="close-btn" onClick={handleCloseModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showDeleteConfirmation && selectedEmployee && (
           <div className="modal-overlay">
@@ -542,231 +595,232 @@ const [editForm, setEditForm] = useState({
           </div>
         )}
 
-{isAddEmployeeModalOpen && (
-  <div
-    className="modal-overlay"
-    onClick={() => setIsAddEmployeeModalOpen(false)}  // Closes the modal when clicking outside content
-  >
-    <div
-      className="modal-content"
-      onClick={(e) => e.stopPropagation()}  // Prevents the event from propagating to the overlay
-    >
-      <div className="modal-header">
-        <h2>Add Employee</h2>
-        <button
-          className="close-btn"
-          onClick={() => setIsAddEmployeeModalOpen(false)}
-        >
-          <MdClose />
-        </button>
-      </div>
-      <div className="modal-body">
-        {/* Name */}
-        <input
-          type="text"
-          name="name"
-          placeholder="Employee Name"
-          value={customerForm.name}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, name: e.target.value })
-          }
-          className={`modal-input ${formErrors.name ? "input-error" : ""}`}
-        />
-        {formErrors.name && (
-          <span className="error-message">{formErrors.name}</span>
+        {isAddEmployeeModalOpen && (
+          <div
+            className="modal-overlay"
+            onClick={() => setIsAddEmployeeModalOpen(false)}
+          >
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Add Employee</h2>
+                <button
+                  className="close-btn"
+                  onClick={() => setIsAddEmployeeModalOpen(false)}
+                >
+                  <MdClose />
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Name */}
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Employee Name"
+                  value={customerForm.name}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, name: e.target.value })
+                  }
+                  className={`modal-input ${
+                    formErrors.name ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.name && (
+                  <span className="error-message">{formErrors.name}</span>
+                )}
+
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Phone"
+                  value={customerForm.phone}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, phone: e.target.value })
+                  }
+                  className={`modal-input ${
+                    formErrors.phone ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.phone && (
+                  <span className="error-message">{formErrors.phone}</span>
+                )}
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={customerForm.email}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, email: e.target.value })
+                  }
+                  className={`modal-input ${
+                    formErrors.email ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.email && (
+                  <span className="error-message">{formErrors.email}</span>
+                )}
+
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Address"
+                  value={customerForm.address}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      address: e.target.value,
+                    })
+                  }
+                  className={`modal-input ${
+                    formErrors.address ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.address && (
+                  <span className="error-message">{formErrors.address}</span>
+                )}
+
+                <select
+                  name="routes"
+                  multiple
+                  value={customerForm.routes}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      routes: Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      ),
+                    })
+                  }
+                  className="modal-select"
+                >
+                  <option value="1">Route 1</option>
+                  <option value="2">Route 2</option>
+                  <option value="3">Route 3</option>
+                </select>
+
+                <select
+                  name="category"
+                  value={customerForm.category}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      category: e.target.value,
+                    })
+                  }
+                  className="modal-select"
+                >
+                  <option value="">Select Category</option>
+                  <option value="main_driver">Driver</option>
+                  <option value="backup_driver">Backup Driver</option>
+                </select>
+              </div>
+              <div className="modal-footer">
+                <button className="submit-btn" onClick={handleAddEmployee}>
+                  Add Employee
+                </button>
+                <button
+                  className="cancel-btn"
+                  onClick={() => setIsAddEmployeeModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* Phone */}
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone"
-          value={customerForm.phone}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, phone: e.target.value })
-          }
-          className={`modal-input ${formErrors.phone ? "input-error" : ""}`}
-        />
-        {formErrors.phone && (
-          <span className="error-message">{formErrors.phone}</span>
+        {isEditModalOpen && (
+          <div className="custom-modal-overlay">
+            <div className="custom-modal">
+              <div className="custom-modal-header">
+                <h2 className="custom-modal-title">Edit Employee Details</h2>
+                <button
+                  className="custom-modal-close"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  <MdClose />
+                </button>
+              </div>
+              <div className="custom-modal-body">
+                <form>
+                  <div className="custom-form-group">
+                    <label htmlFor="employeeName">Employee Name</label>
+                    <input
+                      id="employeeName"
+                      type="text"
+                      name="name"
+                      placeholder="Enter Employee Name"
+                      value={editForm.name}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="custom-form-group">
+                    <label htmlFor="phone">Phone</label>
+                    <input
+                      id="phone"
+                      type="text"
+                      name="phone"
+                      placeholder="Enter Phone Number"
+                      value={editForm.phone}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="custom-form-group">
+                    <label htmlFor="address">Address</label>
+                    <input
+                      id="address"
+                      type="text"
+                      name="address"
+                      placeholder="Enter Address"
+                      value={editForm.address}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="custom-form-group">
+                    <label htmlFor="primaryRouteName">Primary Route</label>
+                    <input
+                      id="primaryRouteName"
+                      type="text"
+                      name="primaryRouteName"
+                      placeholder="Enter Primary Route"
+                      value={editForm.primaryRouteName}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="custom-form-group">
+                    <label htmlFor="status">Status</label>
+                    <select
+                      id="status"
+                      name="status"
+                      value={editForm.status}
+                      onChange={handleEditFormChange}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div className="custom-modal-footer">
+                <button
+                  className="custom-button custom-button-save"
+                  onClick={handleSaveEdit}
+                >
+                  Save
+                </button>
+                <button
+                  className="custom-button custom-button-cancel"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* Email */}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={customerForm.email}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, email: e.target.value })
-          }
-          className={`modal-input ${formErrors.email ? "input-error" : ""}`}
-        />
-        {formErrors.email && (
-          <span className="error-message">{formErrors.email}</span>
-        )}
-
-        {/* Address */}
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={customerForm.address}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, address: e.target.value })
-          }
-          className={`modal-input ${formErrors.address ? "input-error" : ""}`}
-        />
-        {formErrors.address && (
-          <span className="error-message">{formErrors.address}</span>
-        )}
-
-        {/* Routes */}
-        <select
-          name="routes"
-          multiple
-          value={customerForm.routes}
-          onChange={(e) =>
-            setCustomerForm({
-              ...customerForm,
-              routes: Array.from(
-                e.target.selectedOptions,
-                (option) => option.value
-              ),
-            })
-          }
-          className="modal-select"
-        >
-          <option value="1">Route 1</option>
-          <option value="2">Route 2</option>
-          <option value="3">Route 3</option>
-        </select>
-
-        {/* Category */}
-        <select
-          name="category"
-          value={customerForm.category}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, category: e.target.value })
-          }
-          className="modal-select"
-        >
-          <option value="">Select Category</option>
-          <option value="main_driver">Driver</option>
-          <option value="backup_driver">Backup Driver</option>
-        </select>
-      </div>
-      <div className="modal-footer">
-        <button className="submit-btn" onClick={handleAddEmployee}>
-          Add Employee
-        </button>
-        <button
-          className="cancel-btn"
-          onClick={() => setIsAddEmployeeModalOpen(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
-{isEditModalOpen && (
-  <div className="custom-modal-overlay">
-    <div className="custom-modal">
-      <div className="custom-modal-header">
-        <h2 className="custom-modal-title">Edit Employee Details</h2>
-        <button
-          className="custom-modal-close"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          <MdClose />
-        </button>
-      </div>
-      <div className="custom-modal-body">
-        <form>
-          <div className="custom-form-group">
-            <label htmlFor="employeeName">Employee Name</label>
-            <input
-              id="employeeName"
-              type="text"
-              name="name"
-              placeholder="Enter Employee Name"
-              value={editForm.name}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="custom-form-group">
-            <label htmlFor="phone">Phone</label>
-            <input
-              id="phone"
-              type="text"
-              name="phone"
-              placeholder="Enter Phone Number"
-              value={editForm.phone}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="custom-form-group">
-            <label htmlFor="address">Address</label>
-            <input
-              id="address"
-              type="text"
-              name="address"
-              placeholder="Enter Address"
-              value={editForm.address}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="custom-form-group">
-            <label htmlFor="primaryRouteName">Primary Route</label>
-            <input
-              id="primaryRouteName"
-              type="text"
-              name="primaryRouteName"
-              placeholder="Enter Primary Route"
-              value={editForm.primaryRouteName}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="custom-form-group">
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={editForm.status}
-              onChange={handleEditFormChange}
-            >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-        </form>
-      </div>
-      <div className="custom-modal-footer">
-        <button
-          className="custom-button custom-button-save"
-          onClick={handleSaveEdit}
-        >
-          Save
-        </button>
-        <button
-          className="custom-button custom-button-cancel"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-      <ToastContainer />
-
-
+        <ToastContainer />
       </div>
     </section>
   );
