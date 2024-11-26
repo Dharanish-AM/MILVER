@@ -13,7 +13,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-}
+} 
 .mapRoutes-content-mapContainer {
   height: 95%;
   width: 40%;
@@ -259,4 +259,37 @@
   width: 40%;
   background-color: white;
   border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+.mapRoutes-content-routeDetails-Container {
+  height: 90%;
+  width: 90%;
+}
+.mapRoutes-content-routeDetails-Container-Backbutton {
+  height: 2.5vw;
+  aspect-ratio: 1;
+  border-radius: 100px;
+  border: none;
+  background-color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: url("../assets/left arrow.png");
+  background-size: 1.1vw;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.mapRoutes-content-routeDetails-Container-Backbutton:hover {
+  scale: 1.1;
+}
+.mapRoutes-content-routeDetails-Container-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.mapRoutes-content-routeDetails-Container-header-title {
+  margin-left: 1vw;
+  font-size: 2vw;
+  margin-top: 1%;
 }
