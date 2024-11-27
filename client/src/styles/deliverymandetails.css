@@ -339,37 +339,6 @@
   font-size: 16px;
 }
 
-.delete-confirmation-modal {
-  background-color: #f2f2f2;
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-}
-
-.delete-confirmation-modal h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.delete-confirmation-modal .confirm-btn {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.delete-confirmation-modal .cancel-btn {
-  background-color: #8c8c8c;
-  color: white;
-  padding: 10px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
 .add-employee-modal-overlay {
   position: fixed;
   top: 0;
@@ -557,17 +526,16 @@ add-employee-submit-btn {
 
 
 .edit-modal {
-  background: #fff;
-  width: 1000px;
+  background: #ffffff;
+  width: 700px;
   max-width: 95%;
   border-radius: 12px;
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   position: relative;
   padding: 25px;
   animation: modalFadeIn 0.5s ease-out;
-  overflow: hidden;
 }
 
 
@@ -575,39 +543,43 @@ add-employee-submit-btn {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  background: linear-gradient(135deg, #3498db, #2ecc71);
-  color: #fff;
-  font-size: 22px;
-  font-weight: 600;
+  background-color: #f4f4f4;
+  color: #2c3e50;
+  padding: 20px;
   border-radius: 12px 12px 0 0;
-  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: capitalize;
 }
 
 .edit-modal-title {
   margin: 0;
+  font-size: 22px;
+  font-weight: 600;
 }
 
 .edit-modal-close {
   background: none;
   border: none;
-  font-size: 26px;
-  color: #fff;
+  font-size: 24px;
+  color: #2c3e50;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .edit-modal-close:hover {
   color: #e74c3c;
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 
 .edit-modal-body {
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 20px 0;
+  gap: 24px;
+  color: #34495e;
+  font-size: 16px;
 }
 
 
@@ -620,138 +592,134 @@ add-employee-submit-btn {
 .edit-form-group label {
   font-size: 16px;
   font-weight: 500;
-  color: #34495e;
+  color: #2c3e50;
 }
 
 .edit-form-group input,
 .edit-form-group select {
   width: 100%;
-  padding: 16px;
+  padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
-  background-color: #f9f9f9;
+  background-color: #f7f9fc;
   transition: all 0.3s ease;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .edit-form-group input:focus,
 .edit-form-group select:focus {
   border-color: #3498db;
-  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
   outline: none;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
 }
 
 
 .edit-modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 30px;
-  padding: 20px 30px;
-  background-color: rgba(240, 240, 240, 0.9);
-  border-top: 1px solid #ddd;
+  padding: 20px;
+  background-color: #ecf0f1;
   border-radius: 0 0 12px 12px;
+  gap: 16px;
 }
 
+
 .edit-button {
-  padding: 14px 32px;
+  padding: 12px 24px;
   font-size: 16px;
   font-weight: bold;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid transparent;
+  border: 2px solid;
   background-color: transparent;
-  color: #34495e;
 }
 
 .edit-button-save {
-  border-color: #3498db;
-  color: #3498db;
+  border-color: #2ecc71;
+  color: #2ecc71;
 }
 
 .edit-button-save:hover {
-  background-color: #3498db;
+  background-color: #2ecc71;
   color: #fff;
-  border-color: #2980b9;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .edit-button-cancel {
-  border-color: #95a5a6;
-  color: #95a5a6;
+  border-color: #e74c3c;
+  color: #e74c3c;
 }
 
 .edit-button-cancel:hover {
-  background-color: #95a5a6;
+  background-color: #e74c3c;
   color: #fff;
-  border-color: #7f8c8d;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .edit-modal {
     width: 90%;
     padding: 20px;
   }
 
   .edit-modal-header {
-    padding: 10px 20px;
     font-size: 18px;
+    padding: 15px;
   }
 
   .edit-button {
     font-size: 14px;
-    padding: 12px 25px;
+    padding: 10px 20px;
   }
 
   .edit-form-group input,
   .edit-form-group select {
-    padding: 14px;
+    padding: 12px;
   }
 }
-/* Modal Overlay */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7); /* Darker transparent background */
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  backdrop-filter: blur(10px); /* Frosted glass effect */
+  backdrop-filter: blur(10px);
 }
 
-/* Modal Container */
+
 .modal-container {
-  background: rgba(255, 255, 255, 0.95); /* Slight transparency */
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
   padding: 25px;
   overflow-y: auto;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
-  backdrop-filter: blur(8px); /* Subtle blur effect for modern look */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* Thin border for separation */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Modal Header */
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -765,7 +733,7 @@ add-employee-submit-btn {
   font-size: 1.6rem;
   font-weight: 600;
   color: #333;
-  text-transform: uppercase; /* Clean professional look */
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -775,15 +743,15 @@ add-employee-submit-btn {
   font-size: 1.8rem;
   color: #555;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .modal-close-btn:hover {
-  color: #e63946; /* Red color on hover */
-  transform: rotate(180deg); /* Rotate effect for interaction */
+  color: #e63946;
+  transform: rotate(180deg);
 }
 
-/* Modal Body */
+
 .modal-body {
   padding: 15px 0;
 }
@@ -795,14 +763,14 @@ add-employee-submit-btn {
   line-height: 1.6;
 }
 
-/* Modal Footer */
+
 .modal-footer {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
-/* Buttons */
+
 button {
   padding: 12px 25px;
   font-size: 1.1rem;
@@ -811,32 +779,32 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
   font-weight: 600;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for buttons */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Edit Button */
+
 .btn-edit {
-  background: linear-gradient(145deg, #4c9bff, #0061f2); /* Blue gradient */
+  background: linear-gradient(145deg, #4c9bff, #0061f2);
   color: white;
 }
 
 .btn-edit:hover {
   background: linear-gradient(145deg, #0061f2, #0049b3);
-  transform: scale(1.05); /* Slight zoom effect */
+  transform: scale(1.05);
 }
 
-/* Delete Button */
+
 .btn-delete {
-  background: linear-gradient(145deg, #ff4e50, #e63946); /* Red gradient */
+  background: linear-gradient(145deg, #ff4e50, #e63946);
   color: white;
 }
 
 .btn-delete:hover {
   background: linear-gradient(145deg, #e63946, #d62828);
-  transform: scale(1.05); /* Slight zoom effect */
+  transform: scale(1.05);
 }
 
-/* Close Button */
+
 .btn-close {
   background: #f1f1f1;
   color: #333;
@@ -844,10 +812,10 @@ button {
 
 .btn-close:hover {
   background: #ddd;
-  transform: scale(1.05); /* Slight zoom effect */
+  transform: scale(1.05);
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .modal-container {
     width: 95%;
@@ -861,5 +829,133 @@ button {
   button {
     padding: 10px 20px;
     font-size: 1rem;
+  }
+}
+
+.delete-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeBackdrop 0.3s ease-in-out;
+}
+
+
+.delete-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 420px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.4s ease-out;
+  font-family: 'Inter', sans-serif;
+}
+
+
+.delete-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #2c3e50;
+  font-weight: 600;
+  text-align: center;
+}
+
+
+.delete-body p {
+  margin: 15px 0;
+  font-size: 1rem;
+  color: #34495e;
+  text-align: center;
+  line-height: 1.5;
+}
+
+
+.delete-input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #dcdde1;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #2f3640;
+  background-color: #f5f6fa;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.delete-input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+  outline: none;
+}
+
+
+.delete-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.delete-cancel-btn,
+.delete-confirm-btn {
+  padding: 12px 18px;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+
+.delete-cancel-btn {
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.delete-cancel-btn:hover {
+  background: #dcdde1;
+  transform: translateY(-1px);
+}
+
+
+.delete-confirm-btn {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+.delete-confirm-btn:hover:enabled {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+.delete-confirm-btn:disabled {
+  background: #e6b0aa;
+  cursor: not-allowed;
+}
+
+
+@keyframes fadeBackdrop {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

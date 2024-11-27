@@ -541,43 +541,44 @@ function Deliverymandetails() {
 )}
 
 
-        {showDeleteConfirmation && selectedEmployee && (
-          <div className="modal-overlay">
-            <div className="delete-confirmation-modal">
-              <div className="delete-confirmation-header">
-                <h3>Are you sure you want to delete this employee?</h3>
-              </div>
-              <div className="delete-confirmation-body">
-                <p>
-                  To confirm, type the name{" "}
-                  <strong>{selectedEmployee.name}</strong> below:
-                </p>
-                <input
-                  type="text"
-                  value={deleteConfirmation}
-                  onChange={handleDeleteConfirmationChange}
-                  placeholder="Enter name to confirm"
-                  className="confirmation-input"
-                />
-              </div>
-              <div className="delete-confirmation-footer">
-                <button
-                  className="cancel-btn"
-                  onClick={handleCloseDeleteConfirmation}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="confirm-btn"
-                  onClick={handleDelete}
-                  disabled={deleteConfirmation !== selectedEmployee.name}
-                >
-                  Confirm Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+{showDeleteConfirmation && selectedEmployee && (
+  <div className="delete-backdrop">
+    <div className="delete-modal">
+      <div className="delete-header">
+        <h3>Are you sure you want to delete this employee?</h3>
+      </div>
+      <div className="delete-body">
+        <p>
+          To confirm, type the name{" "}
+          <strong>{selectedEmployee.name}</strong> below:
+        </p>
+        <input
+          type="text"
+          value={deleteConfirmation}
+          onChange={handleDeleteConfirmationChange}
+          placeholder="Enter name to confirm"
+          className="delete-input"
+        />
+      </div>
+      <div className="delete-footer">
+        <button
+          className="delete-cancel-btn"
+          onClick={handleCloseDeleteConfirmation}
+        >
+          Cancel
+        </button>
+        <button
+          className="delete-confirm-btn"
+          onClick={handleDelete}
+          disabled={deleteConfirmation !== selectedEmployee.name}
+        >
+          Confirm Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 {isAddEmployeeModalOpen && (
   <div
     className="add-employee-modal-overlay"
