@@ -514,55 +514,32 @@ function Deliverymandetails() {
             );
           })}
         </div>
-
         {showModal && selectedEmployee && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>{selectedEmployee.name}</h3>
-                <button className="close-btn" onClick={handleCloseModal}>
-                  <MdClose />
-                </button>
-              </div>
-              <div className="modal-body">
-                <p>
-                  <strong>Phone:</strong> {selectedEmployee.phone}
-                </p>
-                <p>
-                  <strong>Email:</strong> {selectedEmployee.email}
-                </p>
-                <p>
-                  <strong>Address:</strong> {selectedEmployee.address}
-                </p>
-                <p>
-                  <strong>Primary Route:</strong>{" "}
-                  {selectedEmployee.primaryRouteName}
-                </p>
-                <p>
-                  <strong>Status:</strong> {selectedEmployee.status}
-                </p>
-                <p>
-                  <strong>External Status:</strong>{" "}
-                  {selectedEmployee.external_status}
-                </p>
-              </div>
-              <div className="modal-footer">
-                <button className="edit-btn" onClick={handleEdit}>
-                  Edit
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={handleShowDeleteConfirmation}
-                >
-                  Delete
-                </button>
-                <button className="close-btn" onClick={handleCloseModal}>
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+  <div className="modal-overlay">
+    <div className="modal-container">
+      <div className="modal-header">
+        <h3 className="modal-title">{selectedEmployee.name}</h3>
+        <button className="modal-close-btn" onClick={handleCloseModal}>
+          <MdClose />
+        </button>
+      </div>
+      <div className="modal-body">
+        <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
+        <p><strong>Email:</strong> {selectedEmployee.email}</p>
+        <p><strong>Address:</strong> {selectedEmployee.address}</p>
+        <p><strong>Primary Route:</strong> {selectedEmployee.primaryRouteName}</p>
+        <p><strong>Status:</strong> {selectedEmployee.status}</p>
+        <p><strong>External Status:</strong> {selectedEmployee.external_status}</p>
+      </div>
+      <div className="modal-footer">
+        <button className="btn-edit" onClick={handleEdit}>Edit</button>
+        <button className="btn-delete" onClick={handleShowDeleteConfirmation}>Delete</button>
+        <button className="btn-close" onClick={handleCloseModal}>Close</button>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {showDeleteConfirmation && selectedEmployee && (
           <div className="modal-overlay">
