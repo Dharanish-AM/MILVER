@@ -5,7 +5,17 @@ const DEFAULT_LOCATION = { latitude: 0, longitude: 0 };
 const getAllCustomers = async (req, res) => {
   try {
     const customers = await Customer.find();
-    res.json(customers);
+   const transformedcustomers=await Promise.all( customers.map(async(customer)=>{
+  //  console.log("😎",customer,"😎")
+  //  console.log(customer.route_id);
+   const route=await Route.findById(customer.route_id);
+   return{
+    ...customer.toObject(),
+    route_name:route?route.route_name:null
+   }
+    }))
+    console.log(transformedcustomers)
+    res.json(transformedcustomers);
   } catch (error) {
     res.status(500).json({ message: "Error fetching customers", error });
   }

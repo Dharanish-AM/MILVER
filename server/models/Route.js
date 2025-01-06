@@ -50,10 +50,15 @@ const routeSchema = new mongoose.Schema({
     ],
     default: [],
   },
-  defaultAmount: { 
+  fuelamount: { 
     type: Number,
     default: 0,
   },
+  todaysAmount:{
+    type:Number,
+    default:0
+  },
+ 
 });
 
 routeSchema.plugin(AutoIncrement, { inc_field: "route_id" });
