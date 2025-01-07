@@ -18,6 +18,7 @@ import { useMap } from "react-leaflet";
 import RouteImg from "../assets/RouteImg";
 
 function Dashboard() {
+  const [routes, setRoutes] = useState([]);
   const [data, setData] = useState([]);
   const [deliveryDetails, setDeliveryDetails] = useState([]);
   const mapRef = useRef();
@@ -88,22 +89,23 @@ function Dashboard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/route/getallroutes")
+      .get("http://localhost:8000/api/route/")
       .then((res) => {
-        const routes = res.data.data;
-        console.log(res.data.data);
-        const deliveryDetails = routes.flatMap((route) => {
-          if (route.driver) {
-            console.log(route.driver);
-            return route.driver;
-          }
-          return [];
-        });
-        setDeliveryDetails(deliveryDetails);
-        setData(routes);
+        console.log(res);
+        setRoutes(res.data);
       })
       .catch((err) => {
         console.log("Error in getRoutes API request:", err);
+      });
+    axios
+      .get("http://localhost:8000/api/deliverymen/")
+      .then((res) => {
+        console.log(res.data);
+        const deliverymen = res.data;
+        setDeliveryDetails(deliverymen);
+      })
+      .catch((err) => {
+        console.log("Error in getAllDeliveryMen : ", err);
       });
   }, []);
 
@@ -311,62 +313,48 @@ function Dashboard() {
                     <thead className="delivery-details-table-head">
                       <tr>
                         <th className="delivery-details-table-No">No</th>
+                        <th className="delivery-details-table-status">
+                          Status
+                        </th>
                         <th className="delivery-details-table-Name">Name</th>
-                        <th className="delivery-details-table-Route">Route</th>
+                        <th className="delivery-details-table-route">Route</th>
                         <th className="delivery-details-table-1/2">1/2</th>
                         <th className="delivery-details-table-1">1</th>
-                        <th className="delivery-details-table-supplied">
-                          <img
-                            src={supplied}
-                            alt="supplied"
-                            style={{ width: "10px", height: "20px" }}
-                          />
-                        </th>
-                        <th className="delivery-details-table-collected">
-                          <img
-                            src={collected}
-                            alt="collected"
-                            style={{ width: "10px", height: "20px" }}
-                          />
-                        </th>
-                        <th className="delivery-details-table-broken">
-                          <img
-                            src={broken}
-                            alt="broken"
-                            style={{ width: "20px", height: "20px" }}
-                          />
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {deliveryDetails.map((detail, index) => (
                         <tr key={index}>
-                          <td
-                            className="delivery-details-table-No"
-                            style={{ padding: "15px 15px" }}
-                          >
-                            {detail.delivery_man_id}
+                          <td className="delivery-details-table-No">
+                            {index + 1}
+                          </td>
+                          <td className="delivery-details-table-status">
+                            <div
+                              className="delivery-details-table-status-circle"
+                              style={{
+                                backgroundColor:
+                                  detail.status === "assigned"
+                                    ? "green"
+                                    : detail.status === "on_leave"
+                                    ? "red"
+                                    : "orange",
+                              }}
+                            ></div>
                           </td>
                           <td className="delivery-details-table-Name">
-                            {detail.name}
+                            {detail.name || "no data"}
                           </td>
-                          <td className="delivery-details-table-Route">
-                            {detail.to}
+                          <td className="delivery-details-table-route">
+                            {detail.status === "assigned" ? routes.find((route) => {   
+                                const temp = route.driver && route.driver._id === detail._id;
+                                console.log(temp)
+                            }) : "-"}
                           </td>
-                          <td className="delivery-details-table-1/2">
-                            {detail.half || 0}
-                          </td>
-                          <td className="delivery-details-table-1">
+                          <td className="delivery-details-table-1-2">
                             {detail.full || 0}
                           </td>
-                          <td className="delivery-details-table-supplied">
+                          <td className="delivery-details-table-1">
                             {detail.supplied || 0}
-                          </td>
-                          <td className="delivery-details-table-collected">
-                            {detail.collected || 0}
-                          </td>
-                          <td className="delivery-details-table-broken">
-                            {detail.damaged || 0}
                           </td>
                         </tr>
                       ))}

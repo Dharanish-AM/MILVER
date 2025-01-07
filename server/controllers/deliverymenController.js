@@ -4,10 +4,24 @@ const cron = require("node-cron");
 
 const getAllDeliverymen = async (req, res) => {
   try {
-    const deliverymen = await Deliverymen.find().populate(
-      "delivery_history.customer"
-    );
-    res.json(deliverymen);
+    const deliverymen = await Deliverymen.find()
+      .populate({
+        path: "routes",
+        select: "route_id route_name location distance",
+      })
+      .populate("delivery_history.customer");
+
+    const transformedDeliverymen = deliverymen.map((deliveryman) => ({
+      ...deliveryman.toObject(),
+      routes: deliveryman.routes.map((route) => ({
+        id: route.route_id,
+        name: route.route_name,
+        location: route.location,
+        distance: route.distance,
+      })),
+    }));
+
+    res.json(transformedDeliverymen);
   } catch (error) {
     res
       .status(500)
@@ -133,6 +147,31 @@ const attendencedeliverymen = async (req, res) => {
     const attendanceStatus = is_present ? "present" : "absent";
     const deliverymenStatus = is_present ? "available" : "on_leave";
 
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const driver = await Deliverymen.findOne({ _id: driver_id });
+
+    if (!driver) {
+      res
+        .status(404)
+        .json({ message: `Driver with ID ${driver_id} not found` });
+      return;
+    }
+
+    const alreadyMarked = driver.attendence.some((att) => {
+      const recordDate = new Date(att.date);
+      recordDate.setHours(0, 0, 0, 0);
+      return recordDate.getTime() === currentDate.getTime();
+    });
+
+    if (alreadyMarked) {
+      res.status(400).json({
+        message: "Attendance for today has already been marked",
+      });
+      return;
+    }
+
     const updatedDriver = await Deliverymen.findOneAndUpdate(
       { _id: driver_id },
       {
@@ -146,13 +185,6 @@ const attendencedeliverymen = async (req, res) => {
       },
       { new: true }
     );
-
-    if (!updatedDriver) {
-      res
-        .status(404)
-        .json({ message: `Driver with ID ${driver_id} not found` });
-      return;
-    }
 
     res.status(200).json({
       message: "Attendance and status updated successfully",
@@ -279,12 +311,10 @@ const resetDriverStatusAndRoutes = () => {
       console.log(
         "Running scheduled task to reset driver statuses and routes."
       );
- 
-      
+
       await Deliverymen.updateMany({}, { status: "available" });
       console.log("All deliverymen statuses updated to 'available'.");
 
-      
       await Route.updateMany({}, { driver: null });
       console.log("All routes have been reset to have no assigned driver.");
     } catch (error) {

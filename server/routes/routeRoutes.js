@@ -12,7 +12,7 @@ const {
 const router = express.Router();
 
 router.get("/", getAllRoutes);
-router.post("/getroute", getRouteById); 
+router.get("/getroute", getRouteById); 
 router.post("/", createRoute);
 
 router.put("/", updateRoute); 

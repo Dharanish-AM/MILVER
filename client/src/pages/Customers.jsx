@@ -315,7 +315,7 @@ const Customers = () => {
                   <th>Route Id</th>
                   <th>Route Name</th>
                   <th>Status</th>
-                  <th>View More</th>
+                 
                 </tr>
               </thead>
               <tbody>

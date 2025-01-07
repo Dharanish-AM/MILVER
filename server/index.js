@@ -19,14 +19,14 @@ const PORT = process.env.PORT || 8000;
 db();
 
 app.use(cors({ origin: "*" }));
-app.use(express.json());
-
+app.use(express.json()); 
+ 
 app.use("/api/customer", customerRoutes);
 app.use("/api/deliverymen", deliverymenRoutes);
-app.use("/api/route", routeRoutes);
+app.use("/api/route", routeRoutes); 
 app.use("/api/bottle", bottleRoutes);
 app.use("/api/fuelallowance", fuelallowance);
-
+ 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

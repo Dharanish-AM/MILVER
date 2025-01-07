@@ -101,28 +101,35 @@ function Deliverymandetails() {
     phone: "",
     route_name: "",
   });
+  const getDeliverymenData = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/deliverymen/`
+      );
+      console.log(response.data);
+
+      setdelivermendata(response.data);
+    } catch (error) {
+      console.error("Error fetching deliverymen data: ", error);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const getDeliverymenData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/deliverymen/`
-        );
-        console.log(response.data);
-        if (isMounted) {
-          setdelivermendata(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching deliverymen data: ", error);
+
+    const fetchData = async () => {
+      if (isMounted) {
+        await getDeliverymenData();
       }
     };
 
-    getDeliverymenData();
+    fetchData();
 
     return () => {
       isMounted = false;
     };
   }, [isEventAdded]);
+
   const handleAddEmployee = async () => {
     const errors = {};
     if (!customerForm.name) errors.name = "Name is required.";
@@ -291,7 +298,7 @@ function Deliverymandetails() {
     console.log("❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥");
     console.log(`Current Attendance: ${employee}`);
     console.log(empid);
-    var choice = false;
+    let choice = false;
     try {
       if (employee === "Present") {
         choice = true;
@@ -303,7 +310,9 @@ function Deliverymandetails() {
         { driver_id: empid, is_present: choice }
       );
       if (response.status === 200) {
-        toast.success("attendence updated successfully");
+        toast.success("Attendance updated successfully");
+
+        await getDeliverymenData();
       }
     } catch (error) {
       console.error("Error updating attendance:", error);
@@ -393,7 +402,7 @@ function Deliverymandetails() {
           </div>
         </div>
         <div className="filter-bar">
-        <div className="search-barmain">
+          <div className="search-barmain">
             <FaSearch className="search-iconmain" />
             <input
               type="text"
@@ -440,27 +449,30 @@ function Deliverymandetails() {
 
             return (
               <div key={index} className="employee-card">
-             <div
-  className={`employee-status ${
-    employee.status === "assigned"
-      ? "assigned"
-      : employee.status === "available"
-      ? "available"
-      : employee.status === "on_leave"
-      ? "on-leave"
-      : ""
-  }`}
->
-  {employee.status}
-</div>
+                <div
+                  className={`employee-status ${
+                    employee.status === "assigned"
+                      ? "Assigned"
+                      : employee.status === "available"
+                      ? "Available"
+                      : employee.status === "on_leave"
+                      ? "Absent"
+                      : ""
+                  }`}
+                >
+                  {employee.status === "on_leave"
+                    ? "Absent"
+                    : employee.status.charAt(0).toUpperCase() +
+                      employee.status.slice(1).toLowerCase()}
+                </div>
 
                 <div className="attendance-dropdown">
                   <button className="attendance-icon">
                     <img
                       src={calender}
                       style={{
-                        width: "32px",
-                        height: "32px",
+                        width: "28px",
+                        height: "28px",
                         objectFit: "contain",
                       }}
                     />
@@ -468,8 +480,13 @@ function Deliverymandetails() {
                   <div className="dropdown-menu">
                     <button
                       onClick={() =>
-                        handleAttendanceChange("Present", employee._id) }
-                        style={{padding:'12px 20px',  fontSize: "1.1em",fontWeight:"bold"}}
+                        handleAttendanceChange("Present", employee._id)
+                      }
+                      style={{
+                        padding: "12px 20px",
+                        fontSize: "0.8em",
+                        fontWeight: "bold",
+                      }}
                     >
                       Present
                     </button>
@@ -477,12 +494,17 @@ function Deliverymandetails() {
                       onClick={() =>
                         handleAttendanceChange("Absent", employee._id)
                       }
-                      style={{padding:'12px 20px',  fontSize: "1.1em",fontWeight:"bold"}}
+                      style={{
+                        padding: "12px 20px",
+                        fontSize: "0.8em",
+                        fontWeight: "bold",
+                      }}
                     >
                       Absent
                     </button>
                   </div>
                 </div>
+
                 <div className="employee-info">
                   <img
                     src={DeliveryManImg}
@@ -492,7 +514,18 @@ function Deliverymandetails() {
                   <h3>{employee.name}</h3>
                   <div className="employee-details">
                     <p>
-                      <strong>Route:</strong> {employee.primaryRouteName} 🛤️
+                      {employee.routes && employee.routes.length > 0 ? (
+                        <p>
+                          <strong>Route IDs:</strong>{" "}
+                          {employee.routes && employee.routes.length > 0
+                            ? employee.routes
+                                .map((route) => route.id)
+                                .join(", ")
+                            : "No routes assigned"}
+                        </p>
+                      ) : (
+                        "No routes assigned"
+                      )}
                     </p>
                     <p>
                       <strong>Ph-no:</strong> {employee.phone} 📱
@@ -514,296 +547,322 @@ function Deliverymandetails() {
             );
           })}
         </div>
+
         {showModal && selectedEmployee && (
-  <div className="modal-overlay">
-    <div className="modal-container">
-      <div className="modal-header">
-        <h3 className="modal-title">{selectedEmployee.name}</h3>
-        <button className="modal-close-btn" onClick={handleCloseModal}>
-          <MdClose />
-        </button>
-      </div>
-      <div className="modal-body">
-        <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
-        <p><strong>Email:</strong> {selectedEmployee.email}</p>
-        <p><strong>Address:</strong> {selectedEmployee.address}</p>
-        <p><strong>Primary Route:</strong> {selectedEmployee.primaryRouteName}</p>
-        <p><strong>Status:</strong> {selectedEmployee.status}</p>
-        <p><strong>External Status:</strong> {selectedEmployee.external_status}</p>
-      </div>
-      <div className="modal-footer">
-        <button className="btn-edit" onClick={handleEdit}>Edit</button>
-        <button className="btn-delete" onClick={handleShowDeleteConfirmation}>Delete</button>
-        <button className="btn-close" onClick={handleCloseModal}>Close</button>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-header">
+                <h3 className="modal-title">{selectedEmployee.name}</h3>
+              </div>
+              <div className="modal-body">
+                <p>
+                  <strong>Phone:</strong> {selectedEmployee.phone}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedEmployee.email}
+                </p>
+                <p>
+                  <strong>Address:</strong> {selectedEmployee.address}
+                </p>
+              
+                <p>
+                  <strong>Status:</strong> {selectedEmployee.status}
+                </p>
 
-
-{showDeleteConfirmation && selectedEmployee && (
-  <div className="delete-backdrop">
-    <div className="delete-modal">
-      <div className="delete-header">
-        <h3>Are you sure you want to delete this employee?</h3>
-      </div>
-      <div className="delete-body">
-        <p>
-          To confirm, type the name{" "}
-          <strong>{selectedEmployee.name}</strong> below:
-        </p>
-        <input
-          type="text"
-          value={deleteConfirmation}
-          onChange={handleDeleteConfirmationChange}
-          placeholder="Enter name to confirm"
-          className="delete-input"
-        />
-      </div>
-      <div className="delete-footer">
-        <button
-          className="delete-cancel-btn"
-          onClick={handleCloseDeleteConfirmation}
-        >
-          Cancel
-        </button>
-        <button
-          className="delete-confirm-btn"
-          onClick={handleDelete}
-          disabled={deleteConfirmation !== selectedEmployee.name}
-        >
-          Confirm Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-{isAddEmployeeModalOpen && (
-  <div
-    className="add-employee-modal-overlay"
-    onClick={() => setIsAddEmployeeModalOpen(false)}
-  >
-    <div
-      className="add-employee-modal-content"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="add-employee-modal-header">
-        <h2 className="add-employee-title">Add Employee</h2>
-        <button
-          className="add-employee-close-btn"
-          onClick={() => setIsAddEmployeeModalOpen(false)}
-        >
-          <MdClose />
-        </button>
-      </div>
-      <div className="add-employee-modal-body">
-        <input
-          type="text"
-          name="name"
-          placeholder="Employee Name"
-          value={customerForm.name}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, name: e.target.value })
-          }
-          className={`add-employee-input ${
-            formErrors.name ? "input-error" : ""
-          }`}
-        />
-        {formErrors.name && (
-          <span className="error-message">{formErrors.name}</span>
+                <p>
+                  <strong>Route IDs:</strong>{" "}
+                  {selectedEmployee.routes && selectedEmployee.routes.length > 0
+                    ? selectedEmployee.routes
+                        .map((route) => route.id)
+                        .join(", ")
+                    : "No routes assigned"}
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn-edit" onClick={handleEdit}>
+                  Edit
+                </button>
+                <button
+                  className="btn-delete"
+                  onClick={handleShowDeleteConfirmation}
+                >
+                  Delete
+                </button>
+                <button className="btn-close" onClick={handleCloseModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone"
-          value={customerForm.phone}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, phone: e.target.value })
-          }
-          className={`add-employee-input ${
-            formErrors.phone ? "input-error" : ""
-          }`}
-        />
-        {formErrors.phone && (
-          <span className="error-message">{formErrors.phone}</span>
+        {showDeleteConfirmation && selectedEmployee && (
+          <div className="delete-backdrop">
+            <div className="delete-modal">
+              <div className="delete-header">
+                <h3>Are you sure you want to delete this employee?</h3>
+              </div>
+              <div className="delete-body">
+                <p>
+                  To confirm, type the name{" "}
+                  <strong>{selectedEmployee.name}</strong> below:
+                </p>
+                <input
+                  type="text"
+                  value={deleteConfirmation}
+                  onChange={handleDeleteConfirmationChange}
+                  placeholder="Enter name to confirm"
+                  className="delete-input"
+                />
+              </div>
+              <div className="delete-footer">
+                <button
+                  className="delete-cancel-btn"
+                  onClick={handleCloseDeleteConfirmation}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="delete-confirm-btn"
+                  onClick={handleDelete}
+                  disabled={deleteConfirmation !== selectedEmployee.name}
+                >
+                  Confirm Delete
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={customerForm.email}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, email: e.target.value })
-          }
-          className={`add-employee-input ${
-            formErrors.email ? "input-error" : ""
-          }`}
-        />
-        {formErrors.email && (
-          <span className="error-message">{formErrors.email}</span>
-        )}
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={customerForm.address}
-          onChange={(e) =>
-            setCustomerForm({ ...customerForm, address: e.target.value })
-          }
-          className={`add-employee-input ${
-            formErrors.address ? "input-error" : ""
-          }`}
-        />
-        {formErrors.address && (
-          <span className="error-message">{formErrors.address}</span>
-        )}
-
-        <select
-          name="routes"
-          multiple
-          value={customerForm.routes}
-          onChange={(e) =>
-            setCustomerForm({
-              ...customerForm,
-              routes: Array.from(
-                e.target.selectedOptions,
-                (option) => option.value
-              ),
-            })
-          }
-          className="add-employee-select"
-        >
-          <option value="1">Route 1</option>
-          <option value="2">Route 2</option>
-          <option value="3">Route 3</option>
-        </select>
-
-        <select
-          name="category"
-          value={customerForm.category}
-          onChange={(e) =>
-            setCustomerForm({
-              ...customerForm,
-              category: e.target.value,
-            })
-          }
-          className="add-employee-select"
-        >
-          <option value="">Select Category</option>
-          <option value="main_driver">Driver</option>
-          <option value="backup_driver">Backup Driver</option>
-        </select>
-      </div>
-      <div className="add-employee-modal-footer">
-        <button className="add-employee-submit-btn" onClick={handleAddEmployee}>
-          Add Employee
-        </button>
-        <button
-          className="add-employee-cancel-btn"
-          onClick={() => setIsAddEmployeeModalOpen(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-{isEditModalOpen && (
-  <div className="edit-modal-overlay">
-    <div className="edit-modal">
-      <div className="edit-modal-header">
-        <h2 className="edit-modal-title">Edit Employee Details</h2>
-        <button
-          className="edit-modal-close"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          <MdClose />
-        </button>
-      </div>
-      <div className="edit-modal-body">
-        <form>
-          <div className="edit-form-group">
-            <label htmlFor="employeeName">Employee Name</label>
-            <input
-              id="employeeName"
-              type="text"
-              name="name"
-              placeholder="Enter Employee Name"
-              value={editForm.name}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="edit-form-group">
-            <label htmlFor="phone">Phone</label>
-            <input
-              id="phone"
-              type="text"
-              name="phone"
-              placeholder="Enter Phone Number"
-              value={editForm.phone}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="edit-form-group">
-            <label htmlFor="address">Address</label>
-            <input
-              id="address"
-              type="text"
-              name="address"
-              placeholder="Enter Address"
-              value={editForm.address}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="edit-form-group">
-            <label htmlFor="primaryRouteName">Primary Route</label>
-            <input
-              id="primaryRouteName"
-              type="text"
-              name="primaryRouteName"
-              placeholder="Enter Primary Route"
-              value={editForm.primaryRouteName}
-              onChange={handleEditFormChange}
-            />
-          </div>
-          <div className="edit-form-group">
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={editForm.status}
-              onChange={handleEditFormChange}
+        {isAddEmployeeModalOpen && (
+          <div
+            className="add-employee-modal-overlay"
+            onClick={() => setIsAddEmployeeModalOpen(false)}
+          >
+            <div
+              className="add-employee-modal-content"
+              onClick={(e) => e.stopPropagation()}
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+              <div className="add-employee-modal-header">
+                <h2 className="add-employee-title">Add Employee</h2>
+                <button
+                  className="add-employee-close-btn"
+                  onClick={() => setIsAddEmployeeModalOpen(false)}
+                >
+                  <MdClose />
+                </button>
+              </div>
+              <div className="add-employee-modal-body">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Employee Name"
+                  value={customerForm.name}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, name: e.target.value })
+                  }
+                  className={`add-employee-input ${
+                    formErrors.name ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.name && (
+                  <span className="error-message">{formErrors.name}</span>
+                )}
+
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Phone"
+                  value={customerForm.phone}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, phone: e.target.value })
+                  }
+                  className={`add-employee-input ${
+                    formErrors.phone ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.phone && (
+                  <span className="error-message">{formErrors.phone}</span>
+                )}
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={customerForm.email}
+                  onChange={(e) =>
+                    setCustomerForm({ ...customerForm, email: e.target.value })
+                  }
+                  className={`add-employee-input ${
+                    formErrors.email ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.email && (
+                  <span className="error-message">{formErrors.email}</span>
+                )}
+
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Address"
+                  value={customerForm.address}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      address: e.target.value,
+                    })
+                  }
+                  className={`add-employee-input ${
+                    formErrors.address ? "input-error" : ""
+                  }`}
+                />
+                {formErrors.address && (
+                  <span className="error-message">{formErrors.address}</span>
+                )}
+
+                <select
+                  name="routes"
+                  multiple
+                  value={customerForm.routes}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      routes: Array.from(
+                        e.target.selectedOptions,
+                        (option) => option.value
+                      ),
+                    })
+                  }
+                  className="add-employee-select"
+                >
+                  <option value="1">Route 1</option>
+                  <option value="2">Route 2</option>
+                  <option value="3">Route 3</option>
+                </select>
+
+                <select
+                  name="category"
+                  value={customerForm.category}
+                  onChange={(e) =>
+                    setCustomerForm({
+                      ...customerForm,
+                      category: e.target.value,
+                    })
+                  }
+                  className="add-employee-select"
+                >
+                  <option value="">Select Category</option>
+                  <option value="main_driver">Driver</option>
+                  <option value="backup_driver">Backup Driver</option>
+                </select>
+              </div>
+              <div className="add-employee-modal-footer">
+                <button
+                  className="add-employee-submit-btn"
+                  onClick={handleAddEmployee}
+                >
+                  Add Employee
+                </button>
+                <button
+                  className="add-employee-cancel-btn"
+                  onClick={() => setIsAddEmployeeModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
-        </form>
-      </div>
-      <div className="edit-modal-footer">
-        <button
-          className="edit-button edit-button-save"
-          onClick={handleSaveEdit}
-        >
-          Save
-        </button>
-        <button
-          className="edit-button edit-button-cancel"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        )}
 
-
+        {isEditModalOpen && (
+          <div className="edit-modal-overlay">
+            <div className="edit-modal">
+              <div className="edit-modal-header">
+                <h2 className="edit-modal-title">Edit Employee Details</h2>
+                <button
+                  className="edit-modal-close"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  <MdClose />
+                </button>
+              </div>
+              <div className="edit-modal-body">
+                <form>
+                  <div className="edit-form-group">
+                    <label htmlFor="employeeName">Employee Name</label>
+                    <input
+                      id="employeeName"
+                      type="text"
+                      name="name"
+                      placeholder="Enter Employee Name"
+                      value={editForm.name}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="edit-form-group">
+                    <label htmlFor="phone">Phone</label>
+                    <input
+                      id="phone"
+                      type="text"
+                      name="phone"
+                      placeholder="Enter Phone Number"
+                      value={editForm.phone}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="edit-form-group">
+                    <label htmlFor="address">Address</label>
+                    <input
+                      id="address"
+                      type="text"
+                      name="address"
+                      placeholder="Enter Address"
+                      value={editForm.address}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="edit-form-group">
+                    <label htmlFor="primaryRouteName">Primary Route</label>
+                    <input
+                      id="primaryRouteName"
+                      type="text"
+                      name="primaryRouteName"
+                      placeholder="Enter Primary Route"
+                      value={editForm.primaryRouteName}
+                      onChange={handleEditFormChange}
+                    />
+                  </div>
+                  <div className="edit-form-group">
+                    <label htmlFor="status">Status</label>
+                    <select
+                      id="status"
+                      name="status"
+                      value={editForm.status}
+                      onChange={handleEditFormChange}
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Inactive">Inactive</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div className="edit-modal-footer">
+                <button
+                  className="edit-button edit-button-save"
+                  onClick={handleSaveEdit}
+                >
+                  Save
+                </button>
+                <button
+                  className="edit-button edit-button-cancel"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <ToastContainer />
       </div>

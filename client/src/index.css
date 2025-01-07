@@ -6,6 +6,12 @@ body {
 button , input {
   font-family: "Josefin Sans";
 }
+p{
+  font-family: "Josefin Sans";
+}
+table{
+  font-family: "Josefin Sans";
+}
 /* src/index.css or src/styles.css
 @tailwind base;
 @tailwind components;
