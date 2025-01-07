@@ -15,7 +15,7 @@ export default function Fuel() {
   const [data, setData] = useState([]); 
 
   const filterOptions = ["none", "Assigned", "Not Assigned"];
-
+const[todaysallroutecost,settodaystotalcost]=useState(0);
   useEffect(() => {
     const getdata = async () => {
       try {
@@ -28,9 +28,17 @@ export default function Fuel() {
           route: route.route_name, 
           drivers: route.driver?.name || "Unassigned", 
           totalCost: 0, 
-          todaysAmount: 0,
+          todaysAmount: route.todaysAmount,
           editable: false,
+          routeid:route._id,
+          driver_id:route.driver?._id,
+          paidamounttoday:route.todaysAmount,
+          deliverymensdue:route.driver?.deliverymensdue,
+          oursdue:route.driver?.ourdue
         }));
+        const allroutescost = routes.reduce((acc, route) => acc + route.totalCost, 0);
+      console.log("Total cost of all routes:", allroutescost)
+      settodaystotalcost(allroutescost)
         setData(routes);
       } catch (error) {
         console.error("Error fetching routes:", error);
@@ -53,22 +61,75 @@ export default function Fuel() {
       filter
     );
   };
-const handleSave=async(e)=>{
+ const handleSave = async (e) => {
+  console.log(e.sno);
+  console.log(e);
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/addfuel`, {
+    driverId: e.driver_id,
+    routeId: e.routeid,
+    amount: e.todaysAmount,
+    routescost: 11,
+  });
+  console.log(response.data);
 
-console.log(e.sno)
+  if (response.data.status === 200) {
+    setData((prevData) => {
+      return prevData.map((row) =>
+        row.sno === e.sno
+          ? {
+              ...row,
+              todaysAmount: e.todaysAmount, 
+              editable: false, 
+              paidamounttoday: row.paidamounttoday + parseFloat(e.todaysAmount), 
+            }
+          : row
+      );
+    });
+  }
+};
 
-const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/update`,{routeid:e.sno,deliverymanid:2,defaultamount:e.totalCost,todaysamount:e.todaysAmount});
-
-}
+  // const toggleEdit = (index) => {
+  //   const newData = [...data];
+  //   newData[index].editable = !newData[index].editable;
+  //   setData(newData);
+  // };
   const toggleEdit = (index) => {
     const newData = [...data];
+    const currentRow = newData[index];
+    const currentTime = new Date();
+  
+    const lastEditTime = currentRow.lastEditTime
+      ? new Date(currentRow.lastEditTime)
+      : null;
+  
+    if (
+      lastEditTime &&
+      lastEditTime.toDateString() === currentTime.toDateString()
+    ) {
+      // toast.warning("dddd")
+
+      alert("already amount is assigned for this deliverymen.");
+      return;
+    }
+  
     newData[index].editable = !newData[index].editable;
+  
+    if (!newData[index].editable) {
+      newData[index].lastEditTime = currentTime;
+    }
+  
     setData(newData);
   };
-
+  const[index,setindex]=useState(0);
   const handleInputChange = (index, field, value) => {
     const newData = [...data];
     newData[index][field] = value;
+    console.log(index,field)
+    if (field === "todaysAmount") {
+setindex(index)
+      // newData[index].paidamounttoday = parseFloat(value) || 0;
+
+    }
     setData(newData);
   };
 
@@ -84,7 +145,7 @@ const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/u
           <div className="fuel-overview">
             <div className="fuel-overview-daily">
               <div className="fuel-overview-daily-content">
-                <span>Rs. </span>1200
+                <span>Rs. </span>{todaysallroutecost||2000}
               </div>
               <div className="fuel-overview-daily-label">TODAY FUEL COST</div>
             </div>
@@ -176,9 +237,13 @@ const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/u
                   <tr style={{ textAlign: "left" }}>
                     <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>S. No</th>
                     <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Route Name</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Drivers</th>
                     <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>TA</th>
+                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Drivers</th>
+                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Deliverymans due</th>
+                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>ours due</th>
+
                     <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>PAID</th>
+                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>PAY</th>
                     <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Actions</th>
                   </tr>
                 </thead>
@@ -197,9 +262,23 @@ const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/u
                         {row.route}
                       </td>
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                        {row.fuelamount||2000}
+                      </td>
+                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
                         {row.drivers}
                       </td>
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                        {row.deliverymensdue}
+                      </td>
+                     
+                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                        {row.oursdue}
+                      </td>
+                     
+                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                        {row.paidamounttoday}
+                      </td>
+                      {/* <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
                         {row.editable ? (
                           <input
                             type="number"
@@ -217,12 +296,12 @@ const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/u
                         ) : (
                           `Rs. ${row.totalCost}`
                         )}
-                      </td>
+                      </td> */}
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
                         {row.editable ? (
                           <input
                             type="number"
-                            value={row.todaysAmount}
+                            placeholder="RS 0"
                             onChange={(e) =>
                               handleInputChange(index, "todaysAmount", e.target.value)
                             }
@@ -234,7 +313,7 @@ const response=await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/u
                             }}
                           />
                         ) : (
-                          `Rs. ${row.todaysAmount}`
+                        0
                         )}
                       </td>
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>

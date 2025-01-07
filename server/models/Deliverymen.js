@@ -51,6 +51,15 @@ const DeliverymenSchema = new Schema({
       },
     },
   ],
+  deliverymensdue:{
+    type:Number,
+    default:0
+  },
+  ourdue:{
+    type:Number,
+    default:0
+  },
+
   fuel_allowance: {
     type: [
       {
