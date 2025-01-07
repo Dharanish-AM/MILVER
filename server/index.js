@@ -9,8 +9,8 @@ const routeRoutes = require("./routes/routeRoutes");
 const bottleRoutes = require("./routes/bottleRoutes");
 const fuelallowance = require("./routes/FuelAllowanceRoutes");
 
-const clearfuntion = require("./controllers/deliverymenController")
-clearfuntion.resetDriverStatusAndRoutes()
+const clearfuntion = require("./controllers/deliverymenController");
+clearfuntion.resetDriverStatusAndRoutes();
 
 const app = express();
 const PORT = process.env.PORT || 8000;

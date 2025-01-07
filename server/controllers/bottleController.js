@@ -17,9 +17,9 @@ const addBottleDetail = async (req, res) => {
     // Add the new bottle detail to the existing bottle_details array
     bottle.bottle_details.push(bottle_detail);
 
-    // Save the updated bottle document
+    // Save the updated bottle document 
     const updatedBottle = await bottle.save();
-
+ 
     res.status(200).json(updatedBottle);
   } catch (error) {
     res.status(500).json({ message: "Error adding bottle detail", error });
