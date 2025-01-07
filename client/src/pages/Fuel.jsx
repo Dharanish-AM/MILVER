@@ -61,6 +61,8 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
       filter
     );
   };
+  const[index,setindex]=useState(0);
+
  const handleSave = async (e) => {
   console.log(e.sno);
   console.log(e);
@@ -71,8 +73,12 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
     routescost: 11,
   });
   console.log(response.data);
-
-  if (response.data.status === 200) {
+if(response.data.status===200){
+   console.log("consoled before changiing newdata");
+   const newData = [...data];
+   console.log("😎😎😎",newData[index]);
+   console.log("after");
+    // newData[index].paidamounttoday = parseFloat(value) || 0;
     setData((prevData) => {
       return prevData.map((row) =>
         row.sno === e.sno
@@ -86,7 +92,7 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
       );
     });
   }
-};
+ }
 
   // const toggleEdit = (index) => {
   //   const newData = [...data];
@@ -120,9 +126,9 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
   
     setData(newData);
   };
-  const[index,setindex]=useState(0);
   const handleInputChange = (index, field, value) => {
     const newData = [...data];
+
     newData[index][field] = value;
     console.log(index,field)
     if (field === "todaysAmount") {

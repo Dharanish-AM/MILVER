@@ -43,8 +43,9 @@ const route=await Route.findById(routeId);
     }
 
     await deliveryman.save();
-
+console.log("successfully")
     return res.status(200).json({
+      status:200,
       message: "Fuel allowance added successfully.",
       deliveryman,
     });
