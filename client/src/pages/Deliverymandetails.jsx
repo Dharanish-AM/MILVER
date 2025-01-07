@@ -177,23 +177,20 @@ function Deliverymandetails() {
   };
 
   const filteredEmployees = deliverymendata.filter((employee) => {
+    // Match search term (case-insensitive)
     const matchesSearch =
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (employee.primaryRouteName &&
-        employee.primaryRouteName
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()));
-
+        employee.primaryRouteName.toLowerCase().includes(searchTerm.toLowerCase()));
+  
+    // Match status filter
     const matchesStatus =
-      statusFilter === "Status" || employee.status === statusFilter;
-
-    const matchesRoute =
-      routeFilter === "Routes" ||
-      (employee.primaryroutes &&
-        employee.primaryroutes.toString() === routeFilter);
-
-    return matchesSearch && matchesStatus && matchesRoute;
+      statusFilter === "All" || // Show all employees if 'All' is selected
+      employee.status.toLowerCase() === statusFilter.toLowerCase();
+  
+    return matchesSearch && matchesStatus;
   });
+  
 
   const handleViewDetails = (employee) => {
     setSelectedEmployee(employee);
@@ -295,23 +292,20 @@ function Deliverymandetails() {
     doc.save("employee_data.pdf");
   };
   const handleAttendanceChange = async (employee, empid) => {
-    console.log("❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥❤️‍🔥");
-    console.log(`Current Attendance: ${employee}`);
-    console.log(empid);
-    let choice = false;
     try {
-      if (employee === "Present") {
-        choice = true;
-      } else if (employee === "Absent") {
-        choice = false;
-      }
+      const choice = employee === "Present" ? true : false;
+      const payload = { driver_id: empid, is_present: choice };
+      console.log("Payload being sent:", payload);
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/deliverymen/attendence`,
-        { driver_id: empid, is_present: choice }
+        payload
       );
+
+      console.log("API Response:", response.data);
+
       if (response.status === 200) {
         toast.success("Attendance updated successfully");
-
         await getDeliverymenData();
       }
     } catch (error) {
@@ -412,31 +406,19 @@ function Deliverymandetails() {
             />
           </div>
 
-          <div className="dropdown-container">
+          <div className="status-filter-container">
             <select
               className="status-dropdown"
               value={statusFilter}
               onChange={handleStatusChange}
             >
-              <option>Status</option>
-              <option>available</option>
-              <option>Not available</option>
-            </select>
-            <select
-              className="route-dropdown"
-              value={routeFilter}
-              onChange={handleRouteChange}
-            >
-              <option>Routes</option>
-              <option>T Nagar</option>
-              <option>Nungambakkam</option>
-              <option>1000 lights</option>
-              <option>Mandaveli</option>
-              <option>Santhome</option>
-              <option>Kodambakkam</option>
-              <option>Royapettah</option>
+              <option value="All">All</option>
+              <option value="Available">Available</option>
+              <option value="Assigned">Assigned</option>
+              <option value="on_leave">Absent</option>
             </select>
           </div>
+          
         </div>
 
         <div className="employee-list">
@@ -470,6 +452,7 @@ function Deliverymandetails() {
                   <button className="attendance-icon">
                     <img
                       src={calender}
+                      alt="Calendar"
                       style={{
                         width: "28px",
                         height: "28px",
@@ -514,18 +497,9 @@ function Deliverymandetails() {
                   <h3>{employee.name}</h3>
                   <div className="employee-details">
                     <p>
-                      {employee.routes && employee.routes.length > 0 ? (
-                        <p>
-                          <strong>Route IDs:</strong>{" "}
-                          {employee.routes && employee.routes.length > 0
-                            ? employee.routes
-                                .map((route) => route.id)
-                                .join(", ")
-                            : "No routes assigned"}
-                        </p>
-                      ) : (
-                        "No routes assigned"
-                      )}
+                      <strong>Route IDs:</strong>{" "}
+                      {employee.routes?.map((route) => route.id).join(", ") ||
+                        "No routes assigned"}
                     </p>
                     <p>
                       <strong>Ph-no:</strong> {employee.phone} 📱
@@ -564,7 +538,7 @@ function Deliverymandetails() {
                 <p>
                   <strong>Address:</strong> {selectedEmployee.address}
                 </p>
-              
+
                 <p>
                   <strong>Status:</strong> {selectedEmployee.status}
                 </p>

@@ -140,7 +140,7 @@
 .employee-card {
   background-color: #fff;
   border-radius: 15px;
-  padding: 15px;
+  padding: 25px;
  height: 70%;
   width: 20%;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -178,25 +178,28 @@ table{
 .employee-status.Assigned {
   background-color: #28a745;
   color: #fff;
-  font-size:15px;
+  font-size:20px;
   font-family: "Josefin Sans";
   font-weight: 500;
+  padding: 10px;
 }
 
 .employee-status.Available {
   background-color: #ffc107;
   color: #fff;
-  font-size:15px;
+  font-size:20px;
   font-family: "Josefin Sans";
   font-weight: 500;
+  padding: 10px;
 }
 
 .employee-status.Absent {
   background-color: #d9534f;
   color: #fff;
-  font-size:15px;
+  font-size:20px;
   font-family: "Josefin Sans";
   font-weight: 500;
+  padding: 10px;
 }
 
 .employee-avatar {
@@ -207,10 +210,11 @@ table{
   display: block;
   object-fit: cover;
   border: 2px solid #ddd;
+  margin-top: 50px;
 }
 
 .employee-info h3 {
-  font-size: 1.1em;
+  font-size: 1.2em;
   font-weight: 600;
   margin: 5px 0;
   color: #333;
@@ -219,14 +223,14 @@ table{
 .employee-details {
   background-color: #f7f7f7;
   border-radius: 10px;
-  padding: 10px;
+  padding: 25px;
   margin: 15px 0;
   text-align: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .employee-details p {
-  font-size: 0.9em;
+  font-size: 1em;
   color: #555;
   margin: 5px 0;
 }
@@ -234,12 +238,13 @@ table{
 .employee-joined {
   font-size: 0.85em;
   color: #666;
-  margin-top: 10px;
+  margin-top: 35px;
   text-align: center;
   background-color: #3d4d8f;
   width: 40%;
-  padding: 3px;
+  padding: 10px;
   border-radius: 5px;
+  margin-left: 27%;
 }
 
 .employee-joined a {

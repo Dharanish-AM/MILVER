@@ -26,7 +26,8 @@ app.use("/api/deliverymen", deliverymenRoutes);
 app.use("/api/route", routeRoutes); 
 app.use("/api/bottle", bottleRoutes);
 app.use("/api/fuelallowance", fuelallowance);
- 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  
+app.listen(PORT, () => { 
+  console.log(`Server running on port ${PORT}`); 
+});  
+   

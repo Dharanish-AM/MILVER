@@ -137,12 +137,15 @@ const attendencedeliverymen = async (req, res) => {
   try {
     const { driver_id, is_present } = req.body;
 
-    if (!driver_id || is_present === undefined) {
+    // Validate input
+    if (!driver_id || typeof is_present !== "boolean") {
       res.status(400).json({
         message: "Driver ID and attendance status are required",
       });
       return;
     }
+
+    console.log("Received Payload:", { driver_id, is_present });
 
     const attendanceStatus = is_present ? "present" : "absent";
     const deliverymenStatus = is_present ? "available" : "on_leave";
@@ -159,6 +162,7 @@ const attendencedeliverymen = async (req, res) => {
       return;
     }
 
+    // Check if attendance for today is already marked
     const alreadyMarked = driver.attendence.some((att) => {
       const recordDate = new Date(att.date);
       recordDate.setHours(0, 0, 0, 0);
@@ -172,6 +176,7 @@ const attendencedeliverymen = async (req, res) => {
       return;
     }
 
+    // Update attendance
     const updatedDriver = await Deliverymen.findOneAndUpdate(
       { _id: driver_id },
       {
