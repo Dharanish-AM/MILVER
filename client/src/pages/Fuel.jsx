@@ -62,16 +62,18 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
     );
   };
   const[index,setindex]=useState(0);
-
+const[isinputchanged,setinputchanged]=useState(0);
  const handleSave = async (e) => {
+  console.log("consoling the data before saving")
   console.log(e.sno);
   console.log(e);
   const response = await axios.post(`${import.meta.env.VITE_API_URL}/fuelallowance/addfuel`, {
     driverId: e.driver_id,
     routeId: e.routeid,
-    amount: e.todaysAmount,
+    amount: isinputchanged?e.todaysAmount:0,
     routescost: 11,
   });
+ 
   console.log(response.data);
 if(response.data.status===200){
    console.log("consoled before changiing newdata");
@@ -86,49 +88,51 @@ if(response.data.status===200){
               ...row,
               todaysAmount: e.todaysAmount, 
               editable: false, 
-              paidamounttoday: row.paidamounttoday + parseFloat(e.todaysAmount), 
+              paidamounttoday: isinputchanged?row.paidamounttoday + parseFloat(e.todaysAmount):row.paidamounttoday, 
             }
           : row
       );
     });
+    setinputchanged(0);
   }
  }
 
-  // const toggleEdit = (index) => {
-  //   const newData = [...data];
-  //   newData[index].editable = !newData[index].editable;
-  //   setData(newData);
-  // };
   const toggleEdit = (index) => {
     const newData = [...data];
-    const currentRow = newData[index];
-    const currentTime = new Date();
-  
-    const lastEditTime = currentRow.lastEditTime
-      ? new Date(currentRow.lastEditTime)
-      : null;
-  
-    if (
-      lastEditTime &&
-      lastEditTime.toDateString() === currentTime.toDateString()
-    ) {
-      // toast.warning("dddd")
-
-      alert("already amount is assigned for this deliverymen.");
-      return;
-    }
-  
     newData[index].editable = !newData[index].editable;
-  
-    if (!newData[index].editable) {
-      newData[index].lastEditTime = currentTime;
-    }
-  
     setData(newData);
   };
-  const handleInputChange = (index, field, value) => {
-    const newData = [...data];
+  // const toggleEdit = (index) => {
+  //   const newData = [...data];
+  //   const currentRow = newData[index];
+  //   const currentTime = new Date();
+  
+  //   const lastEditTime = currentRow.lastEditTime
+  //     ? new Date(currentRow.lastEditTime)
+  //     : null;
+  
+  //   if (
+  //     lastEditTime &&
+  //     lastEditTime.toDateString() === currentTime.toDateString()
+  //   ) {
+  //     // toast.warning("dddd")
 
+  //     alert("already amount is assigned for this deliverymen.");
+  //     return;
+  //   }
+  
+  //   newData[index].editable = !newData[index].editable;
+  
+  //   if (!newData[index].editable) {
+  //     newData[index].lastEditTime = currentTime;
+  //   }
+  
+  //   setData(newData);
+  // };
+  const handleInputChange = (index, field, value) => {
+    setinputchanged(1)
+    const newData = [...data];
+console.log(value,"valye")
     newData[index][field] = value;
     console.log(index,field)
     if (field === "todaysAmount") {
