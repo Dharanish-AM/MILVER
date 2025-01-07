@@ -4,8 +4,8 @@ function RouteImg({ route_id, colors }) {
   const color = colors[(route_id ) % colors.length];
   return (
     <svg
-      width="61"
-      height="11"
+      width="30"
+      height="15"
       viewBox="0 0 61 11"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -16,7 +16,7 @@ function RouteImg({ route_id, colors }) {
         x2="54.5435"
         y2="5.5"
         stroke={color}
-        strokeWidth="3"
+        strokeWidth="5"
       />
       <circle cx="55.0435" cy="5.5" r="5" fill={color} stroke={color} />
       <circle cx="6.04346" cy="5.5" r="5" fill={color} stroke={color} />
