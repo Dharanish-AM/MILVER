@@ -16,11 +16,22 @@ import L from "leaflet";
 import axios from "axios";
 import { useMap } from "react-leaflet";
 import RouteImg from "../assets/RouteImg";
+import React from "react";
+import { Polyline } from "react-leaflet";
+import { Tooltip } from "react-leaflet";
+const getRouteIcon = (driver) => {
+  const color = driver === null ? "orange" : "green";
+  return `<svg width="100" height="207" viewBox="0 0 100 207" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" 
+                d="M100 50C100 56.1758 98.8804 62.0898 96.833 67.5505L51.0002 207L5.47681 72.7756C1.97559 65.9451 0 58.2034 0 50C0 22.3857 22.3857 0 50 0C77.6143 0 100 22.3857 100 50ZM50 66C59.9412 66 68 57.9412 68 48C68 38.0588 59.9412 30 50 30C40.0588 30 32 38.0588 32 48C32 57.9412 40.0588 66 50 66Z" 
+                fill="${color}"/>
+            </svg>`;
+};
 
 function Dashboard() {
   const [routes, setRoutes] = useState([]);
-  const [data, setData] = useState([]);
   const [deliveryDetails, setDeliveryDetails] = useState([]);
+  const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
   const mapRef = useRef();
   const colors = [
     "#008080", // Teal
@@ -44,48 +55,6 @@ function Dashboard() {
     "#6B8E23", // Olive Drab
     "#BA55D3", // Medium Orchid
   ];
-  const getCustomerIconSVG = (route_id) => {
-    const color = colors[(route_id - 1) % colors.length];
-
-    return `<svg
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle cx="16" cy="16" r="16" fill="${color}"/>
-    </svg>`;
-  };
-
-  // eslint-disable-next-line react/prop-types
-  const MapWithRouting = ({ routeCoordinates, routeColor }) => {
-    const map = useMap();
-
-    useEffect(() => {
-      if (routeCoordinates) {
-        const routingControl = L.Routing.control({
-          // eslint-disable-next-line react/prop-types
-          waypoints: routeCoordinates.map((coords) => L.latLng(coords)),
-          routeWhileDragging: true,
-          show: false,
-          routePopup: false,
-          collapsible: false,
-          addWaypoints: false,
-          showAlternatives: false,
-          lineOptions: {
-            styles: [{ color: routeColor, weight: 2.5, opacity: 0.7 }],
-          },
-          createMarker: () => null,
-        }).addTo(map);
-        return () => {
-          map.removeControl(routingControl);
-        };
-      }
-      return null;
-    }, [map, routeCoordinates, routeColor]);
-
-    return null;
-  };
 
   useEffect(() => {
     axios
@@ -109,32 +78,23 @@ function Dashboard() {
       });
   }, []);
 
-  const createCustomerIcon = (route_id) => {
-    const svgString = getCustomerIconSVG(route_id);
-    const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
-    return L.icon({
-      iconUrl: svgDataUrl,
-      iconSize: [8, 8],
-      iconAnchor: [4, 8],
-      popupAnchor: [0, -8],
-    });
-  };
-  useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
-      const bounds = L.latLngBounds(
-        deliveryDetails.map((detail) => detail.coordinates)
-      );
-      map.fitBounds(bounds);
-    }
-  }, [deliveryDetails]);
-
   const customIcon = L.icon({
-    iconUrl: industry,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
+      iconUrl: industry,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32],
+    });
+  
+    const createRouteIcon = (driver) => {
+      const svgString = getRouteIcon(driver);
+      const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
+      return L.icon({
+        iconUrl: svgDataUrl,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+      });
+    };
   return (
     <section className="Dashboard">
       <Header />
@@ -318,7 +278,7 @@ function Dashboard() {
                         </th>
                         <th className="delivery-details-table-Name">Name</th>
                         <th className="delivery-details-table-route">Route</th>
-                        <th className="delivery-details-table-1/2">1/2</th>
+                        <th className="delivery-details-table-1-2">1/2</th>
                         <th className="delivery-details-table-1">1</th>
                       </tr>
                     </thead>
@@ -345,11 +305,13 @@ function Dashboard() {
                             {detail.name || "no data"}
                           </td>
                           <td className="delivery-details-table-route">
-                            {detail.status === "assigned" ? routes.find((route) => {   
-                                const temp = route.driver && route.driver._id === detail._id;
-                                console.log(temp)
-                            }) : "-"}
+                            {detail.status === "assigned"
+                              ? routes.find(
+                                  (route) => route.driver?._id === detail._id
+                                )?.route_name || "No route assigned"
+                              : "-"}
                           </td>
+
                           <td className="delivery-details-table-1-2">
                             {detail.full || 0}
                           </td>
@@ -368,55 +330,46 @@ function Dashboard() {
         <div className="Dashboard-right">
           <div className="Dashboard-right-mapContainer">
             <MapContainer
-              center={[13.054398115031136, 80.26375998957623]}
-              zoom={13}
-              className="Dashboard-right-mapContainer-map"
-              zoomControl={false}
+              center={[
+                artMilkCompanyPosition[0],
+                artMilkCompanyPosition[1] - 0.01,
+              ]}
+              zoom={14}
+              className="mapRoutes-content-map"
             >
               <TileLayer
                 url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-                attribution="&copy; <a href='https://www.stadiamaps.com/' target='_blank'>Stadia Maps</a> &copy; <a href='https://openmaptiles.org/' target='_blank'>OpenMapTiles</a> &copy; <a href='https://www.openstreetmap.org/copyright' target='_blank'>OpenStreetMap</a> contributors"
+                attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                minZoom={0}
+                maxZoom={20}
               />
-              <Marker
-                position={[13.054398115031136, 80.26375998957623]}
-                icon={customIcon}
-              >
+              <Marker position={artMilkCompanyPosition} icon={customIcon}>
                 <Popup>ART Milk Company</Popup>
               </Marker>
-              {data.map((route) => {
-                const routeCoordinates = [
-                  [13.054398115031136, 80.26375998957623],
-                ];
-
-                route.customers.forEach((customer) => {
-                  const coordinates = customer.coordinates;
-                  routeCoordinates.push([coordinates[1], coordinates[0]]);
-                });
-
-                const routeColor = colors[(route.route_id - 1) % colors.length];
-
-                return (
-                  <>
-                    <MapWithRouting
-                      key={route.route_id}
-                      routeCoordinates={routeCoordinates}
-                      routeColor={routeColor}
-                    />
-                    {route.customers.map((customer) => {
-                      const coordinates = customer.coordinates;
-                      return (
-                        <Marker
-                          key={customer.customer_id}
-                          position={[coordinates[1], coordinates[0]]}
-                          icon={createCustomerIcon(route.route_id)}
-                        >
-                          <Popup>Customer ID: {customer.customer_id}</Popup>
-                        </Marker>
-                      );
-                    })}
-                  </>
-                );
-              })}
+                {routes.map((route) => {
+                  const routePosition = [
+                    route.location.latitude,
+                    route.location.longitude,
+                  ];
+                  return (
+                    <React.Fragment key={route._id}>
+                      <Polyline
+                        positions={[artMilkCompanyPosition, routePosition]}
+                        color={route.driver === null ? "orange" : "green"}
+                      />
+                      <Marker
+                        position={routePosition}
+                        icon={createRouteIcon(route.driver)}
+                      >
+                        <Tooltip className="small-tooltip" permanent>
+                          <strong>{route.route_name}</strong>
+                          <br />
+                          Distance: {route.distance} km
+                        </Tooltip>
+                      </Marker>
+                    </React.Fragment>
+                  );
+                })}
             </MapContainer>
           </div>
 
@@ -427,14 +380,14 @@ function Dashboard() {
             </div>
             <div className="Dashboard-right-routes-content">
               <div className="Dashboard-right-routes-content">
-                {deliveryDetails.map((detail, index) => (
+                {routes.map((detail, index) => (
                   <div
                     key={index}
                     className="Dashboard-right-routes-content-item"
                   >
                     <RouteImg route_id={index} colors={colors} />
                     <div className="Dashboard-right-routes-content-item-route">
-                      {detail.to}
+                      {detail.route_name}
                     </div>
                   </div>
                 ))}
