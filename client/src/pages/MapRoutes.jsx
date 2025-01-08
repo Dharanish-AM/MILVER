@@ -433,7 +433,8 @@ export default function MapRoutes() {
               filteredData.map((route) => {
                 const assignedAvailableDeliveryMen = deliveryMan.filter(
                   (man) =>
-                    man.routes.includes(route._id) && man.status === "available"
+                    man.routes.some((r) => r.id === route.route_id) && // Match route_id correctly
+        man.status === "available"
                 );
 
                 return (
