@@ -22,7 +22,7 @@ import DeliveryManImg from "../assets/delivery-man.png";
 
 function Deliverymandetails() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("Status");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [routeFilter, setRouteFilter] = useState("Routes");
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -181,16 +181,17 @@ function Deliverymandetails() {
     const matchesSearch =
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (employee.primaryRouteName &&
-        employee.primaryRouteName.toLowerCase().includes(searchTerm.toLowerCase()));
-  
+        employee.primaryRouteName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()));
+
     // Match status filter
     const matchesStatus =
       statusFilter === "All" || // Show all employees if 'All' is selected
       employee.status.toLowerCase() === statusFilter.toLowerCase();
-  
+
     return matchesSearch && matchesStatus;
   });
-  
 
   const handleViewDetails = (employee) => {
     setSelectedEmployee(employee);
@@ -418,11 +419,11 @@ function Deliverymandetails() {
               <option value="on_leave">Absent</option>
             </select>
           </div>
-          
         </div>
 
         <div className="employee-list">
           {filteredEmployees.map((employee, index) => {
+            // Ensure attendance is an array and presentCount calculation is correct
             const presentCount = Array.isArray(employee.attendence)
               ? employee.attendence.filter(
                   (att) => att.status.toLowerCase() === "present"
@@ -498,8 +499,9 @@ function Deliverymandetails() {
                   <div className="employee-details">
                     <p>
                       <strong>Route IDs:</strong>{" "}
-                      {employee.routes?.map((route) => route.id).join(", ") ||
-                        "No routes assigned"}
+                      {employee.routes?.length
+                        ? employee.routes.map((route) => route.id).join(", ")
+                        : "No routes assigned"}
                     </p>
                     <p>
                       <strong>Ph-no:</strong> {employee.phone} 📱
