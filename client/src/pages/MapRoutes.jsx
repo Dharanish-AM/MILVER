@@ -434,9 +434,13 @@ export default function MapRoutes() {
                 const assignedAvailableDeliveryMen = deliveryMan.filter(
                   (man) =>
                     man.routes.some((r) => r.id === route.route_id) && // Match route_id correctly
-        man.status === "available"
+                    man.status === "available"
                 );
-
+                const allDeliveryMan = deliveryMan.filter(
+                  (man) =>
+                    man.routes.some((r) => r.id === route.route_id) &&
+                    (man.status === "available" || "assigned")
+                );
                 return (
                   <div
                     key={route._id}
@@ -492,9 +496,15 @@ export default function MapRoutes() {
                                     {man.name} ({man.phone})
                                   </option>
                                 ))
+                              ) : allDeliveryMan.length > 0 ? (
+                                allDeliveryMan.map((man) => (
+                                  <option key={man._id} value={man._id} style={{color : "orange"}}>
+                                    {man.name} ({man.phone})
+                                  </option>
+                                ))
                               ) : (
-                                <option value="" disabled>
-                                  No available delivery men assigned
+                                <option key="" disabled>
+                                  No Delivery man available
                                 </option>
                               )}
                             </select>

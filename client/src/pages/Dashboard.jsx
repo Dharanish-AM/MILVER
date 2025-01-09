@@ -32,7 +32,6 @@ function Dashboard() {
   const [routes, setRoutes] = useState([]);
   const [deliveryDetails, setDeliveryDetails] = useState([]);
   const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
-  const mapRef = useRef();
   const colors = [
     "#008080", // Teal
     "#FFA500", // Orange
@@ -346,7 +345,7 @@ function Dashboard() {
               <Marker position={artMilkCompanyPosition} icon={customIcon}>
                 <Popup>ART Milk Company</Popup>
               </Marker>
-                {routes.map((route) => {
+                {routes.map((route, index) => {
                   const routePosition = [
                     route.location.latitude,
                     route.location.longitude,
@@ -355,7 +354,7 @@ function Dashboard() {
                     <React.Fragment key={route._id}>
                       <Polyline
                         positions={[artMilkCompanyPosition, routePosition]}
-                        color={route.driver === null ? "orange" : "green"}
+                        color={colors[index+1]}
                       />
                       <Marker
                         position={routePosition}

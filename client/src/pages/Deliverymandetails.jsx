@@ -368,7 +368,7 @@ function Deliverymandetails() {
       <Header />
       <div className="main-content">
         <div className="header-section">
-          <h1 class="gradient-text">Employees</h1>
+          <h1 className="gradient-text">Employees</h1>
 
           <div className="header-buttons">
             <div className="export-btn-container">
