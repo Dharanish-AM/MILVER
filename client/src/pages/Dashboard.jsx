@@ -27,6 +27,7 @@ const getRouteIcon = (driver) => {
                 fill="${color}"/>
             </svg>`;
 };
+const apiKey = "55e8c4aa-6a8e-4ac8-b886-ac98649ed892";
 
 function Dashboard() {
   const [routes, setRoutes] = useState([]);
@@ -78,22 +79,22 @@ function Dashboard() {
   }, []);
 
   const customIcon = L.icon({
-      iconUrl: industry,
+    iconUrl: industry,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  });
+
+  const createRouteIcon = (driver) => {
+    const svgString = getRouteIcon(driver);
+    const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
+    return L.icon({
+      iconUrl: svgDataUrl,
       iconSize: [32, 32],
       iconAnchor: [16, 32],
       popupAnchor: [0, -32],
     });
-  
-    const createRouteIcon = (driver) => {
-      const svgString = getRouteIcon(driver);
-      const svgDataUrl = "data:image/svg+xml;base64," + btoa(svgString);
-      return L.icon({
-        iconUrl: svgDataUrl,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32],
-      });
-    };
+  };
   return (
     <section className="Dashboard">
       <Header />
@@ -337,7 +338,7 @@ function Dashboard() {
               className="mapRoutes-content-map"
             >
               <TileLayer
-                url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+                url={`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
                 attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 minZoom={0}
                 maxZoom={20}
@@ -345,30 +346,30 @@ function Dashboard() {
               <Marker position={artMilkCompanyPosition} icon={customIcon}>
                 <Popup>ART Milk Company</Popup>
               </Marker>
-                {routes.map((route, index) => {
-                  const routePosition = [
-                    route.location.latitude,
-                    route.location.longitude,
-                  ];
-                  return (
-                    <React.Fragment key={route._id}>
-                      <Polyline
-                        positions={[artMilkCompanyPosition, routePosition]}
-                        color={colors[index+1]}
-                      />
-                      <Marker
-                        position={routePosition}
-                        icon={createRouteIcon(route.driver)}
-                      >
-                        <Tooltip className="small-tooltip" permanent>
-                          <strong>{route.route_name}</strong>
-                          <br />
-                          Distance: {route.distance} km
-                        </Tooltip>
-                      </Marker>
-                    </React.Fragment>
-                  );
-                })}
+              {routes.map((route, index) => {
+                const routePosition = [
+                  route.location.latitude,
+                  route.location.longitude,
+                ];
+                return (
+                  <React.Fragment key={route._id}>
+                    <Polyline
+                      positions={[artMilkCompanyPosition, routePosition]}
+                      color={colors[index + 1]}
+                    />
+                    <Marker
+                      position={routePosition}
+                      icon={createRouteIcon(route.driver)}
+                    >
+                      <Tooltip className="small-tooltip" permanent>
+                        <strong>{route.route_name}</strong>
+                        <br />
+                        Distance: {route.distance} km
+                      </Tooltip>
+                    </Marker>
+                  </React.Fragment>
+                );
+              })}
             </MapContainer>
           </div>
 
