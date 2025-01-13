@@ -25,6 +25,7 @@ const getRouteIcon = (driver) => {
             </svg>`;
 };
 
+const apiKey = "55e8c4aa-6a8e-4ac8-b886-ac98649ed892";
 export default function MapRoutes() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -367,7 +368,7 @@ export default function MapRoutes() {
               className="mapRoutes-content-map"
             >
               <TileLayer
-                url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+                url={`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
                 attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 minZoom={0}
                 maxZoom={20}
@@ -498,7 +499,11 @@ export default function MapRoutes() {
                                 ))
                               ) : allDeliveryMan.length > 0 ? (
                                 allDeliveryMan.map((man) => (
-                                  <option key={man._id} value={man._id} style={{color : "orange"}}>
+                                  <option
+                                    key={man._id}
+                                    value={man._id}
+                                    style={{ color: "orange" }}
+                                  >
                                     {man.name} ({man.phone})
                                   </option>
                                 ))
