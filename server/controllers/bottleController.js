@@ -1,171 +1,72 @@
 const Bottle = require("../models/Bottle");
 
-// Add new bottle details for a specific route
-const addBottleDetail = async (req, res) => {
+
+exports.createBottleEntry = async (req, res) => {
   try {
-    const { route_id, bottle_detail } = req.body;
+    const { route_id, total } = req.body;
 
-    // Find the bottle document for the given route_id
-    const bottle = await Bottle.findOne({ route_id });
+    if (!route_id || total === undefined) {
+      return res.status(400).json({ message: "Route ID and total bottles are required." });
+    }
 
+    const newBottle = new Bottle({
+      route_id,
+      bottle_details: [{ total, delivered: 0, damaged: 0, returned: 0, date: new Date() }],
+    });
+
+    await newBottle.save();
+    return res.status(201).json({ message: "Bottle entry created successfully.", data: newBottle });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+exports.updateBottleStatus = async (req, res) => {
+  try {
+    const { bottleId, delivered, damaged, returned } = req.body;
+
+    if (!bottleId) {
+      return res.status(400).json({ message: "Bottle ID is required." });
+    }
+
+    const bottle = await Bottle.findById(bottleId);
     if (!bottle) {
-      return res
-        .status(404)
-        .json({ message: "Bottle document not found for the given route" });
+      return res.status(404).json({ message: "Bottle entry not found." });
     }
 
-    // Add the new bottle detail to the existing bottle_details array
-    bottle.bottle_details.push(bottle_detail);
 
-    // Save the updated bottle document 
-    const updatedBottle = await bottle.save();
- 
-    res.status(200).json(updatedBottle);
+    bottle.bottle_details.push({
+      total: bottle.bottle_details[bottle.bottle_details.length - 1]?.total || 0,
+      delivered: delivered || 0,
+      damaged: damaged || 0,
+      returned: returned || 0,
+      date: new Date(),
+    });
+
+    await bottle.save();
+    return res.status(200).json({ message: "Bottle status updated successfully.", data: bottle });
   } catch (error) {
-    res.status(500).json({ message: "Error adding bottle detail", error });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Get bottle details by route_id
-const getBottlesByRoute = async (req, res) => {
+exports.fetchBottleDetailsByRoute = async (req, res) => {
   try {
-    const { route_id } = req.body;
+    const { route_id } = req.params;
 
-    // Find the bottle document by route_id
-    const bottles = await Bottle.find({ route_id });
-
-    if (!bottles || bottles.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bottles found for the given route" });
+    if (!route_id) {
+      return res.status(400).json({ message: "route_id is required" });
     }
 
-    res.status(200).json(bottles);
+    const bottles = await Bottle.find({ route_id }).populate("route_id");
+
+    if (!bottles.length) {
+      return res.status(404).json({ message: "No bottle records found for this route" });
+    }
+
+    res.status(200).json({ message: "Bottle details fetched successfully", bottles });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving bottles", error });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-};
-
-// Get a specific bottle by route_id and detail_id
-const getBottleDetailById = async (req, res) => {
-  try {
-    const { route_id, detail_id } = req.body;
-
-    // Find the bottle document by route_id
-    const bottle = await Bottle.findOne({ route_id });
-
-    if (!bottle) {
-      return res
-        .status(404)
-        .json({ message: "Bottle document not found for the given route" });
-    }
-
-    // Find the specific detail in the bottle_details array
-    const detail = bottle.bottle_details.find(
-      (detail) => detail._id.toString() === detail_id
-    );
-
-    if (!detail) {
-      return res.status(404).json({ message: "Bottle detail not found" });
-    }
-
-    res.status(200).json(detail);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving bottle detail", error });
-  }
-};
-
-// Update bottle details for a specific route and detail_id
-const updateBottleDetail = async (req, res) => {
-  try {
-    const { route_id, detail_id, updated_detail } = req.body;
-
-    // Find the bottle document for the given route_id
-    const bottle = await Bottle.findOne({ route_id });
-
-    if (!bottle) {
-      return res
-        .status(404)
-        .json({ message: "Bottle document not found for the given route" });
-    }
-
-    // Find the index of the bottle detail in the bottle_details array
-    const detailIndex = bottle.bottle_details.findIndex(
-      (detail) => detail._id.toString() === detail_id
-    );
-
-    if (detailIndex === -1) {
-      return res.status(404).json({ message: "Bottle detail not found" });
-    }
-
-    // Update the specific bottle detail
-    bottle.bottle_details[detailIndex] = {
-      ...bottle.bottle_details[detailIndex]._doc,
-      ...updated_detail,
-    };
-
-    // Save the updated bottle document
-    const updatedBottle = await bottle.save();
-
-    res.status(200).json(updatedBottle);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating bottle detail", error });
-  }
-};
-
-// Delete a bottle document by route_id
-const deleteBottle = async (req, res) => {
-  try {
-    const { route_id } = req.body;
-
-    // Find and delete the bottle document for the given route_id
-    const deletedBottle = await Bottle.findOneAndDelete({ route_id });
-
-    if (!deletedBottle) {
-      return res
-        .status(404)
-        .json({ message: "Bottle document not found for the given route" });
-    }
-
-    res.status(200).json({ message: "Bottle deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting bottle", error });
-  }
-};
-
-// Delete a specific bottle detail from a bottle document
-const deleteBottleDetail = async (req, res) => {
-  try {
-    const { route_id, detail_id } = req.body;
-
-    // Find the bottle document for the given route_id
-    const bottle = await Bottle.findOne({ route_id });
-
-    if (!bottle) {
-      return res
-        .status(404)
-        .json({ message: "Bottle document not found for the given route" });
-    }
-
-    // Remove the specific detail from the bottle_details array
-    bottle.bottle_details = bottle.bottle_details.filter(
-      (detail) => detail._id.toString() !== detail_id
-    );
-
-    // Save the updated bottle document
-    const updatedBottle = await bottle.save();
-
-    res.status(200).json(updatedBottle);
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting bottle detail", error });
-  }
-};
-
-module.exports = {
-  addBottleDetail,
-  getBottlesByRoute,
-  getBottleDetailById,
-  updateBottleDetail,
-  deleteBottle,
-  deleteBottleDetail,
 };

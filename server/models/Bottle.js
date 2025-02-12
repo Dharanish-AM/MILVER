@@ -8,15 +8,18 @@ const BottleSchema = new mongoose.Schema({
   bottle_details: {
     type: [
       {
+        total: {
+          type: Number,
+          default: 0,
+          require: true,
+        },
         delivered: {
           type: Number,
-          required: true,
           min: 0,
           default: 0,
         },
         damaged: {
           type: Number,
-          required: true,
           min: 0,
           default: 0,
         },
