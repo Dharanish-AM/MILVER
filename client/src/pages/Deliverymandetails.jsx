@@ -104,7 +104,7 @@ function Deliverymandetails() {
   const getDeliverymenData = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/deliverymen/`
+        `http://localhost:8000/api/deliverymen/`
       );
       console.log(response.data);
 

@@ -51,7 +51,7 @@ const Customers = () => {
     try {
       console.log("consoled");
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/customer/`
+        `http://localhost:8000/api/customer/`
       );
       setCustomersData(response.data);
       console.log(response.data, "customerdata");
