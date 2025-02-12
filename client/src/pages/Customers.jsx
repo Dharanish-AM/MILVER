@@ -366,7 +366,6 @@ const Customers = () => {
         </div>
       </div>
 
-      {/* Popup modal for customer creation */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setmodalclose()}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

@@ -27,7 +27,7 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
           sno:route.route_id,
           route: route.route_name, 
           drivers: route.driver?.name || "Unassigned", 
-          totalCost: 0, 
+          totalCost: route.fuelamount||0, 
           todaysAmount: route.todaysAmount,
           editable: false,
           routeid:route._id,
@@ -71,7 +71,7 @@ const[isinputchanged,setinputchanged]=useState(0);
     driverId: e.driver_id,
     routeId: e.routeid,
     amount: isinputchanged?e.todaysAmount:0,
-    routescost: 11,
+    routescost: e.totalCost,
   });
  
   console.log(response.data);
@@ -97,38 +97,38 @@ if(response.data.status===200){
   }
  }
 
-  const toggleEdit = (index) => {
-    const newData = [...data];
-    newData[index].editable = !newData[index].editable;
-    setData(newData);
-  };
   // const toggleEdit = (index) => {
   //   const newData = [...data];
-  //   const currentRow = newData[index];
-  //   const currentTime = new Date();
-  
-  //   const lastEditTime = currentRow.lastEditTime
-  //     ? new Date(currentRow.lastEditTime)
-  //     : null;
-  
-  //   if (
-  //     lastEditTime &&
-  //     lastEditTime.toDateString() === currentTime.toDateString()
-  //   ) {
-  //     // toast.warning("dddd")
-
-  //     alert("already amount is assigned for this deliverymen.");
-  //     return;
-  //   }
-  
   //   newData[index].editable = !newData[index].editable;
-  
-  //   if (!newData[index].editable) {
-  //     newData[index].lastEditTime = currentTime;
-  //   }
-  
   //   setData(newData);
   // };
+  const toggleEdit = (index) => {
+    const newData = [...data];
+    const currentRow = newData[index];
+    const currentTime = new Date();
+  
+    const lastEditTime = currentRow.lastEditTime
+      ? new Date(currentRow.lastEditTime)
+      : null;
+  
+    if (
+      lastEditTime &&
+      lastEditTime.toDateString() === currentTime.toDateString()
+    ) {
+      // toast.warning("dddd")
+
+      alert("already amount is assigned for this deliverymen.");
+      return;
+    }
+  
+    newData[index].editable = !newData[index].editable;
+  
+    if (!newData[index].editable) {
+      newData[index].lastEditTime = currentTime;
+    }
+  
+    setData(newData);
+  };
   const handleInputChange = (index, field, value) => {
     setinputchanged(1)
     const newData = [...data];
@@ -272,7 +272,7 @@ setindex(index)
                         {row.route}
                       </td>
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
-                        {row.fuelamount||2000}
+                        {row.totalCost||2000}
                       </td>
                       <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
                         {row.drivers}
