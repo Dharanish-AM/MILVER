@@ -1,11 +1,9 @@
 const Bottle = require("../models/Bottle");
 
-// Add new bottle details for a specific route
 const addBottleDetail = async (req, res) => {
   try {
     const { route_id, bottle_detail } = req.body;
 
-    // Find the bottle document for the given route_id
     const bottle = await Bottle.findOne({ route_id });
 
     if (!bottle) {
@@ -14,7 +12,6 @@ const addBottleDetail = async (req, res) => {
         .json({ message: "Bottle document not found for the given route" });
     }
 
-    // Add the new bottle detail to the existing bottle_details array
     bottle.bottle_details.push(bottle_detail);
 
     // Save the updated bottle document 
