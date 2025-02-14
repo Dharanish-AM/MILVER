@@ -36,7 +36,8 @@ export default function MapRoutes() {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [updatedRouteData, setUpdatedRouteData] = useState(null);
-
+const[openmodel,setopenmodel]=useState(false);
+const[bottlecount,setbottlecount]=useState();
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/route/")
@@ -55,7 +56,9 @@ export default function MapRoutes() {
       })
       .catch((err) => console.log("Error in getDeliveryDetails " + err));
   }, []);
-
+  const handlebottlecountchange = (e) => {
+    setbottlecount(e.target.value); 
+  };
   const handleFilterChange = (val) => {
     const filterValue = val.target.value;
     setFilter(filterValue);
@@ -90,8 +93,10 @@ export default function MapRoutes() {
       [routeId]: deliveryManId,
     }));
   };
-
+const[currentrouteid,setcurrentrouteid]=useState(null);
   const handleAssignDeliveryMan = (routeId, deliveryManId) => {
+    setopenmodel(true);
+    setcurrentrouteid(routeId);
     const payload = {
       driver_objid: deliveryManId,
       route_objid: routeId,
@@ -118,9 +123,18 @@ export default function MapRoutes() {
         );
       })
       .catch((err) => console.error("Error assigning delivery man:", err));
-    window.location.reload();
   };
 
+const submitbottlemodel=async()=>{
+// const response=await axios.post("http://localhost:8000/api/bottle/create",{route_id:currentrouteid,total:bottlecount});
+// console.log(response.data);
+closebottlemodel(false);
+window.location.reload();
+}
+  const closebottlemodel=()=>{
+    setopenmodel(false);
+    window.location.reload();
+  }
   const customIcon = L.icon({
     iconUrl: industry,
     iconSize: [32, 32],
@@ -550,6 +564,27 @@ export default function MapRoutes() {
             )}
           </div>
         </div>
+        {openmodel &&
+        <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Popup Modal</h2>
+          <div className="contents">
+           <label htmlFor="">Enter bottle count</label> <input type='number'
+           value={bottlecount}
+           onchange={handlebottlecountchange}
+           placeholder="enter bottles count"
+           />
+          </div>
+          <button onClick={() =>submitbottlemodel()} className="submit-btn">
+            Submit
+          </button>
+          <button onClick={() =>closebottlemodel()} className="close-btn">
+            Close
+          </button>
+        
+        </div>
+      </div>
+      }
       </section>
     </section>
   );

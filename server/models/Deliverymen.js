@@ -63,20 +63,31 @@ const DeliverymenSchema = new Schema({
   fuel_allowance: {
     type: [
       {
-        amount: {
-          type: Number,
-        },
-        route_id: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Route",
-        },
         date: {
           type: Date,
+          required: true,
         },
+        
+        records: [
+          {
+            amount: {
+              type: Number,
+            },
+            route_id: {
+              type: mongoose.Schema.ObjectId,
+              ref: "Route",
+            },
+            time: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
       },
     ],
     default: [],
   },
+  
   attendence: {
     type: [
       {

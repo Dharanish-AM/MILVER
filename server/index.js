@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv").config();
 const db = require("./config/db");
-const cronJob = require("../server/cron/todaysfuelamount"); // Import the cron job
+const cronJob = require("../server/cron/todaysfuelamount");
 
 const customerRoutes = require("./routes/customerRoutes");
 const deliverymenRoutes = require("./routes/deliverymenRoutes");
