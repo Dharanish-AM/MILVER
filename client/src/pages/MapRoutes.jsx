@@ -36,8 +36,15 @@ export default function MapRoutes() {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [updatedRouteData, setUpdatedRouteData] = useState(null);
-const[openmodel,setopenmodel]=useState(false);
-const[bottlecount,setbottlecount]=useState();
+  const [openmodel, setopenmodel] = useState(false);
+  const [bottlecount, setbottlecount] = useState();
+  const [newRoute, setNewRoute] = useState(false)
+  const [routeName, setRouteName] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [distance, setDistance] = useState("");
+  const [defaultAmount, setDefaultAmount] = useState("");
+
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/route/")
@@ -57,7 +64,7 @@ const[bottlecount,setbottlecount]=useState();
       .catch((err) => console.log("Error in getDeliveryDetails " + err));
   }, []);
   const handlebottlecountchange = (e) => {
-    setbottlecount(e.target.value); 
+    setbottlecount(e.target.value);
   };
   const handleFilterChange = (val) => {
     const filterValue = val.target.value;
@@ -93,7 +100,7 @@ const[bottlecount,setbottlecount]=useState();
       [routeId]: deliveryManId,
     }));
   };
-const[currentrouteid,setcurrentrouteid]=useState(null);
+  const [currentrouteid, setcurrentrouteid] = useState(null);
   const handleAssignDeliveryMan = (routeId, deliveryManId) => {
     setopenmodel(true);
     setcurrentrouteid(routeId);
@@ -125,16 +132,16 @@ const[currentrouteid,setcurrentrouteid]=useState(null);
       .catch((err) => console.error("Error assigning delivery man:", err));
   };
 
-const submitbottlemodel=async()=>{
-// const response=await axios.post("http://localhost:8000/api/bottle/create",{route_id:currentrouteid,total:bottlecount});
-// console.log(response.data);
-closebottlemodel(false);
-window.location.reload();
-}
-  const closebottlemodel=()=>{
+  const submitbottlemodel = async () => {
+    // const response=await axios.post("http://localhost:8000/api/bottle/create",{route_id:currentrouteid,total:bottlecount});
+    // console.log(response.data);
+    closebottlemodel(false);
+    window.location.reload();
+  };
+  const closebottlemodel = () => {
     setopenmodel(false);
     window.location.reload();
-  }
+  };
   const customIcon = L.icon({
     iconUrl: industry,
     iconSize: [32, 32],
@@ -183,6 +190,36 @@ window.location.reload();
       .catch((err) => console.error("Error updating data:", err));
   };
   const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const routeData = {
+      route_name: routeName,
+      customers: [],
+      drivers: null,
+      distance: parseFloat(distance),
+      location: {
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      },
+      defaultAmount: parseFloat(defaultAmount),
+    };
+
+    try {
+      const response = await axios.post("http://localhost:8000/api/route/", routeData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Route added successfully:", response.data);
+      alert("Route added successfully!");
+    } catch (error) {
+      console.error("Error adding route:", error);
+      alert("Failed to add route.");
+    }
+  };
+
 
   return (
     <section className="mapRoutes-container">
@@ -440,151 +477,183 @@ window.location.reload();
               </select>
             </div>
             <div className="mapRoutes-content-details-top-add">
-              <button>+</button>
+              <button onClick={() => setNewRoute(!newRoute)} style={{ backgroundColor: newRoute ? "red" : "#333" }}>{newRoute ? "x" : "+"}</button>
             </div>
           </div>
-          <div className="mapRoutes-content-details-bottom">
-            {filteredData.length > 0 ? (
-              filteredData.map((route) => {
-                const assignedAvailableDeliveryMen = deliveryMan.filter(
-                  (man) =>
-                    man.routes.some((r) => r.id === route.route_id) && // Match route_id correctly
-                    man.status === "available"
-                );
-                const allDeliveryMan = deliveryMan.filter(
-                  (man) =>
-                    man.routes.some((r) => r.id === route.route_id) &&
-                    (man.status === "available" || "assigned")
-                );
-                return (
-                  <div
-                    key={route._id}
-                    className="mapRoutes-content-details-bottom-container"
-                  >
-                    <div className="mapRoutes-content-details-bottom-left">
-                      <div className="mapRoutes-content-details-bottom-left-status-container">
-                        <span>Status : </span>
-                        {route.driver === null ? (
-                          <div style={{ color: "orange", fontWeight: 650 }}>
-                            {" "}
-                            Not Assigned{" "}
+          {
+            newRoute ?
+              <div className="mapRoutes-content-details-bottom-newRoute-container">
+                <div className="mapRoutes-content-details-bottom-newRoute-container-heading">
+                  Add New Route
+                </div>
+                <form className="mapRoutes-content-details-bottom-newRoute-container-form" onSubmit={handleSubmit}>
+                  <div className="mapRoutes-content-details-bottom-newRoute-container-form-input-container">
+                    <div>Route Name</div>
+                    <input type="text" value={routeName} onChange={(e) => setRouteName(e.target.value)} required />
+                  </div>
+                  <div className="mapRoutes-content-details-bottom-newRoute-container-form-input-container">
+                    <div>Coordinates</div>
+                    <input type="text" placeholder="Latitude" value={latitude} onChange={(e) => setLatitude(e.target.value)} required />
+                    <input type="text" placeholder="Longitude" value={longitude} onChange={(e) => setLongitude(e.target.value)} required />
+                  </div>
+                  <div className="mapRoutes-content-details-bottom-newRoute-container-form-input-container">
+                    <div>Distance</div>
+                    <input type="number" value={distance} onChange={(e) => setDistance(e.target.value)} required />
+                  </div>
+                  <div className="mapRoutes-content-details-bottom-newRoute-container-form-input-container">
+                    <div>Default Amount</div>
+                    <input type="number" value={defaultAmount} onChange={(e) => setDefaultAmount(e.target.value)} required />
+                  </div>
+                  <button type="submit">Add Route</button>
+                </form>
+              </div> :
+              <div className="mapRoutes-content-details-bottom">
+                {filteredData.length > 0 ? (
+                  filteredData.map((route) => {
+                    const assignedAvailableDeliveryMen = deliveryMan.filter(
+                      (man) =>
+                        man.routes.some((r) => r.id === route.route_id) && // Match route_id correctly
+                        man.status === "available"
+                    );
+                    const allDeliveryMan = deliveryMan.filter(
+                      (man) =>
+                        man.routes.some((r) => r.id === route.route_id) &&
+                        (man.status === "available" || "assigned")
+                    );
+                    return (
+                      <div
+                        key={route._id}
+                        className="mapRoutes-content-details-bottom-container"
+                      >
+                        <div className="mapRoutes-content-details-bottom-left">
+                          <div className="mapRoutes-content-details-bottom-left-status-container">
+                            <span>Status : </span>
+                            {route.driver === null ? (
+                              <div style={{ color: "orange", fontWeight: 650 }}>
+                                {" "}
+                                Not Assigned{" "}
+                              </div>
+                            ) : (
+                              <div style={{ color: "green", fontWeight: 650 }}>
+                                {" "}
+                                Assigned{" "}
+                              </div>
+                            )}
                           </div>
-                        ) : (
-                          <div style={{ color: "green", fontWeight: 650 }}>
-                            {" "}
-                            Assigned{" "}
+                          <div className="mapRoutes-content-details-bottom-left-routeid">
+                            <span>Route ID : </span>
+                            <div> {route.route_id}</div>
                           </div>
-                        )}
-                      </div>
-                      <div className="mapRoutes-content-details-bottom-left-routeid">
-                        <span>Route ID : </span>
-                        <div> {route.route_id}</div>
-                      </div>
-                      <div className="mapRoutes-content-details-bottom-left-routename">
-                        <span>Route name : </span>
-                        <div>{route.route_name}</div>
-                      </div>
-                      <div className="mapRoutes-content-details-bottom-left-distance">
-                        <span>Distance : </span>
-                        <div>{route.distance}</div>
-                      </div>
-                    </div>
-                    <div className="mapRoutes-content-details-bottom-right">
-                      {route.driver === null ? (
-                        <>
-                          <div className="mapRoutes-content-details-bottom-right-list">
-                            <select
-                              value={selectedDeliveryMan[route._id] || ""}
-                              onChange={(e) =>
-                                handleSelectDeliveryMan(
-                                  route._id,
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option value="" disabled>
-                                Select Delivery Man
-                              </option>
-                              {assignedAvailableDeliveryMen.length > 0 ? (
-                                assignedAvailableDeliveryMen.map((man) => (
-                                  <option key={man._id} value={man._id}>
-                                    {man.name} ({man.phone})
-                                  </option>
-                                ))
-                              ) : allDeliveryMan.length > 0 ? (
-                                allDeliveryMan.map((man) => (
-                                  <option
-                                    key={man._id}
-                                    value={man._id}
-                                    style={{ color: "orange" }}
-                                  >
-                                    {man.name} ({man.phone})
-                                  </option>
-                                ))
-                              ) : (
-                                <option key="" disabled>
-                                  No Delivery man available
-                                </option>
-                              )}
-                            </select>
+                          <div className="mapRoutes-content-details-bottom-left-routename">
+                            <span>Route name : </span>
+                            <div>{route.route_name}</div>
                           </div>
-
-                          <button
-                            className="mapRoutes-content-details-bottom-right-button"
-                            onClick={() => {
-                              if (selectedDeliveryMan[route._id]) {
-                                handleAssignDeliveryMan(
-                                  route._id,
-                                  selectedDeliveryMan[route._id]
-                                );
-                              }
-                            }}
-                          >
-                            Assign
-                          </button>
-                        </>
-                      ) : (
-                        <div className="mapRoutes-content-details-bottom-right-Assigned">
-                          <span>Assigned Delivery Man: </span>
-                          <div>
-                            {route.driver.name} ({route.driver.phone})
+                          <div className="mapRoutes-content-details-bottom-left-distance">
+                            <span>Distance : </span>
+                            <div>{route.distance}</div>
                           </div>
                         </div>
-                      )}
-                    </div>
-                    <div
-                      className="mapRoutes-content-details-bottom-info"
-                      onClick={() => handleRouteInfoClick(route)}
-                    ></div>
-                  </div>
-                );
-              })
-            ) : (
-              <p>No routes available</p>
-            )}
-          </div>
+                        <div className="mapRoutes-content-details-bottom-right">
+                          {route.driver === null ? (
+                            <>
+                              <div className="mapRoutes-content-details-bottom-right-list">
+                                <select
+                                  value={selectedDeliveryMan[route._id] || ""}
+                                  onChange={(e) =>
+                                    handleSelectDeliveryMan(
+                                      route._id,
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="" disabled>
+                                    Select Delivery Man
+                                  </option>
+                                  {assignedAvailableDeliveryMen.length > 0 ? (
+                                    assignedAvailableDeliveryMen.map((man) => (
+                                      <option key={man._id} value={man._id}>
+                                        {man.name} ({man.phone})
+                                      </option>
+                                    ))
+                                  ) : allDeliveryMan.length > 0 ? (
+                                    allDeliveryMan.map((man) => (
+                                      <option
+                                        key={man._id}
+                                        value={man._id}
+                                        style={{ color: "orange" }}
+                                      >
+                                        {man.name} ({man.phone})
+                                      </option>
+                                    ))
+                                  ) : (
+                                    <option key="" disabled>
+                                      No Delivery man available
+                                    </option>
+                                  )}
+                                </select>
+                              </div>
+
+                              <button
+                                className="mapRoutes-content-details-bottom-right-button"
+                                onClick={() => {
+                                  if (selectedDeliveryMan[route._id]) {
+                                    handleAssignDeliveryMan(
+                                      route._id,
+                                      selectedDeliveryMan[route._id]
+                                    );
+                                  }
+                                }}
+                              >
+                                Assign
+                              </button>
+                            </>
+                          ) : (
+                            <div className="mapRoutes-content-details-bottom-right-Assigned">
+                              <span>Assigned Delivery Man: </span>
+                              <div>
+                                {route.driver.name} ({route.driver.phone})
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div
+                          className="mapRoutes-content-details-bottom-info"
+                          onClick={() => handleRouteInfoClick(route)}
+                        ></div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No routes available</p>
+                )}
+              </div>
+          }
         </div>
-        {openmodel &&
-        <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>Popup Modal</h2>
-          <div className="contents">
-           <label htmlFor="">Enter bottle count</label> <input type='number'
-           value={bottlecount}
-           onchange={handlebottlecountchange}
-           placeholder="enter bottles count"
-           />
+        {openmodel && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>Popup Modal</h2>
+              <div className="contents">
+                <label htmlFor="">Enter bottle count</label>{" "}
+                <input
+                  type="number"
+                  value={bottlecount}
+                  onchange={handlebottlecountchange}
+                  placeholder="enter bottles count"
+                />
+              </div>
+              <button
+                onClick={() => submitbottlemodel()}
+                className="submit-btn"
+              >
+                Submit
+              </button>
+              <button onClick={() => closebottlemodel()} className="close-btn">
+                Close
+              </button>
+            </div>
           </div>
-          <button onClick={() =>submitbottlemodel()} className="submit-btn">
-            Submit
-          </button>
-          <button onClick={() =>closebottlemodel()} className="close-btn">
-            Close
-          </button>
-        
-        </div>
-      </div>
-      }
+        )}
       </section>
     </section>
   );
