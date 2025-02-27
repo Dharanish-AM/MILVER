@@ -53,12 +53,22 @@ exports.updateBottleStatus = async (req, res) => {
 
 exports.fetchAllBottles = async (req, res) => {
   try {
+    const bottles = await Bottle.find().populate("route_id");
 
-  }
-  catch (err) {
+    return res.status(200).json({
+      message: "Bottles fetched successfully.",
+      data: bottles,
+    });
+  } catch (error) {
+    console.error("Error fetching bottles:", error);
 
+    return res.status(500).json({
+      message: "Server error while fetching bottles.",
+      error: error.message,
+    });
   }
-}
+};
+
 
 exports.fetchBottleDetailsByRoute = async (req, res) => {
   try {

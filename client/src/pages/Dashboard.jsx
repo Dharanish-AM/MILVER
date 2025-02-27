@@ -32,6 +32,7 @@ const apiKey = "55e8c4aa-6a8e-4ac8-b886-ac98649ed892";
 function Dashboard() {
   const [routes, setRoutes] = useState([]);
   const [deliveryDetails, setDeliveryDetails] = useState([]);
+  const [bottles, setBottles] = useState([]);
   const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
   const colors = [
     "#008080", // Teal
@@ -76,6 +77,12 @@ function Dashboard() {
       .catch((err) => {
         console.log("Error in getAllDeliveryMen : ", err);
       });
+    axios.get("http://localhost:8000/api/bottle/get-all-bottles").
+      then((res) => {
+        console.log("bottles", res.data.data);
+        const bottles = res.data;
+        setBottles(bottles);
+      })
   }, []);
 
   const customIcon = L.icon({
@@ -296,8 +303,8 @@ function Dashboard() {
                                   detail.status === "assigned"
                                     ? "green"
                                     : detail.status === "on_leave"
-                                    ? "red"
-                                    : "orange",
+                                      ? "red"
+                                      : "orange",
                               }}
                             ></div>
                           </td>
@@ -307,8 +314,8 @@ function Dashboard() {
                           <td className="delivery-details-table-route">
                             {detail.status === "assigned"
                               ? routes.find(
-                                  (route) => route.driver?._id === detail._id
-                                )?.route_name || "No route assigned"
+                                (route) => route.driver?._id === detail._id
+                              )?.route_name || "No route assigned"
                               : "-"}
                           </td>
 
