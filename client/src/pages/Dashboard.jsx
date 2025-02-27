@@ -4,8 +4,8 @@ import cow from "../assets/cow.png";
 import tick from "../assets/tick.png";
 import exclamation from "../assets/exclamation.png";
 import supplied from "../assets/supplied.png";
-import collected from "../assets/collected.png";
-import broken from "../assets/broken.png";
+import collectedImg from "../assets/collected.png";
+import brokenImg from "../assets/broken.png";
 import person from "../assets/person.png";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +33,9 @@ function Dashboard() {
   const [routes, setRoutes] = useState([]);
   const [deliveryDetails, setDeliveryDetails] = useState([]);
   const [bottles, setBottles] = useState([]);
+  const [bottleCount, setBottleCount] = useState(0);
+  const [collected, setCollected] = useState(0);
+  const [broken, setBroken] = useState(0);
   const artMilkCompanyPosition = [13.054398115031136, 80.26375998957623];
   const colors = [
     "#008080", // Teal
@@ -77,12 +80,12 @@ function Dashboard() {
       .catch((err) => {
         console.log("Error in getAllDeliveryMen : ", err);
       });
-    axios.get("http://localhost:8000/api/bottle/get-all-bottles").
-      then((res) => {
-        console.log("bottles", res.data.data);
+    axios
+      .get("http://localhost:8000/api/bottle/get-all-bottles")
+      .then((res) => {
         const bottles = res.data;
-        setBottles(bottles);
-      })
+        setBottles(bottles.data);
+      });
   }, []);
 
   const customIcon = L.icon({
@@ -102,6 +105,38 @@ function Dashboard() {
       popupAnchor: [0, -32],
     });
   };
+  useEffect(() => {
+    let count = 0;
+    let collected = 0;
+    let broken = 0;
+    console.log("Bottles state:", bottles);
+
+    if (Array.isArray(bottles)) {
+      bottles.forEach((bottle) => {
+        bottle.bottle_details.forEach((element) => {
+          const today = new Date();
+          const elementDate = new Date(element.date);
+
+          if (
+            elementDate.getFullYear() === today.getFullYear() &&
+            elementDate.getMonth() === today.getMonth() &&
+            elementDate.getDate() === today.getDate()
+          ) {
+            count += element.total;
+            collected += element.returned;
+            broken += element.damaged;
+          }
+        });
+      });
+    } else {
+      console.warn("Bottles is not an array:", bottles);
+    }
+
+    setBottleCount(count);
+    setCollected(collected);
+    setBroken(broken);
+  }, [bottles]);
+
   return (
     <section className="Dashboard">
       <Header />
@@ -115,7 +150,7 @@ function Dashboard() {
                   style={{ backgroundImage: `url(${cow})` }}
                 ></div>
                 <div className="Dashboard-left-top-element-content-text">
-                  1230 L
+                  {bottleCount} L
                 </div>
               </div>
               <div className="Dashboard-left-top-element-label">
@@ -170,35 +205,35 @@ function Dashboard() {
                         </div>
                       </div>
                       <div className="Dashboard-left-bottom-left-top-bottles-element-value">
-                        <span>1200</span>
+                        <span>{bottleCount}</span>
                       </div>
                     </div>
                     <div className="Dashboard-left-bottom-left-top-bottles-element">
                       <div className="Dashboard-left-bottom-left-top-bottles-element-label">
                         <div
                           className="Dashboard-left-bottom-left-top-bottles-element-label-img"
-                          style={{ backgroundImage: `url(${collected})` }}
+                          style={{ backgroundImage: `url(${collectedImg})` }}
                         ></div>
                         <div className="Dashboard-left-bottom-left-top-bottles-element-label-text">
                           collected
                         </div>
                       </div>
                       <div className="Dashboard-left-bottom-left-top-bottles-element-value">
-                        <span>500</span>
+                        <span>{collected}</span>
                       </div>
                     </div>
                     <div className="Dashboard-left-bottom-left-top-bottles-element">
                       <div className="Dashboard-left-bottom-left-top-bottles-element-label">
                         <div
                           className="Dashboard-left-bottom-left-top-bottles-element-label-img"
-                          style={{ backgroundImage: `url(${broken})` }}
+                          style={{ backgroundImage: `url(${brokenImg})` }}
                         ></div>
                         <div className="Dashboard-left-bottom-left-top-bottles-element-label-text">
                           damaged
                         </div>
                       </div>
                       <div className="Dashboard-left-bottom-left-top-bottles-element-value">
-                        <span>4</span>
+                        <span>{broken}</span>
                       </div>
                     </div>
                   </div>
@@ -303,8 +338,8 @@ function Dashboard() {
                                   detail.status === "assigned"
                                     ? "green"
                                     : detail.status === "on_leave"
-                                      ? "red"
-                                      : "orange",
+                                    ? "red"
+                                    : "orange",
                               }}
                             ></div>
                           </td>
@@ -314,8 +349,8 @@ function Dashboard() {
                           <td className="delivery-details-table-route">
                             {detail.status === "assigned"
                               ? routes.find(
-                                (route) => route.driver?._id === detail._id
-                              )?.route_name || "No route assigned"
+                                  (route) => route.driver?._id === detail._id
+                                )?.route_name || "No route assigned"
                               : "-"}
                           </td>
 
@@ -323,7 +358,26 @@ function Dashboard() {
                             {detail.full || 0}
                           </td>
                           <td className="delivery-details-table-1">
-                            {detail.supplied || 0}
+                            {bottles
+                              .filter(
+                                (bottle) =>
+                                  bottle.route_id?.driver === detail._id
+                              )
+                              .flatMap((bottle) => bottle.bottle_details)
+                              .filter((element) => {
+                                const today = new Date();
+                                const elementDate = new Date(element.date);
+                                return (
+                                  elementDate.getFullYear() ===
+                                    today.getFullYear() &&
+                                  elementDate.getMonth() === today.getMonth() &&
+                                  elementDate.getDate() === today.getDate()
+                                );
+                              })
+                              .reduce(
+                                (sum, element) => sum + element.total,
+                                0
+                              ) || 0}
                           </td>
                         </tr>
                       ))}
