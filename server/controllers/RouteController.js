@@ -1,5 +1,6 @@
 const Route = require("../models/Route");
 const Deliverymen = require("../models/Deliverymen");
+const Bottle = require("../models/Bottle");
 
 const getAllRoutes = async (req, res) => {
   console.log("Fetching all routes...");
@@ -55,7 +56,7 @@ const confirmAndSaveAssignments = async (req, res) => {
 
 const assignDeliverymenManual = async (req, res) => {
   try {
-    const { driver_objid, route_objid,totalBottle } = req.body;
+    const { driver_objid, route_objid, totalBottles } = req.body;
 
     const route = await Route.findById(route_objid);
     const driver = await Deliverymen.findById(driver_objid);
@@ -64,10 +65,11 @@ const assignDeliverymenManual = async (req, res) => {
       return res.status(404).json({ message: "Route or driver not found" });
     }
 
-    route.driver = driver._id;
 
+    route.driver = driver._id;
     driver.status = "assigned";
     await driver.save();
+
 
     route.delivery_history.push({
       driver: driver._id,
@@ -76,9 +78,21 @@ const assignDeliverymenManual = async (req, res) => {
 
     await route.save();
 
-    res.json(route);
+
+    const newBottle = new Bottle({
+      route_id: route._id,
+      bottle_details: [{ total: totalBottles, delivered: 0, damaged: 0, returned: 0, date: new Date() }],
+    });
+
+    await newBottle.save();
+
+    res.json({
+      message: "Driver assigned and bottle entry created successfully",
+      route,
+      bottleEntry: newBottle,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error assigning driver", error });
+    res.status(500).json({ message: "Error assigning driver", error: error.message });
   }
 };
 

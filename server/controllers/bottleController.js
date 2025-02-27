@@ -1,7 +1,7 @@
 const Bottle = require("../models/Bottle");
 
 
-exports.createBottleEntry = async (req, res) => {
+exports.createBottleEntry = async () => {
   try {
     const { route_id, total } = req.body;
 
