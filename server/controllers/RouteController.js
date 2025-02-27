@@ -58,6 +58,7 @@ const assignDeliverymenManual = async (req, res) => {
   try {
     const { driver_objid, route_objid, totalBottles } = req.body;
 
+
     const route = await Route.findById(route_objid);
     const driver = await Deliverymen.findById(driver_objid);
 
@@ -79,22 +80,42 @@ const assignDeliverymenManual = async (req, res) => {
     await route.save();
 
 
-    const newBottle = new Bottle({
-      route_id: route._id,
-      bottle_details: [{ total: totalBottles, delivered: 0, damaged: 0, returned: 0, date: new Date() }],
-    });
+    let existingBottle = await Bottle.findOne({ route_id: route._id });
 
-    await newBottle.save();
+    if (existingBottle) {
+
+      existingBottle.bottle_details.push({
+        total: totalBottles,
+        delivered: 0,
+        damaged: 0,
+        returned: 0,
+        date: new Date(),
+      });
+
+      await existingBottle.save();
+    } else {
+
+      existingBottle = new Bottle({
+        route_id: route._id,
+        bottle_details: [
+          { total: totalBottles, delivered: 0, damaged: 0, returned: 0, date: new Date() },
+        ],
+      });
+
+      await existingBottle.save();
+    }
 
     res.json({
-      message: "Driver assigned and bottle entry created successfully",
+      message: "Driver assigned and bottle entry updated successfully",
       route,
-      bottleEntry: newBottle,
+      bottleEntry: existingBottle,
     });
   } catch (error) {
+    console.error("Error assigning driver:", error);
     res.status(500).json({ message: "Error assigning driver", error: error.message });
   }
 };
+
 
 const createRoute = async (req, res) => {
   try {
