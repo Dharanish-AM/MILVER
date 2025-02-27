@@ -317,12 +317,14 @@
 }
 .Dashboard-left-bottom-right-table {
   flex:1;
+  overflow-y: scroll;
   width: 98%;
 }
+
 .delivery-details-table {
   height: 100%;
   width: 100%;
-  overflow-y: auto;
+  
 }
 
 .Dashboard-right-mapContainer {
@@ -334,24 +336,30 @@
 .delivery-details-table-No {
   width: 10%;
   text-align: center !important;
+  font-size: 1rem;
 }
 .delivery-details-table-status {
   width: 10%;
   text-align: center !important;
+  font-size: 1rem;
 }
 .delivery-details-table-Name {
   width: 30%;
+  font-size: 1rem;
 }
 .delivery-details-table-route {
   width: 30%;
+  font-size: 1rem;
 }
 .delivery-details-table-1-2 {
   width: 10%;
   text-align: center !important;
+  font-size: 1rem;
 }
 .delivery-details-table-1 {
   width: 10%;
   text-align: center !important;
+  font-size: 1rem;
 }
 .delivery-details-table-status-circle {
   height: 10px;
@@ -459,6 +467,6 @@
 }
 
 .Dashboard-left-bottom-right-table {
-  overflow-y: scroll;
+  
 
 }

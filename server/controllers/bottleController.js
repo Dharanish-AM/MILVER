@@ -51,6 +51,15 @@ exports.updateBottleStatus = async (req, res) => {
   }
 };
 
+exports.fetchAllBottles = async (req, res) => {
+  try {
+
+  }
+  catch (err) {
+
+  }
+}
+
 exports.fetchBottleDetailsByRoute = async (req, res) => {
   try {
     const { route_id } = req.params;

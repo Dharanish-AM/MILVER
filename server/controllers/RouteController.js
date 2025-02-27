@@ -55,7 +55,7 @@ const confirmAndSaveAssignments = async (req, res) => {
 
 const assignDeliverymenManual = async (req, res) => {
   try {
-    const { driver_objid, route_objid } = req.body;
+    const { driver_objid, route_objid,totalBottle } = req.body;
 
     const route = await Route.findById(route_objid);
     const driver = await Deliverymen.findById(driver_objid);
