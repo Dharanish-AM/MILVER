@@ -498,9 +498,9 @@ function Deliverymandetails() {
                   <h3>{employee.name}</h3>
                   <div className="employee-details">
                     <p>
-                      <strong>Route IDs:</strong>{" "}
+                      <strong>Route:</strong>{" "}
                       {employee.routes?.length
-                        ? employee.routes.map((route) => route.id).join(", ")
+                        ? employee.routes.map((route) => route.name).join(", ")
                         : "No routes assigned"}
                     </p>
                     <p>
@@ -575,49 +575,63 @@ function Deliverymandetails() {
             </div>
           </div>
         ) :
-          isShowAttendenceHistory && <div className="attendence-history-container">
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: "100%"
-            }}>
-              <h2>Attendance History</h2>
-              <strong onClick={() => {
-                setShowAttendenceHistory(false);
-              }} style={{
-                cursor: "pointer"
-              }}>Close</strong>
-            </div>
-            <p><strong>Employee:</strong> {selectedEmployee?.name}</p>
-            <p><strong>Address:</strong> {selectedEmployee?.address}</p>
+          isShowAttendenceHistory && (
+            <div className="attendence-history-container">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <h2>Attendance History</h2>
+                <strong
+                  onClick={() => {
+                    setShowAttendenceHistory(false);
+                  }}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Close
+                </strong>
+              </div>
+              <p>
+                <strong>Employee:</strong> {selectedEmployee?.name}
+              </p>
+              <p>
+                <strong>Address:</strong> {selectedEmployee?.address}
+              </p>
 
-            <div className="attendence-history-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedEmployee?.attendence?.length > 0 ? (
-                    selectedEmployee.attendence.map((record) => (
-                      <tr key={record._id}>
-                        <td>{new Date(record.date).toLocaleDateString()}</td>
-                        <td>{record.status}</td>
-                      </tr>
-                    ))
-                  ) : (
+              <div className="attendence-history-table">
+                <table>
+                  <thead>
                     <tr>
-                      <td colSpan="2">No attendance records available</td>
+                      <th>Date</th>
+                      <th>Status</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {selectedEmployee?.attendence?.length > 0 ? (
+                      [...selectedEmployee.attendence]
+                        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sorting by most recent first
+                        .map((record) => (
+                          <tr key={record._id}>
+                            <td>{new Date(record.date).toLocaleDateString()}</td>
+                            <td>{record.status}</td>
+                          </tr>
+                        ))
+                    ) : (
+                      <tr>
+                        <td colSpan="2">No attendance records available</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-
+          )
         }
 
         {showDeleteConfirmation && selectedEmployee && (

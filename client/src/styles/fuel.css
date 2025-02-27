@@ -4,6 +4,7 @@
   background-color: #d8d8d8;
   display: flex;
   flex-direction: row;
+  overflow: hidden;
 }
 .fuel-container {
   display: flex;
