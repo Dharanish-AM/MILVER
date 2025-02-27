@@ -101,9 +101,11 @@ export default function MapRoutes() {
     }));
   };
   const [currentrouteid, setcurrentrouteid] = useState(null);
+  const[currentdeliverymenid,setdeliverymenid]=useState(null);
   const handleAssignDeliveryMan = (routeId, deliveryManId) => {
     setopenmodel(true);
     setcurrentrouteid(routeId);
+    setdeliverymenid(deliveryManId)
     const payload = {
       driver_objid: deliveryManId,
       route_objid: routeId,
@@ -133,8 +135,9 @@ export default function MapRoutes() {
   };
 
   const submitbottlemodel = async () => {
-    // const response=await axios.post("http://localhost:8000/api/bottle/create",{route_id:currentrouteid,total:bottlecount});
-    // console.log(response.data);
+    console.log(bottlecount)
+    const response=await axios.post("http://localhost:8000/api/bottle/create",{route_objid:currentrouteid,totalBottles:bottlecount,driver_objid:currentdeliverymenid});
+    console.log(response.data);
     closebottlemodel(false);
     window.location.reload();
   };
@@ -611,7 +614,8 @@ export default function MapRoutes() {
                             <div className="mapRoutes-content-details-bottom-right-Assigned">
                               <span>Assigned Delivery Man: </span>
                               <div>
-                                {route.driver.name} ({route.driver.phone})
+                              {route.driver?.name || "No Driver Assigned"} ({route.driver?.phone || "No Phone"})
+
                               </div>
                             </div>
                           )}
@@ -638,7 +642,7 @@ export default function MapRoutes() {
                 <input
                   type="number"
                   value={bottlecount}
-                  onchange={handlebottlecountchange}
+                  onChange={handlebottlecountchange}
                   placeholder="enter bottles count"
                 />
               </div>

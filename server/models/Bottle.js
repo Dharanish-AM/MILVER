@@ -8,10 +8,15 @@ const BottleSchema = new mongoose.Schema({
   bottle_details: {
     type: [
       {
+        deliverymanid: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "DeliveryMan",
+          required: true,
+        },
         total: {
           type: Number,
           default: 0,
-          require: true,
+          required: true,
         },
         delivered: {
           type: Number,
