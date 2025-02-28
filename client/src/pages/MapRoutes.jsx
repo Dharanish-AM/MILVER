@@ -50,7 +50,8 @@ export default function MapRoutes() {
       .get("http://localhost:8000/api/route/")
       .then((res) => {
         setData(res.data);
-        setFilteredData(res.data);
+        console.log("😍😍😍😍😍😍😍",res.data)
+        setFilteredData(res.data.routes);
         console.log(res.data);
       })
       .catch((err) => console.log("Error in getRoutes API request:", err));

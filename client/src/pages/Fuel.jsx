@@ -54,7 +54,7 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
     setFilter(option.value);
   };
 
-  const handleGenerateReport = () => {
+  const handleGenerateReport = async () => {
     console.log(
       "Generating report from",
       fromDate,
@@ -63,7 +63,52 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
       "with filter",
       filter
     );
+  
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/route/report`,
+        {
+          params: {
+            fromDate,
+            toDate,
+            filter,
+          },
+        }
+      );
+  
+      if (response.data.routes.length === 0) {
+        alert("No data found for the selected range.");
+        return;
+      }
+  
+      const reportData = response.data.routes.map((route, index) => ({
+        SNo: index + 1,
+        Route: route.route_name,
+        Driver: route.driver?.name || "Unassigned",
+        "Total Cost": route.fuelamount || 0,
+        "Today's Amount": route.todaysAmount || 0,
+        "Remaining Due": route.driver?.deliverymensdue || 0,
+      }));
+  
+      let csvContent =
+        "data:text/csv;charset=utf-8," +
+        ["SNo,Route,Driver,Total Cost,Today's Amount,Remaining Due"]
+          .concat(reportData.map((row) => Object.values(row).join(",")))
+          .join("\n");
+  
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Fuel_Report_${fromDate}_${toDate}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error generating report:", error);
+      alert("Error generating report. Please try again.");
+    }
   };
+  
   const[index,setindex]=useState(0);
 const[isinputchanged,setinputchanged]=useState(0);
  const handleSave = async (e) => {

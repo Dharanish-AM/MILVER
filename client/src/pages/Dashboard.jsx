@@ -65,7 +65,7 @@ function Dashboard() {
       .get("http://localhost:8000/api/route/")
       .then((res) => {
         console.log(res);
-        setRoutes(res.data);
+        setRoutes(res.data.routes);
       })
       .catch((err) => {
         console.log("Error in getRoutes API request:", err);

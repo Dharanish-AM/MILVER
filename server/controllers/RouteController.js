@@ -259,6 +259,44 @@ const removeDeliverymanFromRoute = async (req, res) => {
       .json({ message: "Error removing deliveryman from route", error });
   }
 };
+const fuelreport = async (req, res) => {
+  try {
+    const { fromDate, toDate, filter } = req.query;
+    console.log(req.query);
+
+    const startDate = new Date(fromDate);
+    const endDate = new Date(toDate);
+    endDate.setHours(23, 59, 59, 999);
+
+    const query = {
+      delivery_history: {
+        $elemMatch: { assigned_at: { $gte: startDate, $lte: endDate } },
+      },
+    };
+
+    if (filter) {
+      query["route_name"] = { $regex: filter, $options: "i" };
+    }
+
+    const routes = await Route.find(query)
+      .populate("driver", "name deliverymensdue")
+      .populate("delivery_history.driver", "name");
+
+    const formattedRoutes = routes.map((route) => {
+      return {
+        ...route.toObject(),
+        delivery_history: route.delivery_history.filter((entry) => 
+          entry.assigned_at >= startDate && entry.assigned_at <= endDate
+        ),
+      };
+    });
+console.log(formattedRoutes)
+    res.json({ success: true, routes: formattedRoutes });
+  } catch (error) {
+    console.error("Error generating report:", error);
+    res.status(500).json({ success: false, message: "Error generating report" });
+  }
+};
 
 module.exports = {
   getAllRoutes,
@@ -269,4 +307,5 @@ module.exports = {
   removeDeliverymanFromRoute,
   assignDeliverymenManual,
   confirmAndSaveAssignments,
+  fuelreport
 };
