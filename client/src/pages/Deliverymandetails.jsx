@@ -26,6 +26,7 @@ function Deliverymandetails() {
   const [routeFilter, setRouteFilter] = useState("Routes");
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const[availableroutes,setavailableroutes]=useState(null)
   const [showModal, setShowModal] = useState(false);
   const [deliverymendata, setdelivermendata] = useState([]);
   const [isEventAdded, setIsEventAdded] = useState(false);
@@ -114,6 +115,19 @@ function Deliverymandetails() {
       console.error("Error fetching deliverymen data: ", error);
     }
   };
+  const getavailableroutes=async()=>{
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/route/`
+      );
+      console.log(response.data);
+
+      setavailableroutes(response.data.routes);
+    } catch (error) {
+      console.error("Error fetching deliverymen data: ", error);
+    }
+  
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -121,6 +135,7 @@ function Deliverymandetails() {
     const fetchData = async () => {
       if (isMounted) {
         await getDeliverymenData();
+        await getavailableroutes();
       }
     };
 
@@ -154,6 +169,14 @@ function Deliverymandetails() {
         customerForm
       );
       toast.success("Employee added successfully!");
+    setCustomerForm({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        routes: [],
+        category: "",
+      });
       setIsAddEmployeeModalOpen(false);
       setIsEventAdded((prev) => !prev);
     } catch (error) {
@@ -557,6 +580,9 @@ function Deliverymandetails() {
                       .join(", ")
                     : "No routes assigned"}
                 </p>
+                <p>
+                  Deliverymens Due:  {selectedEmployee.deliverymensdue}
+                </p>
               </div>
               <div className="modal-footer">
                 <button className="btn-edit" onClick={handleEdit}>
@@ -754,25 +780,33 @@ function Deliverymandetails() {
                   <span className="error-message">{formErrors.address}</span>
                 )}
 
-                <select
-                  name="routes"
-                  multiple
-                  value={customerForm.routes}
-                  onChange={(e) =>
-                    setCustomerForm({
-                      ...customerForm,
-                      routes: Array.from(
-                        e.target.selectedOptions,
-                        (option) => option.value
-                      ),
-                    })
-                  }
-                  className="add-employee-select"
-                >
-                  <option value="1">Route 1</option>
-                  <option value="2">Route 2</option>
-                  <option value="3">Route 3</option>
-                </select>
+<div className="routes-selection">
+  {availableroutes ? (
+    availableroutes.map((route) => (
+      <label key={route.id} className="route-checkbox">
+        <input
+          type="checkbox"
+          value={route.route_id}
+          checked={customerForm.routes.includes(route.route_id)}
+          onChange={(e) => {
+            const selectedRoutes = customerForm.routes.includes(route.route_id)
+              ? customerForm.routes.filter(id => id !== route.route_id)
+              : [...customerForm.routes, route.route_id];
+
+            setCustomerForm({
+              ...customerForm,
+              routes: selectedRoutes,
+            });
+          }}
+        />
+        {route.route_name}
+      </label>
+    ))
+  ) : (
+    <p>Loading routes...</p>
+  )}
+</div>
+
 
                 <select
                   name="category"

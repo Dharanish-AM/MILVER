@@ -119,27 +119,17 @@
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-
 .employee-list {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
   gap: 40px;
-  height: 100%;
   width: 100%;
-  overflow-y: scroll;
-  padding-top: 2%;
-  align-items: center;
   justify-content: center;
-  overflow-x: hidden;
-  overflow-y: auto;
-
 }
 
 .employee-card {
   background-color: #fff;
   border-radius: 15px;
-  flex: 1;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   text-align: center;
   font-family: Arial, sans-serif;
@@ -149,10 +139,27 @@
   align-items: center;
   justify-content: center;
   height: fit-content;
-  min-width: 20%;
+  min-width: 280px; /* Minimum width */
+  max-width: 350px; /* Prevents from being too wide */
+  width: calc(33.33% - 40px); /* Ensures cards take up proper width */
   padding: 1rem;
-
+  flex: 1 1 calc(33.33% - 40px); /* Makes sure the layout remains responsive */
 }
+
+@media (max-width: 1024px) {
+  .employee-card {
+    width: calc(50% - 40px); /* On smaller screens, 2 cards per row */
+    flex: 1 1 calc(50% - 40px);
+  }
+}
+
+@media (max-width: 600px) {
+  .employee-card {
+    width: calc(100% - 40px); /* On very small screens, 1 card per row */
+    flex: 1 1 calc(100% - 40px);
+  }
+}
+
 
 .employee-card:hover {
   transform: scale(1.05);
@@ -369,26 +376,28 @@ table {
   cursor: pointer;
   font-size: 16px;
 }
-
+/* Modal Overlay */
 .add-employee-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1050;
+  backdrop-filter: blur(6px);
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Modal Content */
 .add-employee-modal-content {
-  background: #fff;
+  background: #ffffff;
   width: 600px;
-  border-radius: 18px;
-  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   animation: modalSlideIn 0.4s ease-out;
   display: flex;
@@ -396,65 +405,69 @@ table {
   position: relative;
 }
 
+/* Modal Header */
 .add-employee-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28px 28px;
-  background: #333;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 600;
-  border-bottom: 2px solid #444;
+  padding: 24px;
+  background: linear-gradient(135deg, #007bff, #002f6c);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .add-employee-title {
   margin: 0;
 }
 
+/* Close Button */
 .add-employee-close-btn {
   background: none;
   border: none;
-  font-size: 26px;
-  color: #fff;
+  font-size: 22px;
+  color: #ffffff;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .add-employee-close-btn:hover {
   transform: scale(1.2);
-  color: #ff5722;
+  color: #ffcc00;
 }
 
+/* Modal Body */
 .add-employee-modal-body {
-  padding: 30px 35px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  background-color: #f9f9f9;
+  gap: 18px;
+  background-color: #f5f7fa;
 }
 
+/* Input Fields */
 .add-employee-input,
 .add-employee-select {
-  width: 100%;
-  padding: 14px 18px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
+  width: 97%;
+  padding: 12px 16px;
+  border: 1px solid #d1d9e6;
+  border-radius: 8px;
   font-size: 16px;
-  background-color: #fff;
+  background-color: #ffffff;
   transition: all 0.3s ease;
-  box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .add-employee-input:focus,
 .add-employee-select:focus {
   border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 0 12px rgba(0, 123, 255, 0.3);
   outline: none;
 }
 
+/* Error Message */
 .input-error {
-  border-color: #dc3545;
+  border-color: #dc3545 !important;
 }
 
 .error-message {
@@ -463,76 +476,86 @@ table {
   margin-top: -6px;
 }
 
+/* Modal Footer */
 .add-employee-modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
-  padding: 20px 30px;
-  background-color: #f2f2f2;
-  border-top: 1px solid #ddd;
+  gap: 14px;
+  padding: 18px;
+  background-color: #e9ecef;
+  border-top: 1px solid #ccc;
 }
 
-add-employee-submit-btn {
-  background: transparent;
-  color: #007bff;
-  padding: 14px 30px;
-  border: 2px solid #007bff;
-  border-radius: 50px;
+/* Buttons */
+.add-employee-submit-btn,
+.add-employee-cancel-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease,
-    box-shadow 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+}
+.routes-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-height: 150px; /* Set a max height */
+  overflow-y: auto; /* Enable scrolling when content exceeds max height */
+  padding: 8px;
+  border: 1px solid #d1d9e6;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.route-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.add-employee-submit-btn {
+  background: #007bff;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .add-employee-submit-btn:hover {
-  background-color: #007bff;
-  color: #fff;
-  border-color: #0056b3;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-  transform: translateY(-3px);
-}
-
-.add-employee-submit-btn:active {
-  background-color: #0056b3;
-  transform: translateY(1px);
+  background: #0056b3;
+  transform: translateY(-2px);
 }
 
 .add-employee-cancel-btn {
   background: #6c757d;
-  color: #fff;
-  border: none;
-  padding: 14px 30px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease,
-    box-shadow 0.3s ease;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(108, 117, 125, 0.3);
 }
 
 .add-employee-cancel-btn:hover {
   background: #5a6268;
-  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
     opacity: 1;
   }
 }

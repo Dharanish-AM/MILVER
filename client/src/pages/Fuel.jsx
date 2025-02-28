@@ -6,7 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import axios from "axios";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Fuel() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
@@ -317,8 +318,7 @@ setindex(index)
                         borderBottom: "1px solid #ddd",
                       }}
                     >
-                      TA
-                    </th>
+Total Amount                    </th>
                     <th
                       style={{
                         padding: "10px",
@@ -491,12 +491,13 @@ setindex(index)
                             }
                             toggleEdit(index);
                           }}
+                          disabled={row.drivers==="Unassigned"} 
                           style={{
                             padding: "5px 10px",
                             color: "white",
                             border: "none",
                             borderRadius: "5px",
-                            cursor: "pointer",
+                            cursor:row.drivers==="Unassigned"?"not-allowed":"pointer",
                           }}
                         >
                           {row.editable ? "Save" : "Edit"}
@@ -513,6 +514,8 @@ setindex(index)
           </div>
         </div>
       </div>
+              <ToastContainer />
+      
     </div>
   );
 }
