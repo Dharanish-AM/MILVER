@@ -47,7 +47,7 @@ export default function MapRoutes() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/route/")
+      .get(`${import.meta.env.VITE_API_URL}/route/`)
       .then((res) => {
         setData(res.data);
         console.log("😍😍😍😍😍😍😍",res.data)
@@ -57,7 +57,7 @@ export default function MapRoutes() {
       .catch((err) => console.log("Error in getRoutes API request:", err));
 
     axios
-      .get("http://localhost:8000/api/deliverymen")
+      .get(`${import.meta.env.VITE_API_URL}/deliverymen`)
       .then((res) => {
         setDeliveryMan(res.data);
         console.log(res.data);
@@ -113,7 +113,7 @@ export default function MapRoutes() {
     };
 
     axios
-      .post("http://localhost:8000/api/route/assigndeliverymenmanual", payload)
+      .post(`${import.meta.env.VITE_API_URL}/route/assigndeliverymenmanual`, payload)
       .then((res) => {
         console.log("Delivery man assigned successfully:", res.data);
 
@@ -137,7 +137,7 @@ export default function MapRoutes() {
 
   const submitbottlemodel = async () => {
     console.log(bottlecount)
-    const response=await axios.post("http://localhost:8000/api/bottle/create",{route_objid:currentrouteid,totalBottles:bottlecount,driver_objid:currentdeliverymenid});
+    const response=await axios.post(`${import.meta.env.VITE_API_URL}/bottle/create`,{route_objid:currentrouteid,totalBottles:bottlecount,driver_objid:currentdeliverymenid});
     console.log(response.data);
     closebottlemodel(false);
     window.location.reload();
@@ -186,7 +186,7 @@ export default function MapRoutes() {
   };
   const handleSubmitChanges = () => {
     axios
-      .post("http://localhost:8000/", updatedRouteData)
+      .post(`${import.meta.env.VITE_API_URL}`, updatedRouteData)
       .then((res) => {
         console.log("Data updated successfully:", res.data);
         setEditMode(false);
@@ -211,7 +211,7 @@ export default function MapRoutes() {
     };
 
     try {
-      const response = await axios.post("http://localhost:8000/api/route/", routeData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/route/`, routeData, {
         headers: {
           "Content-Type": "application/json",
         },

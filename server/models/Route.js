@@ -62,6 +62,7 @@ const routeSchema = new mongoose.Schema({
     type:Number,
     default:0
   },
+  
  
 });
 

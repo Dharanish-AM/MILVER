@@ -163,14 +163,14 @@ const createRoute = async (req, res) => {
       location,
       defaultAmount,
     } = req.body;
-
+console.log(req.body)
     const newRoute = new Route({
       route_name,
       customers,
       drivers,
       distance,
       location,
-      defaultAmount,
+      fuelamount:defaultAmount,
     });
 
     await newRoute.save();
@@ -191,7 +191,7 @@ const updateRoute = async (req, res) => {
       location,
       defaultAmount,
     } = req.body;
-
+ console.log(req.body)
     const route = await Route.findOne({ route_id });
 
     if (!route) {

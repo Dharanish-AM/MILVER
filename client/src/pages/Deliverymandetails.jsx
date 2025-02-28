@@ -106,7 +106,7 @@ function Deliverymandetails() {
   const getDeliverymenData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/deliverymen/`
+        `${import.meta.env.VITE_API_URL}/deliverymen/`
       );
       console.log(response.data);
 
@@ -118,7 +118,7 @@ function Deliverymandetails() {
   const getavailableroutes=async()=>{
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/route/`
+       `${import.meta.env.VITE_API_URL}/route/`
       );
       console.log(response.data);
 

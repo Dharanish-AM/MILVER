@@ -62,7 +62,7 @@ function Dashboard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/route/")
+      .get(`${import.meta.env.VITE_API_URL}/route/`)
       .then((res) => {
         console.log(res);
         setRoutes(res.data.routes);
@@ -71,7 +71,7 @@ function Dashboard() {
         console.log("Error in getRoutes API request:", err);
       });
     axios
-      .get("http://localhost:8000/api/deliverymen/")
+      .get(`${import.meta.env.VITE_API_URL}/deliverymen/`)
       .then((res) => {
         console.log(res.data);
         const deliverymen = res.data;
@@ -81,7 +81,7 @@ function Dashboard() {
         console.log("Error in getAllDeliveryMen : ", err);
       });
     axios
-      .get("http://localhost:8000/api/bottle/get-all-bottles")
+      .get(`${import.meta.env.VITE_API_URL}/bottle/get-all-bottles`)
       .then((res) => {
         const bottles = res.data;
         setBottles(bottles.data);
