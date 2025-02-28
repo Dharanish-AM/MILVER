@@ -9,7 +9,7 @@ const deliverymenRoutes = require("./routes/deliverymenRoutes");
 const routeRoutes = require("./routes/routeRoutes");
 const bottleRoutes = require("./routes/bottleRoutes");
 const fuelallowance = require("./routes/FuelAllowanceRoutes");
-
+const authRoutes=require("./routes/AuthRoute")
 const clearfuntion = require("./controllers/deliverymenController");
 clearfuntion.resetDriverStatusAndRoutes();
 
@@ -26,7 +26,8 @@ app.use("/api/deliverymen", deliverymenRoutes);
 app.use("/api/route", routeRoutes); 
 app.use("/api/bottle", bottleRoutes);
 app.use("/api/fuelallowance", fuelallowance);
-  
+app.use("/api/auth", authRoutes);
+
 app.listen(PORT, () => { 
   console.log(`Server running on port ${PORT}`); 
 });  
