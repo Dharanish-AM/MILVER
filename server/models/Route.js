@@ -46,11 +46,15 @@ const routeSchema = new mongoose.Schema({
           type: Date,
           default: Date.now,
         },
+        fuelamount: { 
+          type: Number,
+          default: 0,
+        },
       },
     ],
     default: [],
   },
-  fuelamount: { 
+    fuelamount: { 
     type: Number,
     default: 0,
   },

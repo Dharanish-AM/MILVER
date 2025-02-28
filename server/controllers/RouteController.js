@@ -1,18 +1,54 @@
 const Route = require("../models/Route");
 const Deliverymen = require("../models/Deliverymen");
 const Bottle = require("../models/Bottle");
-
 const getAllRoutes = async (req, res) => {
   console.log("Fetching all routes...");
   try {
-    const routes = await Route.find().populate("customers").populate("driver");
+    const routes = await Route.find()
+      .populate("customers")
+      .populate("driver");
 
-    res.json(routes);
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    let totalAmountPaidToday = 0;
+    let totalMonthFuelCost = 0;
+    let totalLast30DaysFuelCost = 0;
+
+    routes.forEach((route) => {
+      totalAmountPaidToday += route.todaysAmount || 0;
+
+      route.delivery_history.forEach((entry) => {
+        if (entry.assigned_at >= startOfMonth) {
+          totalMonthFuelCost += entry.fuelamount || 0;
+        }
+        if (entry.assigned_at >= thirtyDaysAgo) {
+          totalLast30DaysFuelCost += entry.fuelamount || 0;
+        }
+      });
+    });
+
+    console.log({
+      totalAmountPaidToday,
+      totalMonthFuelCost,
+      totalLast30DaysFuelCost,
+    });
+
+    res.json({
+      routes,
+      totalAmountPaidToday,
+      totalMonthFuelCost,
+      totalLast30DaysFuelCost,
+    });
   } catch (error) {
     console.error("Error fetching routes:", error);
     res.status(500).json({ message: "Error fetching routes", error });
   }
 };
+
+
 
 const getRouteById = async (req, res) => {
   try {

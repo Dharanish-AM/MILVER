@@ -136,7 +136,7 @@ const createDeliveryman = async (req, res) => {
 const attendencedeliverymen = async (req, res) => {
   try {
     const { driver_id, is_present } = req.body;
-
+console.log(req.body)
     // Validate input
     if (!driver_id || typeof is_present !== "boolean") {
       res.status(400).json({
@@ -311,7 +311,7 @@ const deleteDeliveryHistory = async (req, res) => {
 };
 
 const resetDriverStatusAndRoutes = () => {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 0 * * *", async () => {
     try {
       console.log(
         "Running scheduled task to reset driver statuses and routes."

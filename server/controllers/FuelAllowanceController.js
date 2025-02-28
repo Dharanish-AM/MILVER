@@ -2,10 +2,12 @@ const Deliverymen = require("../models/Deliverymen");
 const Route = require("../models/Route");
 
 const addFuelAllowance = async (req, res) => {
-  const { driverId, routeId, amount,routescost} = req.body;
-console.log(req.body)
-console.log(parseInt(amount))
-  if (!driverId || !routeId || amount === undefined) {
+  let { driverId, routeId, amount, routescost, alreadypaidamouttoday } = req.body;
+  console.log(req.body);
+
+  amount = Number(alreadypaidamouttoday) + Number(amount); // Ensure it's a number
+
+  if (!driverId || !routeId || isNaN(amount)) {
     return res.status(400).json({
       message: "driverId, routeId, and amount are required.",
     });
@@ -13,56 +15,65 @@ console.log(parseInt(amount))
 
   try {
     const deliveryman = await Deliverymen.findById(driverId);
-const route=await Route.findById(routeId);
+    const route = await Route.findById(routeId);
+
     if (!deliveryman) {
       return res.status(404).json({ message: "Deliveryman not found." });
     }
 
-    const today = new Date();
-    const todayString = today.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+    if (!route) {
+      return res.status(404).json({ message: "Route not found." });
+    }
 
-    let todayEntry = deliveryman.fuel_allowance.find(
-      (entry) => entry.date.toISOString().split("T")[0] === todayString
+    if (!deliveryman.deliverymensdue) {
+      deliveryman.deliverymensdue = 0;
+    }
+
+    if (amount > routescost) {
+      console.log(amount);
+      let balance = amount - routescost;
+      deliveryman.deliverymensdue += balance;
+    } else if (amount < routescost) {
+      console.log("ss");
+      let balance = routescost - amount;
+      console.log("Balance to be adjusted:", balance);
+
+      if (deliveryman.deliverymensdue > 0) {
+        if (balance >= deliveryman.deliverymensdue) {
+          balance -= deliveryman.deliverymensdue;
+          deliveryman.deliverymensdue = 0;
+        } else {
+          deliveryman.deliverymensdue -= balance;
+          balance = 0;
+        }
+      }
+    }
+
+    route.todaysAmount = amount;
+
+    const today = new Date().toISOString().split("T")[0]; // Get YYYY-MM-DD format
+    const existingEntryIndex = route.delivery_history.findIndex(
+      (entry) =>
+        entry.driver.toString() === driverId.toString() &&
+        entry.assigned_at.toISOString().split("T")[0] === today
     );
 
-    if (!todayEntry) {
-      todayEntry = { date: today,records:[] };
-      todayEntry.records.push({
-        amount,
-        route_id: routeId,
-        time: new Date(),
+    if (existingEntryIndex !== -1) {
+      route.delivery_history[existingEntryIndex].fuelamount = amount;
+    } else {
+      route.delivery_history.push({
+        driver: driverId,
+        assigned_at: new Date(),
+        fuelamount: amount,
       });
-
-      deliveryman.fuel_allowance.push(todayEntry);
     }
 
-    todayEntry.records.push({
-      amount,
-      route_id: routeId,
-      time: new Date(),
-    });
-    console.log(deliveryman.deliverymensdue)
-    if(amount>routescost){
-      let balance=amount-routescost;
-      deliveryman.deliverymensdue+=balance;
-    }
-    else if(amount<routescost){
-      let balance=(routescost-route.todaysAmount)-amount;
-      if(balance<=deliveryman.deliverymensdue){
-      deliveryman.deliverymensdue-=balance;
-      }
-      else{
-        deliveryman.deliverymensdue=0;
-        let balance1=balance-deliveryman.deliverymensdue;
-        deliveryman.ourdue+=balance1;
-      }
-    }
-    route.todaysAmount = Number(route.todaysAmount) + Number(amount);
-    route.save();
+    await route.save();
     await deliveryman.save();
-console.log("successfully")
+
+    console.log("Fuel allowance added successfully.");
     return res.status(200).json({
-      status:200,
+      status: 200,
       message: "Fuel allowance added successfully.",
       deliveryman,
     });

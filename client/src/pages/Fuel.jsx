@@ -13,7 +13,8 @@ export default function Fuel() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("none");
   const [data, setData] = useState([]); 
-
+const[todayspaidamounttotal,settodayspaidamounttotal]=useState(0);
+const[last30daysfuelamount,setlast30daysfuelamount]=useState(0);
   const filterOptions = ["none", "Assigned", "Not Assigned"];
 const[todaysallroutecost,settodaystotalcost]=useState(0);
   useEffect(() => {
@@ -23,7 +24,9 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
           `${import.meta.env.VITE_API_URL}/route/`
         );
         console.log(response.data)
-        const routes = response.data.map((route, index) => ({
+        settodayspaidamounttotal(response.data?.totalAmountPaidToday)
+        setlast30daysfuelamount(response.data?.totalLast30DaysFuelCost)
+        const routes = response.data.routes.map((route, index) => ({
           sno:route.route_id,
           route: route.route_name, 
           drivers: route.driver?.name || "Unassigned", 
@@ -34,7 +37,7 @@ const[todaysallroutecost,settodaystotalcost]=useState(0);
           driver_id:route.driver?._id,
           paidamounttoday:route.todaysAmount,
           deliverymensdue:route.driver?.deliverymensdue,
-          oursdue:route.driver?.ourdue
+         
         }));
         const allroutescost = routes.reduce((acc, route) => acc + route.totalCost, 0);
       console.log("Total cost of all routes:", allroutescost)
@@ -72,6 +75,7 @@ const[isinputchanged,setinputchanged]=useState(0);
     routeId: e.routeid,
     amount: isinputchanged?e.todaysAmount:0,
     routescost: e.totalCost,
+    alreadypaidamouttoday:e.paidamounttoday
   });
  
   console.log(response.data);
@@ -155,13 +159,14 @@ setindex(index)
           <div className="fuel-overview">
             <div className="fuel-overview-daily">
               <div className="fuel-overview-daily-content">
-                <span>Rs. </span>{todaysallroutecost||2000}
+                <span>Rs. </span>
+                {todayspaidamounttotal ||0}
               </div>
               <div className="fuel-overview-daily-label">TODAY FUEL COST</div>
             </div>
             <div className="fuel-overview-total">
               <div className="fuel-overview-total-content">
-                <span>Rs. </span>14521
+                <span>Rs. </span>{last30daysfuelamount}
               </div>
               <div className="fuel-overview-total-label">
                 CURRENT MONTH TOTAL
@@ -245,16 +250,79 @@ setindex(index)
                   }}
                 >
                   <tr style={{ textAlign: "left" }}>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>S. No</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Route Name</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>TA</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Drivers</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Deliverymans due</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>ours due</th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      S. No
+                    </th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Route Name
+                    </th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      TA
+                    </th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Drivers
+                    </th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Deliverymans due
+                    </th>
 
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>PAID</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>PAY</th>
-                    <th style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>Actions</th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Amount Paid Today
+                    </th>
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      PAY
+                    </th>
+                    {/* <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Reduce from Balance
+                    </th> */}
+                    <th
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ddd",
+                      }}
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -262,30 +330,57 @@ setindex(index)
                     <tr
                       key={index}
                       style={{
-                        backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9f9f9",
+                        backgroundColor:
+                          index % 2 === 0 ? "#ffffff" : "#f9f9f9",
                       }}
                     >
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.sno}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.route}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
-                        {row.totalCost||2000}
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        {row.totalCost || 2000}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.drivers}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.deliverymensdue}
                       </td>
-                     
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
-                        {row.oursdue}
-                      </td>
-                     
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.paidamounttoday}
                       </td>
                       {/* <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
@@ -307,13 +402,22 @@ setindex(index)
                           `Rs. ${row.totalCost}`
                         )}
                       </td> */}
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
                         {row.editable ? (
                           <input
                             type="number"
                             placeholder="RS 0"
                             onChange={(e) =>
-                              handleInputChange(index, "todaysAmount", e.target.value)
+                              handleInputChange(
+                                index,
+                                "todaysAmount",
+                                e.target.value
+                              )
                             }
                             style={{
                               width: "100%",
@@ -323,31 +427,38 @@ setindex(index)
                             }}
                           />
                         ) : (
-                        0
+                          0
                         )}
                       </td>
-                      <td style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
-                      <button
-  className={`edit-button ${
-    row.editable ? "save-button" : "edit-mode-button"
-  }`}
-  onClick={() => {
-    if (row.editable) {
-      handleSave(row); 
-    }
-    toggleEdit(index); 
-  }}
-  style={{
-    padding: "5px 10px",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  }}
->
-  {row.editable ? "Save" : "Edit"}
-</button>
-
+                      <td
+                        style={{
+                          padding: "10px",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        <button
+                          className={`edit-button ${
+                            row.editable ? "save-button" : "edit-mode-button"
+                          }`}
+                          onClick={() => {
+                            if (row.editable) {
+                              handleSave(row);
+                            }
+                            toggleEdit(index);
+                          }}
+                          style={{
+                            padding: "5px 10px",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "5px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {row.editable ? "Save" : "Edit"}
+                        </button>
+                        {/* <button className="">
+                          Reduce
+                        </button> */}
                       </td>
                     </tr>
                   ))}
