@@ -312,7 +312,7 @@ const deleteDeliveryHistory = async (req, res) => {
 
 const resetDriverStatusAndRoutes = () => {
   cron.schedule("0 0 * * *", async () => {
-    try {
+    try { 
       console.log(
         "Running scheduled task to reset driver statuses and routes."
       );

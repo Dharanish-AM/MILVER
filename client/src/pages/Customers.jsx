@@ -135,8 +135,7 @@ const Customers = () => {
       console.error("Error adding customer: ", error);
       if (error.response) {
         toast.error(
-          `Error: ${
-            error.response.data.message || "An unknown error occurred."
+          `Error: ${error.response.data.message || "An unknown error occurred."
           }`
         );
       } else {
@@ -328,7 +327,7 @@ const Customers = () => {
                   <th>Customer ID</th>
                   <th>Name</th>
                   <th>Phone</th>
-                  <th>Address</th>
+                  <th className="address-cell" >Address</th>
                   <th>Route Id</th>
                   <th>Route Name</th>
                 </tr>
@@ -359,7 +358,7 @@ const Customers = () => {
                         <td>{customer.customer_id}</td>
                         <td>{customer.name || "N/A"}</td>
                         <td>{customer.phone || "N/A"}</td>
-                        <td className="address-cell">{customer.address || "N/A"}</td> 
+                        <td className="address-cell">{customer.address || "N/A"}</td>
                         <td>{customer.route_id || "N/A"}</td>
                         <td>{customer.route_name || "N/A"}</td>
 

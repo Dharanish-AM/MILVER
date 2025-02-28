@@ -33,6 +33,7 @@ function Deliverymandetails() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isShowAttendenceHistory, setShowAttendenceHistory] = useState(false);
   const [editForm, setEditForm] = useState({
     id: "",
     name: "",
@@ -426,27 +427,26 @@ function Deliverymandetails() {
             // Ensure attendance is an array and presentCount calculation is correct
             const presentCount = Array.isArray(employee.attendence)
               ? employee.attendence.filter(
-                  (att) => att.status.toLowerCase() === "present"
-                ).length
+                (att) => att.status.toLowerCase() === "present"
+              ).length
               : 0;
 
             return (
               <div key={index} className="employee-card">
                 <div
-                  className={`employee-status ${
-                    employee.status === "assigned"
-                      ? "Assigned"
-                      : employee.status === "available"
+                  className={`employee-status ${employee.status === "assigned"
+                    ? "Assigned"
+                    : employee.status === "available"
                       ? "Available"
                       : employee.status === "on_leave"
-                      ? "Absent"
-                      : ""
-                  }`}
+                        ? "Absent"
+                        : ""
+                    }`}
                 >
                   {employee.status === "on_leave"
                     ? "Absent"
                     : employee.status.charAt(0).toUpperCase() +
-                      employee.status.slice(1).toLowerCase()}
+                    employee.status.slice(1).toLowerCase()}
                 </div>
 
                 <div className="attendance-dropdown">
@@ -498,9 +498,9 @@ function Deliverymandetails() {
                   <h3>{employee.name}</h3>
                   <div className="employee-details">
                     <p>
-                      <strong>Route IDs:</strong>{" "}
+                      <strong>Route:</strong>{" "}
                       {employee.routes?.length
-                        ? employee.routes.map((route) => route.id).join(", ")
+                        ? employee.routes.map((route) => route.name).join(", ")
                         : "No routes assigned"}
                     </p>
                     <p>
@@ -524,12 +524,16 @@ function Deliverymandetails() {
           })}
         </div>
 
-        {showModal && selectedEmployee && (
+        {showModal && selectedEmployee && !isShowAttendenceHistory ? (
           <div className="modal-overlay">
             <div className="modal-container">
               <div className="modal-header">
                 <h3 className="modal-title">{selectedEmployee.name}</h3>
+                <div onClick={() => {
+                  setShowAttendenceHistory((state) => !state)
+                }} className="attendence-history-btn" >Attendence History</div>
               </div>
+
               <div className="modal-body">
                 <p>
                   <strong>Phone:</strong> {selectedEmployee.phone}
@@ -549,8 +553,8 @@ function Deliverymandetails() {
                   <strong>Route IDs:</strong>{" "}
                   {selectedEmployee.routes && selectedEmployee.routes.length > 0
                     ? selectedEmployee.routes
-                        .map((route) => route.id)
-                        .join(", ")
+                      .map((route) => route.id)
+                      .join(", ")
                     : "No routes assigned"}
                 </p>
               </div>
@@ -570,7 +574,65 @@ function Deliverymandetails() {
               </div>
             </div>
           </div>
-        )}
+        ) :
+          isShowAttendenceHistory && (
+            <div className="attendence-history-container">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <h2>Attendance History</h2>
+                <strong
+                  onClick={() => {
+                    setShowAttendenceHistory(false);
+                  }}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Close
+                </strong>
+              </div>
+              <p>
+                <strong>Employee:</strong> {selectedEmployee?.name}
+              </p>
+              <p>
+                <strong>Address:</strong> {selectedEmployee?.address}
+              </p>
+
+              <div className="attendence-history-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedEmployee?.attendence?.length > 0 ? (
+                      [...selectedEmployee.attendence]
+                        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sorting by most recent first
+                        .map((record) => (
+                          <tr key={record._id}>
+                            <td>{new Date(record.date).toLocaleDateString()}</td>
+                            <td>{record.status}</td>
+                          </tr>
+                        ))
+                    ) : (
+                      <tr>
+                        <td colSpan="2">No attendance records available</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )
+        }
 
         {showDeleteConfirmation && selectedEmployee && (
           <div className="delete-backdrop">
@@ -637,9 +699,8 @@ function Deliverymandetails() {
                   onChange={(e) =>
                     setCustomerForm({ ...customerForm, name: e.target.value })
                   }
-                  className={`add-employee-input ${
-                    formErrors.name ? "input-error" : ""
-                  }`}
+                  className={`add-employee-input ${formErrors.name ? "input-error" : ""
+                    }`}
                 />
                 {formErrors.name && (
                   <span className="error-message">{formErrors.name}</span>
@@ -653,9 +714,8 @@ function Deliverymandetails() {
                   onChange={(e) =>
                     setCustomerForm({ ...customerForm, phone: e.target.value })
                   }
-                  className={`add-employee-input ${
-                    formErrors.phone ? "input-error" : ""
-                  }`}
+                  className={`add-employee-input ${formErrors.phone ? "input-error" : ""
+                    }`}
                 />
                 {formErrors.phone && (
                   <span className="error-message">{formErrors.phone}</span>
@@ -669,9 +729,8 @@ function Deliverymandetails() {
                   onChange={(e) =>
                     setCustomerForm({ ...customerForm, email: e.target.value })
                   }
-                  className={`add-employee-input ${
-                    formErrors.email ? "input-error" : ""
-                  }`}
+                  className={`add-employee-input ${formErrors.email ? "input-error" : ""
+                    }`}
                 />
                 {formErrors.email && (
                   <span className="error-message">{formErrors.email}</span>
@@ -688,9 +747,8 @@ function Deliverymandetails() {
                       address: e.target.value,
                     })
                   }
-                  className={`add-employee-input ${
-                    formErrors.address ? "input-error" : ""
-                  }`}
+                  className={`add-employee-input ${formErrors.address ? "input-error" : ""
+                    }`}
                 />
                 {formErrors.address && (
                   <span className="error-message">{formErrors.address}</span>

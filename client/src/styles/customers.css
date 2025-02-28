@@ -162,7 +162,7 @@
 .table-wrapper {
   max-height: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  width: 100%;
 }
 
 table {
@@ -234,6 +234,12 @@ tbody tr:hover {
   font-size: 15px;
   justify-content: center;
   align-items: center;
+}
+
+.address-cell{
+  width: 5rem;
+  text-wrap: wrap;
+
 }
 
 .viewmore:hover {
