@@ -170,6 +170,7 @@ function Dashboard() {
               <div className="Dashboard-left-top-element-label">
                 CUSTOMERS DELIVERED
               </div>
+              
             </div>
             <div className="Dashboard-left-top-element">
               <div className="Dashboard-left-top-element-content">
