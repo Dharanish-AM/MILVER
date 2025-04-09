@@ -1,7 +1,7 @@
 const cron = require("node-cron");
 const Route = require("../models/Route");
 
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("* * * * * *", async () => {
   try {
     console.log("Resetting todaysAmount for all routes...");
     const result = await Route.updateMany({}, { $set: { todaysAmount: 0 } });
