@@ -163,18 +163,18 @@ console.log(req.body)
     }
 
     // Check if attendance for today is already marked
-    const alreadyMarked = driver.attendence.some((att) => {
-      const recordDate = new Date(att.date);
-      recordDate.setHours(0, 0, 0, 0);
-      return recordDate.getTime() === currentDate.getTime();
-    });
+    // const alreadyMarked = driver.attendence.some((att) => {
+    //   const recordDate = new Date(att.date);
+    //   recordDate.setHours(0, 0, 0, 0);
+    //   return recordDate.getTime() === currentDate.getTime();
+    // });
 
-    if (alreadyMarked) {
-      res.status(400).json({
-        message: "Attendance for today has already been marked",
-      });
-      return;
-    }
+    // if (alreadyMarked) {
+    //   res.status(400).json({
+    //     message: "Attendance for today has already been marked",
+    //   });
+    //   return;
+    // }
 
     // Update attendance
     const updatedDriver = await Deliverymen.findOneAndUpdate(
