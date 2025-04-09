@@ -1,8 +1,9 @@
 const Deliverymen = require("../models/Deliverymen");
 const Route = require("../models/Route");
 const cron = require("node-cron");
-
+const Customer=require("../models/Customer")
 const getAllDeliverymen = async (req, res) => {
+  console.log("😎😎😎😎")
   try {
     const deliverymen = await Deliverymen.find()
       .populate({
@@ -10,7 +11,8 @@ const getAllDeliverymen = async (req, res) => {
         select: "route_id route_name location distance",
       })
       .populate("delivery_history.customer");
-
+const customercount=await Customer.countDocuments();
+console.log(customercount);
     const transformedDeliverymen = deliverymen.map((deliveryman) => ({
       ...deliveryman.toObject(),
       routes: deliveryman.routes.map((route) => ({
@@ -21,7 +23,7 @@ const getAllDeliverymen = async (req, res) => {
       })),
     }));
 
-    res.json(transformedDeliverymen);
+    res.json({transformedDeliverymen,customercount});
   } catch (error) {
     res
       .status(500)
